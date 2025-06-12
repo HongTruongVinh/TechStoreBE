@@ -6,4 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Mappers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TechStore.Common\TechStore.Common.csproj" />
+    <ProjectReference Include="..\TechStore.Data\TechStore.Data.csproj" />
+    <ProjectReference Include="..\TechStore.Model\TechStore.Model.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -8,7 +8,10 @@ namespace TechStore.Data.Entities
 {
     public class Product : BaseEntity
     {
-        public required string ProductId { get; set; }
+        public required string CategoryId { get; set; }
+        public Category? Category { get; set; }
+        public required string BrandId { get; set; }
+        public Brand? Brand { get; set; }
 
         public required string Name { get; set; }
         public required string ShortDescription { get; set; } = "";
@@ -18,10 +21,6 @@ namespace TechStore.Data.Entities
         public required List<string> Tag { get; set; }
         public required string MainImageUrl { get; set; }
         public List<string>? GalleryImageUrls { get; set; } = new();
-
-        public required string CategoryId { get; set; }
-        public required string CategoryName { get; set; }
-        public required string BrandId { get; set; }
 
 
         public required int Stock { get; set; }

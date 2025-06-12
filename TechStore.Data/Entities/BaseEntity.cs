@@ -9,7 +9,7 @@ namespace TechStore.Data.Entities
 {
     public class BaseEntity
     {
-        public Guid Id { get; set; }
+        public required string Id { get; set; }
 
         public required EEntityStatus EntityStatus { get; set; }
 

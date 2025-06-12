@@ -79,7 +79,7 @@ namespace TechStore.Common.Enums
         Customer
     }
 
-    public enum Gender
+    public enum EGender
     {
         Other,
         Male,
