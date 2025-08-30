@@ -16,14 +16,6 @@ namespace TechStore.Service.Implementations
         { 
             _uow = uow;
         }
-
-        public async Task<string> GetNextCategoryIdAsync()
-        {
-            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Category);
-            var Id = $"CATE-{sequenceNumber:D4}";
-            return Id;
-        }
-
         public async Task<long> GetNextSequenceValueAsync(string sequenceName)
         {
             var sequence = await _uow.Sequences.FindOneAsync(sequence => sequence.Id == sequenceName);
@@ -39,6 +31,112 @@ namespace TechStore.Service.Implementations
             _uow.Sequences.Update(sequence);
 
             return sequence.Value;
+        }
+
+        public async Task<bool> ResetSequenceAsync()
+        {
+            try
+            {
+
+                await _uow.Sequences.DeleteAllAsync();
+                return true;
+            }
+            catch
+            {
+
+                return false;
+            }
+        }
+
+        public async Task<string> GetNextCategoryIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Category);
+            var Id = $"CATE-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextProductIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Product);
+            var Id = $"PROD-{sequenceNumber:D4}"; // Ví dụ: PROD-0001
+            return Id;
+        }
+
+        public async Task<string> GetNextCartItemIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.CartItem);
+            var Id = $"CAIT-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextOrderIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Order);
+            var Id = $"ORD-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextOrderItemIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.OrderItem);
+            var Id = $"ORDI-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextPaymentIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Payment);
+            var Id = $"PAYM-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextReportIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Report);
+            var Id = $"REPT-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextUserIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.User);
+            var Id = $"USER-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextVoucherIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Voucher);
+            var Id = $"VOUC-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextInvoiceIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Invoice);
+            var Id = $"INV-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextBrandIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Brand);
+            var Id = $"BRAND-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextCommentIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Comment);
+            var Id = $"CMT-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextShipperIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Shipper);
+            var Id = $"SHIP-{sequenceNumber:D4}";
+            return Id;
         }
     }
 }

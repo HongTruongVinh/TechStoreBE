@@ -12,5 +12,6 @@ namespace TechStore.Data.Repositories.Implementations
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
         public OrderRepository(AppDbContext context) : base(context) { }
+
     }
 }

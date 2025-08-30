@@ -8,10 +8,10 @@ namespace TechStore.Data.Entities
 {
     public class Product : BaseEntity
     {
-        public required string CategoryId { get; set; }
-        public Category? Category { get; set; }
-        public required string BrandId { get; set; }
-        public Brand? Brand { get; set; }
+        public required Guid CategoryId { get; set; }
+        public required Category Category { get; set; }
+        public required Guid BrandId { get; set; }
+        public required Brand Brand { get; set; }
 
         public required string Name { get; set; }
         public required string ShortDescription { get; set; } = "";

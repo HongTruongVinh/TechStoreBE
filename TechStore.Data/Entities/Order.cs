@@ -9,7 +9,7 @@ namespace TechStore.Data.Entities
 {
     public class Order : BaseEntity
     {
-        public string? CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
         public User? Customer { get; set; }
 
         public required EOrderType OrderType { get; set; } = EOrderType.Online;
@@ -38,6 +38,6 @@ namespace TechStore.Data.Entities
         public QRCode? QRCode { get; set; }
         public ShippingDetail? ShippingDetail { get; set; }
 
-        public ICollection<OrderItem>? OrderItems { get; set; }
+        public required ICollection<OrderItem> OrderItems { get; set; }
     }
 }

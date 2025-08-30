@@ -9,8 +9,8 @@ namespace TechStore.Data.Entities
 {
     public class Payment : BaseEntity
     {
-        public required string OrderId { get; set; }
-        public Order Order { get; set; } = null!;
+        public required Guid OrderId { get; set; }
+        public required Order Order { get; set; }
 
         public required decimal Amount { get; set; } = 0;
 

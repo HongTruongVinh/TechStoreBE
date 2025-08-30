@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TechStore.Service.Interfaces;
+using TechStore.Service.Implementations;
 
 namespace TechStoreAPI.Controllers
 {
@@ -15,7 +15,7 @@ namespace TechStoreAPI.Controllers
             _service = service;
         }
 
-        [HttpGet(Name = "Get Init Data")]
+        [HttpGet("Data")]
         public async Task<JsonResult> Get()
         {
             var result = await _service.GetAllInitData();

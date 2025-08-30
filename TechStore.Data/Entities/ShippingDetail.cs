@@ -9,11 +9,11 @@ namespace TechStore.Data.Entities
 {
     public class ShippingDetail : BaseEntity
     {
-        public required string OrderId { get; set; }
-        public Order? Order { get; set; }
+        public required Guid OrderId { get; set; }
+        public required Order Order { get; set; }
 
-        public required string ShipperId { get; set; }
-        public Shipper? Shipper { get; set; }
+        public required Guid ShipperId { get; set; }
+        public required Shipper Shipper { get; set; }
 
         public required string TrackingNumber { get; set; }
 

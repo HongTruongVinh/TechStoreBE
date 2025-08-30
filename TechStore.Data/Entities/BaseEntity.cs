@@ -9,7 +9,9 @@ namespace TechStore.Data.Entities
 {
     public class BaseEntity
     {
-        public required string Id { get; set; }
+        public Guid Id { get; set; }// Internal ID (Primary Key)
+        public required string PublicId { get; set; } // Public ID (display hoặc dùng cho API, không là khóa chính)
+
 
         public required EEntityStatus EntityStatus { get; set; }
 
@@ -17,8 +19,8 @@ namespace TechStore.Data.Entities
 
         public DateTime? UpdatedAt { get; set; }
 
-        public string? CreatedBy { get; set; }
+        public Guid? CreatedBy { get; set; }
 
-        public string? UpdatedBy { get; set; }
+        public Guid? UpdatedBy { get; set; }
     }
 }

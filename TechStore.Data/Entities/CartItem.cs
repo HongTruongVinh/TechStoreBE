@@ -8,10 +8,10 @@ namespace TechStore.Data.Entities
 {
     public class CartItem : BaseEntity
     {
-        public required string UserId { get; set; }
-        public User User { get; set; } = null!;
+        public required Guid UserId { get; set; }
+        public required User User { get; set; }
 
-        public required string ProductId { get; set; }
+        public required Guid ProductId { get; set; }
 
         public required int Quantity { get; set; }
 

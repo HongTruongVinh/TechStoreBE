@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,5 +29,6 @@ namespace TechStore.Data.UnitOfWork
         IInvalidTokenRepository InvalidTokens { get; }
 
         Task<int> CommitAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

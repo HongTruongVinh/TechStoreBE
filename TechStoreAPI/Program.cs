@@ -40,9 +40,20 @@ namespace TechStoreAPI
             #region Add services to the container
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddScoped<InitialDataService, InitialDataService>();
-            builder.Services.AddScoped<SequenceGeneratorService, SequenceGeneratorService>();
+            builder.Services.AddScoped<TechStore.Service.Interfaces.IAuthenticationService, TechStore.Service.Implementations.AuthenticationService>();
+            builder.Services.AddScoped<IBrandService, BrandService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<InitialDataService, InitialDataService>();
+            builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IQRCodeService, QRCodeService>();
+            builder.Services.AddScoped<SequenceGeneratorService, SequenceGeneratorService>();
+            builder.Services.AddScoped<IShipperService, ShipperService>();
+            builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
             #endregion
 
             builder.Services.AddControllers();

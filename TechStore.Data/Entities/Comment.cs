@@ -8,13 +8,11 @@ namespace TechStore.Data.Entities
 {
     public class Comment : BaseEntity
     {
-        public required string UserId { get; set; }
-        public User? User { get; set; }
+        public required Guid UserId { get; set; }
+        public required User User { get; set; }
 
-        public required string ProductId { get; set; }
-        public Product? Product { get; set; }
-
-        public string? ParentCommentId { get; set; }
+        public required Guid ProductId { get; set; }
+        public required Product Product { get; set; }
 
         public required string Content { get; set; }
 

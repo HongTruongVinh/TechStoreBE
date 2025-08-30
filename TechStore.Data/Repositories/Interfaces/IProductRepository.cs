@@ -9,6 +9,18 @@ namespace TechStore.Data.Repositories.Interfaces
 {
     public interface IProductRepository : IRepository<Product>
     {
-        Task<IEnumerable<Product>> GetTopProductsAsync(int count);
+        Task<List<Product>> GetProductsFilteredAsync(
+            int page,
+            int pageSize,
+            string? categoryId = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            string? brand = null);
+
+        Task<List<Product>> GetTopNewestProductsAsync(int count);
+
+        Task<List<Product>> SearchByNameAsync(string keyword, int pageNumber, int pageSize);
+
+        Task<List<Product>> GetProductsAsync(int pageNumber, int pageSize);
     }
 }

@@ -7,19 +7,16 @@ using TechStore.Common.Enums;
 
 namespace TechStore.Data.Entities
 {
-    public class QRCode
+    public class QRCode : BaseEntity
     {
-        public Guid Id { get; set; }
-
         public required string Content { get; set; } // Ví dụ: link đến Momo, VNPay, order ID, v.v.
 
         public required byte[] ImageData { get; set; } // Mã QR dưới dạng ảnh (byte[])
 
         public required EQRCodeType Type { get; set; } // "Payment", "OrderTracking", etc.
 
-        public required string RelatedId { get; set; } // Id của Payment hoặc Order
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public required Guid RelatedId { get; set; } // Id của Payment hoặc Order
+        public required string RelatedPublicId { get; set; } // Id của Payment hoặc Order
 
         public DateTime? ExpiredAt { get; set; }
     }

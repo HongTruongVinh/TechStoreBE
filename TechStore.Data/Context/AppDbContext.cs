@@ -43,6 +43,8 @@ namespace TechStore.Data.Context
             // Cấu hình Brand
             modelBuilder.Entity<Brand>(entity =>
             {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
                 entity.Property(c => c.Name)
                     .IsRequired()
                     .HasMaxLength(100);
@@ -61,128 +63,174 @@ namespace TechStore.Data.Context
                 entity.HasIndex(c => c.Slug).IsUnique(); // nếu muốn slug là duy nhất
             });
 
-            // Cấu hình Category
-            modelBuilder.Entity<Category>(entity =>
+            modelBuilder.Entity<CartItem>(entity =>
             {
-                entity.Property(c => c.Name)
-                    .IsRequired()
-                    .HasMaxLength(100);
+                entity.HasIndex(p => p.PublicId).IsUnique();
 
-                entity.Property(c => c.Description)
-                    .HasMaxLength(500); // Optional, cho phép null
-
-                entity.Property(c => c.Slug)
-                    .IsRequired()
-                    .HasMaxLength(150);
-
-                entity.Property(c => c.IconImageUrl)
-                    .IsRequired()
-                    .HasMaxLength(300);
-
-                entity.HasIndex(c => c.Slug).IsUnique(); // nếu muốn slug là duy nhất
-            });
-
-            // Cấu hình Product
-            modelBuilder.Entity<Product>()
-                .Property(p => p.Name)
-                .IsRequired()
-                .HasMaxLength(150);
-
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Brand)
-                .WithMany()
-                .HasForeignKey(p => p.BrandId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Category)
-                .WithMany()
-                .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Invoice)
-                .WithOne(i => i.Order)
-                .HasForeignKey<Invoice>(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Payment)
-                .WithOne(i => i.Order)
-                .HasForeignKey<Payment>(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Order>()
-                .HasMany(o => o.OrderItems)
-                .WithOne(oi => oi.Order)
-                .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<OrderItem>()
-                .HasOne(oi => oi.Order)
-                .WithMany(o => o.OrderItems)
-                .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<OrderItem>()
-                .HasOne(p => p.Product)
-                .WithMany()
-                .HasForeignKey(p => p.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Invoice>()
-                .HasOne(i => i.Order)
-                .WithOne(o => o.Invoice)
-                .HasForeignKey<Invoice>(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Payment>()
-                .HasOne(i => i.Order)
-                .WithOne(o => o.Payment)
-                .HasForeignKey<Payment>(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ShippingDetail>()
-                .HasOne(p => p.Shipper)
-                .WithMany()
-                .HasForeignKey(p => p.ShipperId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ShippingDetail>()
-                .HasOne(s => s.Order)
-                .WithOne(o => o.ShippingDetail)
-                .HasForeignKey<ShippingDetail>(o => o.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.ShippingDetail)
-                .WithOne(s => s.Order)
-                .HasForeignKey<ShippingDetail>(s => s.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<CartItem>()
-                .HasOne(c => c.User)
+                entity.HasOne(c => c.User)
                 .WithMany(u => u.CartItems)
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Comment>()
-                .HasOne(c => c.User)
+            });
+
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.Property(c => c.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(c => c.Description)
+                    .HasMaxLength(500); // Optional, cho phép null
+
+                entity.Property(c => c.Slug)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+                entity.Property(c => c.IconImageUrl)
+                    .IsRequired()
+                    .HasMaxLength(300);
+
+                entity.HasIndex(c => c.Slug).IsUnique(); // nếu muốn slug là duy nhất
+            });
+
+            modelBuilder.Entity<Comment>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(c => c.User)
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<User>()
-            //    .HasMany(u => u.Orders)
-            //    .WithOne(o => o.Customer)
-            //    .HasForeignKey(o => o.CustomerId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            });
 
-            //modelBuilder.Entity<User>()
-            //    .HasMany(u => u.CartItems)
-            //    .WithOne(o => o.User)
-            //    .HasForeignKey(o => o.UserId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(i => i.Order)
+                .WithOne(o => o.Invoice)
+                .HasForeignKey<Invoice>(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(o => o.Invoice)
+                .WithOne(i => i.Order)
+                .HasForeignKey<Invoice>(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(o => o.Payment)
+                .WithOne(i => i.Order)
+                .HasForeignKey<Payment>(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(o => o.OrderItems)
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(o => o.ShippingDetail)
+                .WithOne(s => s.Order)
+                .HasForeignKey<ShippingDetail>(s => s.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Product)
+                .WithMany()
+                .HasForeignKey(p => p.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Payment>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(i => i.Order)
+                .WithOne(o => o.Payment)
+                .HasForeignKey<Payment>(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.Property(p => p.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+                entity.HasOne(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Brand)
+                .WithMany()
+                .HasForeignKey(p => p.BrandId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<QRCode>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+            });
+
+            modelBuilder.Entity<Report>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+            });
+
+            modelBuilder.Entity<Shipper>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+            });
+
+            modelBuilder.Entity<ShippingDetail>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(p => p.Shipper)
+                .WithMany()
+                .HasForeignKey(p => p.ShipperId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(s => s.Order)
+                .WithOne(o => o.ShippingDetail)
+                .HasForeignKey<ShippingDetail>(o => o.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+            });
+
+            modelBuilder.Entity<Voucher>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+            });
 
             #endregion
 
