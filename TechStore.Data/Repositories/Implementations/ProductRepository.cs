@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using TechStore.Data.Context;
@@ -14,12 +15,19 @@ namespace TechStore.Data.Repositories.Implementations
     {
         public ProductRepository(AppDbContext context) : base(context) { }
 
-        public Task<List<Product>> GetProductsAsync(int pageNumber, int pageSize)
+        public async Task<List<Product>?> GetProductsAsync(Expression<Func<Product, bool>> predicate, int pageNumber, int pageSize)
         {
-            throw new NotImplementedException();
+            var products =  await _dbSet
+                                .Where(predicate)
+                                .Include(p => p.Category)
+                                .Include(p => p.Brand)
+                                .Skip((pageNumber - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync();
+            return products;
         }
 
-        public async Task<List<Product>> GetProductsFilteredAsync(
+        public async Task<List<Product>?> GetProductsFilteredAsync(
     int pageNumber,
     int pageSize,
     string? categoryId = null,
@@ -64,24 +72,32 @@ namespace TechStore.Data.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<List<Product>> GetTopNewestProductsAsync(int count)
+        public async Task<List<Product>?> GetTopNewestProductsAsync(int count)
         {
             return await _dbSet.OrderByDescending(p => p.StartSellingDate)
                  .Take(count).ToListAsync();
         }
 
-        public async Task<List<Product>> GetTopProductsAsync(int count)
+        public async Task<List<Product>?> GetTopProductsAsync(int count)
         {
             return await _dbSet.OrderBy(p => p.StartSellingDate).Take(count).ToListAsync();
         }
 
-        public async Task<List<Product>> SearchByNameAsync(string keyword, int pageNumber, int pageSize)
+        public async Task<List<Product>?> SearchByNameAsync(string keyword, int pageNumber, int pageSize)
         {
             return await _dbSet.Where(p => p.Name.Contains(keyword))
                 .OrderByDescending(p => p.StartSellingDate)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+        }
+
+        public async Task<Product?> GetProductWithDetailsByIdAsync(string publicId)
+        {
+            return await _dbSet
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .FirstOrDefaultAsync(p => p.PublicId == publicId);
         }
     }
 }

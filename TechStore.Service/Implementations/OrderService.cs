@@ -181,7 +181,7 @@ namespace TechStore.Service.Implementations
             decimal totalPrice = 0;
             decimal totalDiscount = 0;
 
-            var newOrder = new Order
+            var order = new Order
             {
                 PublicId = orderId,
                 CustomerId = customer.Id,
@@ -203,15 +203,8 @@ namespace TechStore.Service.Implementations
                 EntityStatus = EEntityStatus.Active,
             };
 
-            await _uow.Orders.AddAsync(newOrder);
-
-            var order = await _uow.Orders.GetByIdAsync(orderId);
-
-            if (order == null)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
+            await _uow.Orders.AddAsync(order);
+            await _uow.CommitAsync();
 
             List<OrderItem> orderItems = new List<OrderItem>();
             foreach (var item in orderCreateModel.Items)
@@ -236,7 +229,7 @@ namespace TechStore.Service.Implementations
 
                     orderItems.Add(new OrderItem
                     {
-                        PublicId = orderId,
+                        PublicId = Random.Shared.Next(100000, 1000000).ToString(),
                         ProductId = product.Id,
                         Product = product,
                         Order = order,
@@ -329,6 +322,13 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.BadRequest,
             };
 
+            var cashier = await _uow.Users.GetByIdAsync(userId);
+            if (cashier == null)
+            {
+                serviceResult.Message = Messenger.NoExitData + " " + userId;
+                return serviceResult;
+            }
+
             var orderId = await _sequenceService.GetNextOrderIdAsync();
             var invoiceId = await _sequenceService.GetNextInvoiceIdAsync();
             var paymentId = await _sequenceService.GetNextPaymentIdAsync();
@@ -337,7 +337,7 @@ namespace TechStore.Service.Implementations
             decimal totalPrice = 0;
             decimal totalDiscount = 0;
 
-            var newOrder = new Order
+            var order = new Order
             {
                 PublicId = orderId,
                 OrderType = EOrderType.InStore,
@@ -353,19 +353,13 @@ namespace TechStore.Service.Implementations
                 OrderItems = new List<OrderItem>(),
 
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
+                CreatedBy = cashier.Id,
                 UpdatedAt = TimeZoneHelper.GetUtcNow(),
                 EntityStatus = EEntityStatus.Active,
             };
 
-            await _uow.Orders.AddAsync(newOrder);
-
-            var order = await _uow.Orders.GetByIdAsync(orderId);
-
-            if (order == null)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
+            await _uow.Orders.AddAsync(order);
+            await _uow.CommitAsync();
 
             List<OrderItem> orderItems = new List<OrderItem>();
             foreach (var item in orderCreateModel.Items)
@@ -390,7 +384,7 @@ namespace TechStore.Service.Implementations
 
                     orderItems.Add(new OrderItem
                     {
-                        PublicId = orderId,
+                        PublicId = Random.Shared.Next(100000, 1000000).ToString(),
                         ProductId = product.Id,
                         Product = product,
                         Order = order,
@@ -410,6 +404,8 @@ namespace TechStore.Service.Implementations
                 item.TotalPrice = itemTotal - item.Discount;
             }
 
+            await _uow.OrderItems.AddRangeAsync(orderItems);
+
             var finalAmount = totalPrice - totalDiscount;
 
             var invoice = new Invoice
@@ -424,6 +420,7 @@ namespace TechStore.Service.Implementations
                 InvoiceStatus = EInvoiceStatus.Unpaid,
                 EntityStatus = EEntityStatus.Active,
             };
+            await _uow.Invoices.AddAsync(invoice);
 
             var payment = new Payment
             {
@@ -437,6 +434,7 @@ namespace TechStore.Service.Implementations
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
                 EntityStatus = EEntityStatus.Active,
             };
+            await _uow.Payments.AddAsync(payment);
 
             string paymentQR = ServerAddress.WEBSITE_ADDRESS + payment.PublicId;
             var addPaymentQRResult = await _qrCodeService.AddPaymentQRCodeAsync(payment, paymentQR, paymentId, EQRCodeType.Payment, null);
@@ -446,10 +444,6 @@ namespace TechStore.Service.Implementations
                 serviceResult.Message = Messenger.SystemError;
                 return serviceResult;
             }
-
-            await _uow.OrderItems.AddRangeAsync(orderItems);
-            await _uow.Invoices.AddAsync(invoice);
-            await _uow.Payments.AddAsync(payment);
 
             order.Invoice = invoice;
             order.Payment = payment;
@@ -544,7 +538,7 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.GetDataSuccessful,
             };
 
-            var listOrders = await _uow.Orders.FindManyAsync(o => o.OrderStatus == statusId);
+            var listOrders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.OrderStatus == statusId);
 
             foreach (var order in listOrders)
             {
@@ -556,8 +550,6 @@ namespace TechStore.Service.Implementations
                 }
 
                 serviceResult.Data.Add(order.ToOrderDetailModel(customer));
-
-                //serviceResult.Data.Add(await OrderToOrderDetailModelAsync(order));
             }
 
             return serviceResult;
@@ -706,12 +698,6 @@ namespace TechStore.Service.Implementations
             };
 
             await _uow.Invoices.AddAsync(invoice);
-            var addInvoiceResult = await _uow.Invoices.GetByIdAsync(invoiceId);
-
-            if (addInvoiceResult == null)
-            {
-                return serviceResult;
-            }
 
             order.Invoice = invoice;
             _uow.Orders.Update(order);
@@ -765,14 +751,8 @@ namespace TechStore.Service.Implementations
             };
 
             await _uow.ShippingDetails.AddAsync(shippingDetail);
-            var resultAddShippingDetail = await _uow.ShippingDetails.FindOneAsync(sd => sd.PublicId == shippingDetail.PublicId);
 
-            if (resultAddShippingDetail == null)
-            {
-                return serviceResult;
-            }
-
-            order.ShippingDetail = resultAddShippingDetail;
+            order.ShippingDetail = shippingDetail;
             order.OrderStatus = EOrderStatus.Delivering;
             order.UpdatedAt = TimeZoneHelper.GetUtcNow();
             order.UpdatedBy = userUpdating.Id;
@@ -1201,7 +1181,7 @@ namespace TechStore.Service.Implementations
 
                 orderItems.Add(new OrderItem
                 {
-                    PublicId = orderId,
+                    PublicId = Random.Shared.Next(100000, 1000000).ToString(),
                     ProductId = product.Id,
                     Product = product,
                     Order = order,
@@ -1263,7 +1243,7 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.NoExitData,
             };
 
-            var order = await _uow.Orders.GetByIdAsync(id);
+            var order = await _uow.Orders.GetOrderIncludeItemsAsync(o => o.PublicId == id);
 
             if (order == null)
             {
@@ -1397,6 +1377,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
+            serviceResult.Data = true;
             serviceResult.IsSuccess = true;
             serviceResult.Message = Messenger.GetDataSuccessful;
             return serviceResult;

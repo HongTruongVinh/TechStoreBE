@@ -160,13 +160,13 @@ namespace TechStore.Service.Implementations
             await _uow.QRCodes.AddAsync(qrCode);
             serviceResult.Data = qrCode.ToQRCodeResponseModel();
 
-            //var result = await _uow.CommitAsync();
+            var result = await _uow.CommitAsync();
 
-            //if (result < 1)
-            //{
-            //    serviceResult.Message = Messenger.CreateDataError;
-            //    return serviceResult;
-            //}
+            if (result < 1)
+            {
+                serviceResult.Message = Messenger.CreateDataError;
+                return serviceResult;
+            }
 
             //var resultAddQRCode = await _uow.QRCodes.FindOneAsync(qr => qr.PublicId == qrCode.PublicId);
 

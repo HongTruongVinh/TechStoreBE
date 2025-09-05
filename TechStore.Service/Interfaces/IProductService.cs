@@ -33,7 +33,7 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<string>> AddProduct(ProductCreateModel model);
         Task<string> SeedDataProduct(ProductCreateModel model);
         Task<ServiceResult<AdminProductDetailModel>> GetAdminProductById(string id);
-        Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts();
+        Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts(int pageNumber, int pageSize);
 
         Task<ServiceResult<List<ProductListItemModel>>> GetUserRecommendedProducts(string userId);
         Task<ServiceResult<List<ProductListItemModel>>> GetHotProducts();

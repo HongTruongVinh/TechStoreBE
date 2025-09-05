@@ -172,7 +172,7 @@ namespace TechStoreAPI.Controllers
         {
             var serviceResult = await _productService.SearchByNameAsync(keyword, pageNumber, pageSize);
 
-            if (serviceResult.IsSuccess)
+          if (serviceResult.IsSuccess)
             {
                 return new()
                 {

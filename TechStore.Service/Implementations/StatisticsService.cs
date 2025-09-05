@@ -57,12 +57,14 @@ namespace TechStore.Service.Implementations
             };
 
 
-            var orders = await _uow.Orders.GetAllAsync();
+            var orders = await _uow.Orders.GetOrdersIncludeItemsAsync(o => true);
             var products = await _uow.Products.GetAllAsync();
             var users = await _uow.Users.GetAllAsync();
 
             if (orders != null)
             {
+                orders = await GetCategoryOfOrderItem(orders);
+
                 var orderModels = orders.Select(o => o.ToOrderResponseModel()).ToList();
                 overviewData.ProcessingOfPendingOrders = GetProcessingOfPendingOrders(orderModels);
                 overviewData.DeliveringOfProcessingOrders = GetDeliveringOfProcessingOrders(orderModels);
@@ -466,6 +468,25 @@ namespace TechStore.Service.Implementations
 
 
             return actionModels;
+        }
+
+        private async Task<List<Order>> GetCategoryOfOrderItem(List<Order> orders)
+        {
+            foreach (var order in orders)
+            {
+                foreach (var item in order.OrderItems)
+                {
+                    if (item.Product != null)
+                    {
+                        var category = await _uow.Categories.FindOneAsync(c => c.Id == item.Product.CategoryId);
+                        if (category != null)
+                        {
+                            item.Product.Category = category;
+                        }
+                    }
+                }
+            }
+            return orders;
         }
     }
 }

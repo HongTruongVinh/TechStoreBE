@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
+using TechStore.Common.Helpers;
 using TechStore.Data.Entities;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Authentication;
@@ -365,7 +366,7 @@ namespace TechStore.Service.Implementations
                     Slug = "iphone-14-pro-max",
                     Tag = new List<string> { "iphone", "iphone14" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 35000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 45000000,
@@ -383,7 +384,7 @@ namespace TechStore.Service.Implementations
                     Slug = "iphone-14-pro",
                     Tag = new List<string> { "iphone", "iphone14" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 25000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 35000000,
@@ -401,7 +402,7 @@ namespace TechStore.Service.Implementations
                     Slug = "dell-xps-13",
                     Tag = new List<string> { "dell", "dell-xps" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 15000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 25000000,
@@ -419,7 +420,7 @@ namespace TechStore.Service.Implementations
                     Slug = "mac-pro-16",
                     Tag = new List<string> { "mac", "macbook" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 35000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 50000000,
@@ -437,7 +438,7 @@ namespace TechStore.Service.Implementations
                     Slug = "ipad-12-pro",
                     Tag = new List<string> { "ipad", "ipad-pro" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 15000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 25000000,
@@ -456,7 +457,7 @@ namespace TechStore.Service.Implementations
                     Slug = "samsung-galaxy-tab-s8",
                     Tag = new List<string> { "samsung", "samsung-tab" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 15000000,
                     Price = 20000000,
                     Stock = 100,
@@ -474,7 +475,7 @@ namespace TechStore.Service.Implementations
                     Slug = "xiaomi-mi-8",
                     Tag = new List<string> { "xiaomi", "xiaomi-mi8" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 500000,
                     Price = 8000000,
                     Stock = 70,
@@ -491,7 +492,7 @@ namespace TechStore.Service.Implementations
                     Slug = "iphone-13",
                     Tag = new List<string> { "iphone", "iphone13" },
                     IsFeatured = false,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 18000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 23000000,
@@ -508,7 +509,7 @@ namespace TechStore.Service.Implementations
                     Slug = "samsung-galaxy-s23-ultra",
                     Tag = new List<string> { "samsung", "galaxy" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 27000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 32000000,
@@ -525,7 +526,7 @@ namespace TechStore.Service.Implementations
                     Slug = "hp-spectre-x360",
                     Tag = new List<string> { "hp", "laptop" },
                     IsFeatured = false,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 22000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 28000000,
@@ -542,7 +543,7 @@ namespace TechStore.Service.Implementations
                     Slug = "macbook-air-m2",
                     Tag = new List<string> { "macbook", "apple" },
                     IsFeatured = true,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 24000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 30000000,
@@ -559,7 +560,7 @@ namespace TechStore.Service.Implementations
                     Slug = "xiaomi-pad-5",
                     Tag = new List<string> { "xiaomi", "tablet" },
                     IsFeatured = false,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 9000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 12000000,
@@ -576,24 +577,24 @@ namespace TechStore.Service.Implementations
                     Slug = "poco-x5-pro",
                     Tag = new List<string> { "poco", "xiaomi" },
                     IsFeatured = false,
-                    StartSellingDate = DateTime.UtcNow,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     ImportPrice = 6500000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
                     Price = 8500000,
                     Stock = 100,
                     SalePrice = 0
                 };
-                var productModel14 = new ProductCreateModel { Name = "Asus ROG Phone 7", CategoryId = resultCategory1.Data, BrandId = resultBrand4.Data, ShortDescription = "Điện thoại gaming", Description = "Asus ROG Phone mạnh mẽ", Slug = "asus-rog-phone-7", Tag = new List<string> { "asus", "rog" }, IsFeatured = true, StartSellingDate = DateTime.UtcNow, ImportPrice = 20000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 25000000, Stock = 70, SalePrice = 0 };
-                var productModel15 = new ProductCreateModel { Name = "Lenovo Legion 5 Pro", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Laptop gaming", Description = "Laptop mạnh mẽ cho game thủ", Slug = "lenovo-legion-5-pro", Tag = new List<string> { "lenovo", "gaming" }, IsFeatured = true, StartSellingDate = DateTime.UtcNow, ImportPrice = 26000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 50, SalePrice = 0 };
-                var productModel16 = new ProductCreateModel { Name = "iPad Air 2022", CategoryId = resultCategory3.Data, BrandId = resultBrand1.Data, ShortDescription = "Tablet Apple", Description = "iPad Air nhẹ, mạnh", Slug = "ipad-air-2022", Tag = new List<string> { "ipad", "apple" }, IsFeatured = false, StartSellingDate = DateTime.UtcNow, ImportPrice = 15000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 18000000, Stock = 100, SalePrice = 0 };
-                var productModel17 = new ProductCreateModel { Name = "Surface Pro 9", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Tablet lai laptop", Description = "Microsoft Surface Pro mới nhất", Slug = "surface-pro-9", Tag = new List<string> { "microsoft", "surface" }, IsFeatured = true, StartSellingDate = DateTime.UtcNow, ImportPrice = 25000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 80, SalePrice = 0 };
-                var productModel18 = new ProductCreateModel { Name = "Oppo Find X5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Oppo", Description = "Camera siêu nét", Slug = "oppo-find-x5", Tag = new List<string> { "oppo", "smartphone" }, IsFeatured = false, StartSellingDate = DateTime.UtcNow, ImportPrice = 16000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 20000000, Stock = 90, SalePrice = 0 };
-                var productModel19 = new ProductCreateModel { Name = "Realme GT Neo 5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Realme", Description = "Pin trâu, sạc siêu nhanh", Slug = "realme-gt-neo-5", Tag = new List<string> { "realme", "smartphone" }, IsFeatured = false, StartSellingDate = DateTime.UtcNow, ImportPrice = 8000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 11000000, Stock = 100, SalePrice = 0 };
-                var productModel20 = new ProductCreateModel { Name = "Samsung Galaxy Watch 6", CategoryId = resultCategory4.Data, BrandId = resultBrand2.Data, ShortDescription = "Đồng hồ thông minh", Description = "Smartwatch Samsung", Slug = "galaxy-watch-6", Tag = new List<string> { "samsung", "watch" }, IsFeatured = true, StartSellingDate = DateTime.UtcNow, ImportPrice = 5000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 7000000, Stock = 120, SalePrice = 0 };
-                var productModel21 = new ProductCreateModel { Name = "Apple Watch Series 8", CategoryId = resultCategory4.Data, BrandId = resultBrand1.Data, ShortDescription = "Đồng hồ Apple", Description = "Apple Watch mới nhất", Slug = "apple-watch-series-8", Tag = new List<string> { "apple", "watch" }, IsFeatured = true, StartSellingDate = DateTime.UtcNow, ImportPrice = 7000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 9000000, Stock = 100, SalePrice = 0 };
-                var productModel22 = new ProductCreateModel { Name = "Sony WH-1000XM5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Tai nghe chống ồn", Description = "Tai nghe Sony cao cấp", Slug = "sony-wh-1000xm5", Tag = new List<string> { "sony", "headphone" }, IsFeatured = false, StartSellingDate = DateTime.UtcNow, ImportPrice = 6000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 8000000, Stock = 60, SalePrice = 0 };
-                var productModel23 = new ProductCreateModel { Name = "JBL Charge 5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Loa bluetooth", Description = "Loa di động chống nước", Slug = "jbl-charge-5", Tag = new List<string> { "jbl", "bluetooth" }, IsFeatured = false, StartSellingDate = DateTime.UtcNow, ImportPrice = 3000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 4000000, Stock = 80, SalePrice = 0 };
-                var productModel24 = new ProductCreateModel { Name = "Kindle Paperwhite", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Máy đọc sách", Description = "Máy đọc sách Amazon", Slug = "kindle-paperwhite", Tag = new List<string> { "kindle", "ebook" }, IsFeatured = false, StartSellingDate = DateTime.UtcNow, ImportPrice = 2800000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 3500000, Stock = 90, SalePrice = 0 };
+                var productModel14 = new ProductCreateModel { Name = "Asus ROG Phone 7", CategoryId = resultCategory1.Data, BrandId = resultBrand4.Data, ShortDescription = "Điện thoại gaming", Description = "Asus ROG Phone mạnh mẽ", Slug = "asus-rog-phone-7", Tag = new List<string> { "asus", "rog" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 20000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 25000000, Stock = 70, SalePrice = 0 };
+                var productModel15 = new ProductCreateModel { Name = "Lenovo Legion 5 Pro", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Laptop gaming", Description = "Laptop mạnh mẽ cho game thủ", Slug = "lenovo-legion-5-pro", Tag = new List<string> { "lenovo", "gaming" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 26000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 50, SalePrice = 0 };
+                var productModel16 = new ProductCreateModel { Name = "iPad Air 2022", CategoryId = resultCategory3.Data, BrandId = resultBrand1.Data, ShortDescription = "Tablet Apple", Description = "iPad Air nhẹ, mạnh", Slug = "ipad-air-2022", Tag = new List<string> { "ipad", "apple" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 15000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 18000000, Stock = 100, SalePrice = 0 };
+                var productModel17 = new ProductCreateModel { Name = "Surface Pro 9", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Tablet lai laptop", Description = "Microsoft Surface Pro mới nhất", Slug = "surface-pro-9", Tag = new List<string> { "microsoft", "surface" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 25000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 80, SalePrice = 0 };
+                var productModel18 = new ProductCreateModel { Name = "Oppo Find X5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Oppo", Description = "Camera siêu nét", Slug = "oppo-find-x5", Tag = new List<string> { "oppo", "smartphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 16000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 20000000, Stock = 90, SalePrice = 0 };
+                var productModel19 = new ProductCreateModel { Name = "Realme GT Neo 5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Realme", Description = "Pin trâu, sạc siêu nhanh", Slug = "realme-gt-neo-5", Tag = new List<string> { "realme", "smartphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 8000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 11000000, Stock = 100, SalePrice = 0 };
+                var productModel20 = new ProductCreateModel { Name = "Samsung Galaxy Watch 6", CategoryId = resultCategory4.Data, BrandId = resultBrand2.Data, ShortDescription = "Đồng hồ thông minh", Description = "Smartwatch Samsung", Slug = "galaxy-watch-6", Tag = new List<string> { "samsung", "watch" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 5000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 7000000, Stock = 120, SalePrice = 0 };
+                var productModel21 = new ProductCreateModel { Name = "Apple Watch Series 8", CategoryId = resultCategory4.Data, BrandId = resultBrand1.Data, ShortDescription = "Đồng hồ Apple", Description = "Apple Watch mới nhất", Slug = "apple-watch-series-8", Tag = new List<string> { "apple", "watch" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 7000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 9000000, Stock = 100, SalePrice = 0 };
+                var productModel22 = new ProductCreateModel { Name = "Sony WH-1000XM5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Tai nghe chống ồn", Description = "Tai nghe Sony cao cấp", Slug = "sony-wh-1000xm5", Tag = new List<string> { "sony", "headphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 6000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 8000000, Stock = 60, SalePrice = 0 };
+                var productModel23 = new ProductCreateModel { Name = "JBL Charge 5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Loa bluetooth", Description = "Loa di động chống nước", Slug = "jbl-charge-5", Tag = new List<string> { "jbl", "bluetooth" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 3000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 4000000, Stock = 80, SalePrice = 0 };
+                var productModel24 = new ProductCreateModel { Name = "Kindle Paperwhite", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Máy đọc sách", Description = "Máy đọc sách Amazon", Slug = "kindle-paperwhite", Tag = new List<string> { "kindle", "ebook" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 2800000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 3500000, Stock = 90, SalePrice = 0 };
 
                 var resultProduct1 = await _productService.SeedDataProduct(productModel1);
                 var resultProduct2 = await _productService.SeedDataProduct(productModel2);
@@ -795,9 +796,14 @@ namespace TechStore.Service.Implementations
                 await _uow.Users.DeleteAllAsync();
                 await _uow.Categories.DeleteAllAsync();
                 await _uow.Brands.DeleteAllAsync();
+                await _uow.ShippingDetails.DeleteAllAsync();
+                await _uow.InvalidTokens.DeleteAllAsync();
+                await _uow.QRCodes.DeleteAllAsync();
                 await _uow.Shippers.DeleteAllAsync();
                 await _uow.Sequences.DeleteAllAsync();
                 await _uow.Products.DeleteAllAsync();
+                await _uow.Invoices.DeleteAllAsync();
+                await _uow.Payments.DeleteAllAsync();
                 await _uow.OrderItems.DeleteAllAsync();
                 await _uow.Orders.DeleteAllAsync();
 

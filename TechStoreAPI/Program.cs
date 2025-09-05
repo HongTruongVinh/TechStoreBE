@@ -1,6 +1,9 @@
-
+﻿
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using TechStore.Common.Constants;
 using TechStore.Data.Context;
 using TechStore.Data.Repositories;
@@ -17,6 +20,13 @@ namespace TechStoreAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            #region add service congig
+            builder.Services.Configure<JWTConfig>(builder.Configuration.GetSection("JWT"));
+            builder.Services.Configure<CloudinaryConfig>(builder.Configuration.GetSection("CloudinarySettings"));
+
+            var jwtConfig = builder.Configuration.GetSection("JWT").Get<JWTConfig>() ?? new JWTConfig();
+            #endregion
 
             #region Add environment variables when deploy
             builder.Configuration
@@ -36,11 +46,11 @@ namespace TechStoreAPI
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionSetting!.DefaultConnection));
             #endregion
 
-
             #region Add services to the container
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<TechStore.Service.Interfaces.IAuthenticationService, TechStore.Service.Implementations.AuthenticationService>();
+            builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IBrandService, BrandService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<InitialDataService, InitialDataService>();
@@ -52,14 +62,112 @@ namespace TechStoreAPI
             builder.Services.AddScoped<SequenceGeneratorService, SequenceGeneratorService>();
             builder.Services.AddScoped<IShipperService, ShipperService>();
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+            builder.Services.AddScoped<IUploadDataToCloudService, UploadDataToCloudService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
             #endregion
 
-            builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            #region Thêm nút đăng nhập bằng token trên Swagger
+
+            builder.Services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Nhập 'Bearer {token}' (bao gồm chữ Bearer và khoảng trắng)",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                });
+
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
+            #endregion
+
+            #region Config JWT Authentication (cấu hình mặc định một authentication scheme)
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                options.DefaultChallengeScheme =
+                options.DefaultForbidScheme =
+                options.DefaultScheme =
+                options.DefaultSignInScheme =
+                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtConfig.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = jwtConfig.Audience,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        System.Text.Encoding.UTF8.GetBytes(jwtConfig.SigningKey)
+                    ),
+
+                    // Đây là dòng bạn cần thêm để ASP.NET biết lấy Role từ claim "Role" thay vì "role"
+                    RoleClaimType = AppClaims.Role, // hoặc "Role" nếu bạn hardcode
+                    NameClaimType = AppClaims.UserId, // Nếu không set NameClaimType và RoleClaimType, thì ASP.NET Core mặc định sẽ đọc sub cho User.Identity.Name và role cho quyền, nên AppClaims.UserId sẽ bị bỏ qua
+                };
+
+                // Bắt sự kiện thất bại
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine("Token authentication failed:");
+                        Console.WriteLine(context.Exception.ToString()); // Thêm dòng này để xem lỗi thật sự
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("Token validated successfully.");
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        Console.WriteLine("Token challenge triggered:");
+                        Console.WriteLine(context.Error);
+                        Console.WriteLine(context.ErrorDescription);
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+            #endregion
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAnyOrigin", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
+            builder.Services.AddControllers();
 
             var app = builder.Build();
 
@@ -72,6 +180,9 @@ namespace TechStoreAPI
 
             app.UseHttpsRedirection();
 
+            app.UseCors("AllowAnyOrigin");
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

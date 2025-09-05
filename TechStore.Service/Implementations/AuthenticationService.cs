@@ -12,8 +12,6 @@ using TechStore.Common.Enums;
 using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
-using TechStore.Data.Repositories.Implementations;
-using TechStore.Data.Repositories.Interfaces;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Authentication;
 using TechStore.Model.DTOs.User;
@@ -25,18 +23,21 @@ namespace TechStore.Service.Implementations
     public class AuthenticationService : IAuthenticationService
     {
         private readonly JWTConfig _jwtConfig;
+        private readonly IPasswordService _passwordService;
 
         private readonly IUnitOfWork _uow;
         private readonly SequenceGeneratorService _sequenceService;
 
         public AuthenticationService(IOptions<JWTConfig> jwtOptions,
             IUnitOfWork unitOfWork,
-            SequenceGeneratorService sequenceService
+            SequenceGeneratorService sequenceService,
+            IPasswordService passwordService
             )
         {
             _jwtConfig = jwtOptions.Value;
             _uow = unitOfWork;
             _sequenceService = sequenceService;
+            _passwordService = passwordService;
         }
 
         public async Task<ServiceResult<LoginResponseModel>> CustomerLogin(LoginRequestModel loginModel)
@@ -55,6 +56,8 @@ namespace TechStore.Service.Implementations
             {
                 return serviceResult;
             }
+
+            //bool isValid = _passwordService.VerifyPassword(user, loginModel.Password, user.PasswordHash);
 
             if (user.PasswordHash != loginModel.Password)
             {
@@ -98,6 +101,8 @@ namespace TechStore.Service.Implementations
                 serviceResult.Message = Messenger.NoPermission;
                 return serviceResult;
             }
+
+            //bool isValid = _passwordService.VerifyPassword(user, loginModel.Password, user.PasswordHash);
 
             if (user.PasswordHash != loginModel.Password)
             {
@@ -193,7 +198,7 @@ namespace TechStore.Service.Implementations
 
             var userId = await _sequenceService.GetNextUserIdAsync();
 
-            User dataInsert = new User
+            User user = new User
             {
                 PublicId = userId,
                 LastName = registerModel.UserInformation.LastName,
@@ -210,7 +215,9 @@ namespace TechStore.Service.Implementations
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 
-            await _uow.Users.AddAsync(dataInsert);
+            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
+
+            await _uow.Users.AddAsync(user);
             var result = await _uow.CommitAsync();
 
             if (result < 0)
@@ -246,7 +253,7 @@ namespace TechStore.Service.Implementations
 
             var userId = await _sequenceService.GetNextUserIdAsync();
 
-            User dataInsert = new User
+            User user = new User
             {
                 PublicId = userId,
                 LastName = registerModel.UserInformation.LastName,
@@ -263,7 +270,9 @@ namespace TechStore.Service.Implementations
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 
-            await _uow.Users.AddAsync(dataInsert);
+            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
+
+            await _uow.Users.AddAsync(user);
             var result = await _uow.CommitAsync();
 
             if (result < 0)
@@ -300,7 +309,7 @@ namespace TechStore.Service.Implementations
 
             var userId = await _sequenceService.GetNextUserIdAsync();
 
-            User dataInsert = new User
+            User user = new User
             {
                 PublicId = userId,
                 LastName = registerModel.UserInformation.LastName,
@@ -317,7 +326,9 @@ namespace TechStore.Service.Implementations
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 
-            await _uow.Users.AddAsync(dataInsert);
+            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
+
+            await _uow.Users.AddAsync(user);
             var result = await _uow.CommitAsync();
 
             if (result < 0)
@@ -333,12 +344,12 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        private string GenerateJwtTokenForUser(string username, string appRoles)
+        private string GenerateJwtTokenForUser(string userId, string appRoles)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(AppClaims.UserId, username), // Ví dụ thêm UserId
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(AppClaims.UserId, userId), // Ví dụ thêm UserId
                 new Claim(AppClaims.Role, appRoles),   // Ví dụ thêm Role
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };

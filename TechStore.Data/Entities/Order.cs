@@ -38,6 +38,6 @@ namespace TechStore.Data.Entities
         public QRCode? QRCode { get; set; }
         public ShippingDetail? ShippingDetail { get; set; }
 
-        public required ICollection<OrderItem> OrderItems { get; set; }
+        public required ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

@@ -20,5 +20,7 @@ namespace TechStore.Model.DTOs.Product
         public long? AverageRating { get; set; }
         public int? SoldCount { get; set; }
         public int? RatedCount { get; set; }
+
+        public DateTime? StartSellingDate { get; set; }
     }
 }

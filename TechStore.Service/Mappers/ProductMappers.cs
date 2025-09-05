@@ -22,6 +22,7 @@ namespace TechStore.Service.Mappers
                 AverageRating = product.AverageRating,
                 RatedCount = product.RatedCount,
                 SoldCount = product.SoldCount,
+                StartSellingDate = product.StartSellingDate
             };
         }
 
@@ -31,7 +32,7 @@ namespace TechStore.Service.Mappers
             {
                 ProductId = product.PublicId,
                 Name = product.Name,
-                CategoryName = product.Category.Name,
+                CategoryName = product.Category?.Name,
                 ShortDescription = product.ShortDescription,
                 MainImageUrl = product.MainImageUrl,
                 Price = product.Price,
@@ -39,6 +40,7 @@ namespace TechStore.Service.Mappers
                 AverageRating = product.AverageRating,
                 RatedCount = product.RatedCount,
                 SoldCount = product.SoldCount,
+                StartSellingDate = product.StartSellingDate
             };
         }
 
@@ -107,6 +109,9 @@ namespace TechStore.Service.Mappers
                 SalePrice = product.ImportPrice,
                 SaleStart = product.SaleStart,
                 SaleEnd = product.SaleEnd,
+
+                StartSellingDate = product.StartSellingDate,
+                EndSellingDate = product.EndSellingDate,
 
                 Category = category.ToCategoryResponseModel(),
 

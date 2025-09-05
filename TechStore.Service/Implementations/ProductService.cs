@@ -43,7 +43,7 @@ namespace TechStore.Service.Implementations
 
             List<ProductListItemModel> productModels = new List<ProductListItemModel>();
 
-            var products = await _uow.Products.GetProductsAsync(page, pageSize);
+            var products = await _uow.Products.GetProductsAsync(p => true, page, pageSize);
 
             if (products == null)
             {
@@ -424,20 +424,20 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.NoExitData
             };
 
-            var product = await _uow.Products.GetByIdAsync(id);
+            var product = await _uow.Products.GetProductWithDetailsByIdAsync(id);
 
             if (product == null)
             {
                 return serviceResult;
             }
 
-            var category = await _uow.Categories.GetByIdAsync(product.Category.PublicId);
+            var category = product.Category;
             if (category == null)
             {
                 return serviceResult;
             }
 
-            var brand = await _uow.Brands.GetByIdAsync(product.Brand.PublicId);
+            var brand = product.Brand;
             if (brand == null)
             {
                 return serviceResult;
@@ -451,7 +451,7 @@ namespace TechStore.Service.Implementations
         }
 
 
-        public async Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts()
+        public async Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts(int pageNumber, int pageSize)
         {
             var serviceResult = new ServiceResult<List<AdminProductDetailModel>>
             {
@@ -460,20 +460,33 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.NoExitData
             };
 
-            var products = await _uow.Products.GetAllAsync();
+            var products = await _uow.Products.GetProductsAsync(p => true, pageNumber, pageSize);
+
+            if (products == null || products.Count == 0)
+            {
+                return serviceResult;
+            }
 
             foreach (var product in products)
             {
-                var category = await _uow.Categories.GetByIdAsync(product.Category.PublicId);
+                var category = product.Category;
                 if (category == null)
                 {
-                    continue;
+                    category = await _uow.Categories.GetByIdAsync(product.Category.PublicId);
+                    if (category == null)
+                    {
+                        continue;
+                    }
                 }
 
-                var brand = await _uow.Brands.GetByIdAsync(product.Brand.PublicId);
+                var brand = product.Brand;
                 if (brand == null)
                 {
-                    continue;
+                    brand = await _uow.Brands.GetByIdAsync(product.Brand.PublicId);
+                    if (brand == null)
+                    {
+                        continue;
+                    }
                 }
 
                 serviceResult.Data.Add(product.ToAdminProductDetail(category, brand));
@@ -522,7 +535,7 @@ namespace TechStore.Service.Implementations
                     SaleEnd = model.SaleEnd,
                     MainImageUrl = model.MainImageUrl ?? CloudinaryFolders.DefaultImage,
                     GalleryImageUrls = model.GalleryImageUrls,
-                    StartSellingDate = model.StartSellingDate ?? DateTime.UtcNow,
+                    StartSellingDate = model.StartSellingDate ?? TimeZoneHelper.GetUtcNow(),
                     EndSellingDate = model.EndSellingDate,
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
                     SoldCount = Random.Shared.Next(0, 51), // Randomly generated sold count for seeding
