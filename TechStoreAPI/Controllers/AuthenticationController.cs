@@ -52,9 +52,9 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ApiResponse<string>> Register([FromBody] RegisterModel registerModel)
+        public async Task<ApiResponse<bool>> Register([FromBody] CustomerRegisterModel registerModel)
         {
-            ServiceResult<string> serviceResult = await _authenticationService.Register(registerModel);
+            ServiceResult<bool> serviceResult = await _authenticationService.CustomerRegisterAccount(registerModel);
 
             if (serviceResult.IsSuccess)
             {

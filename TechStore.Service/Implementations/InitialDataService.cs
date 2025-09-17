@@ -77,25 +77,57 @@ namespace TechStore.Service.Implementations
 
                 CategoryCreateModel category3 = new CategoryCreateModel
                 {
-                    Name = "Tablet",
-                    Description = "Máy tính bảng",
+                    Name = "Máy tính bảng",
+                    Description = "Tablet",
                     Slug = "may-tinh-bang",
                     IconImageUrl = CloudinaryFolders.DefaultImage
                 };
 
                 CategoryCreateModel category4 = new CategoryCreateModel
                 {
-                    Name = "Smart Watch",
-                    Description = "Đồng hồ thông minh",
+                    Name = "Đồng hồ thông minh",
+                    Description = "Smart Watch",
                     Slug = "smart-watch",
                     IconImageUrl = CloudinaryFolders.DefaultImage
                 };
 
                 CategoryCreateModel category5 = new CategoryCreateModel
                 {
-                    Name = "Charge",
-                    Description = "Sạc",
+                    Name = "Sạc",
+                    Description = "Charge",
                     Slug = "cuc-sac",
+                    IconImageUrl = CloudinaryFolders.DefaultImage
+                };
+
+                CategoryCreateModel category6 = new CategoryCreateModel
+                {
+                    Name = "Dây cáp ",
+                    Description = "Capable",
+                    Slug = "day-cap",
+                    IconImageUrl = CloudinaryFolders.DefaultImage
+                };
+
+                CategoryCreateModel category7 = new CategoryCreateModel
+                {
+                    Name = "Ổ cứng",
+                    Description = "Ổ cứng",
+                    Slug = "o-cung",
+                    IconImageUrl = CloudinaryFolders.DefaultImage
+                };
+
+                CategoryCreateModel category8 = new CategoryCreateModel
+                {
+                    Name = "Ram",
+                    Description = "Ram",
+                    Slug = "ram",
+                    IconImageUrl = CloudinaryFolders.DefaultImage
+                };
+
+                CategoryCreateModel category9 = new CategoryCreateModel
+                {
+                    Name = "hàng cũ",
+                    Description = "hàng cũ",
+                    Slug = "hang-cu",
                     IconImageUrl = CloudinaryFolders.DefaultImage
                 };
 
@@ -104,6 +136,10 @@ namespace TechStore.Service.Implementations
                 var resultCategory3 = await _categoryService.AddCategory(category3);
                 var resultCategory4 = await _categoryService.AddCategory(category4);
                 var resultCategory5 = await _categoryService.AddCategory(category5);
+                var resultCategory6 = await _categoryService.AddCategory(category6);
+                var resultCategory7 = await _categoryService.AddCategory(category7);
+                var resultCategory8 = await _categoryService.AddCategory(category8);
+                var resultCategory9 = await _categoryService.AddCategory(category9);
 
                 #endregion
 
@@ -354,8 +390,7 @@ namespace TechStore.Service.Implementations
 
                 #endregion
 
-                #region add product
-
+                #region create products
                 var productModel1 = new ProductCreateModel
                 {
                     CategoryId = resultCategory1.Data,
@@ -367,13 +402,99 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "iphone", "iphone14" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 35000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 45000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 14 Pro Max 128GB",
+                            ImportPrice = 30000000,
+                            Price = 40000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Silver",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Gold",
+                                    Stock = 50,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 14 Pro Max 256GB",
+                            ImportPrice = 32000000,
+                            Price = 42000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Silver",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Gold",
+                                    Stock = 50,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 14 Pro Max 512GB",
+                            ImportPrice = 35000000,
+                            Price = 45000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Silver",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Gold",
+                                    Stock = 50,
+                                }
+                            },
+                        }
+                    }
                 };
-
                 var productModel2 = new ProductCreateModel
                 {
                     CategoryId = resultCategory1.Data,
@@ -385,13 +506,99 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "iphone", "iphone14" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 25000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 35000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 14 Pro 128GB",
+                            ImportPrice = 25000000,
+                            Price = 35000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Silver",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Gold",
+                                    Stock = 50,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 14 Pro 256GB",
+                            ImportPrice = 27000000,
+                            Price = 37000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Silver",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Gold",
+                                    Stock = 50,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 14 Pro 512GB",
+                            ImportPrice = 30000000,
+                            Price = 40000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Silver",
+                                    Stock = 50,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Gold",
+                                    Stock = 50,
+                                }
+                            },
+                        }
+                    }
                 };
-
                 var productModel3 = new ProductCreateModel
                 {
                     CategoryId = resultCategory2.Data,
@@ -403,13 +610,26 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "dell", "dell-xps" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 15000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 25000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Dell XPS 13",
+                            ImportPrice = 25000000,
+                            Price = 35000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Dell XPS 13",
+                                    Stock = 50,
+                                },
+                            },
+                        }
+                    }
                 };
-
                 var productModel4 = new ProductCreateModel
                 {
                     CategoryId = resultCategory2.Data,
@@ -421,17 +641,30 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "mac", "macbook" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 35000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 50000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Macbook Pro 16",
+                            ImportPrice = 40000000,
+                            Price = 50000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Macbook Pro 16",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
-
                 var productModel5 = new ProductCreateModel
                 {
                     CategoryId = resultCategory3.Data,
-                    Name = "Ipad Pro 12.9",
+                    Name = "Ipad A6",
                     BrandId = resultBrand1.Data,
                     ShortDescription = "Máy tính bảng",
                     Description = "Máy tính bảng",
@@ -439,13 +672,26 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "ipad", "ipad-pro" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 15000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 25000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Ipad A6",
+                            ImportPrice = 25000000,
+                            Price = 28000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Ipad A6",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
-
                 var productModel6 = new ProductCreateModel
                 {
                     CategoryId = resultCategory3.Data,
@@ -458,12 +704,25 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "samsung", "samsung-tab" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 15000000,
-                    Price = 20000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Samsung Galaxy Tab S8",
+                            ImportPrice = 23000000,
+                            Price = 25000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Samsung Galaxy Tab S8",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
-
                 var productModel7 = new ProductCreateModel
                 {
                     CategoryId = resultCategory3.Data,
@@ -476,12 +735,25 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "xiaomi", "xiaomi-mi8" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 500000,
-                    Price = 8000000,
-                    Stock = 70,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Xiaomi mi 8",
+                            ImportPrice = 800000,
+                            Price = 11000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xiaomi mi 8",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
-
                 var productModel8 = new ProductCreateModel
                 {
                     CategoryId = resultCategory1.Data,
@@ -493,11 +765,49 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "iphone", "iphone13" },
                     IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 18000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 23000000,
-                    Stock = 80,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 13 128GB",
+                            ImportPrice = 23000000,
+                            Price = 25000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 35,
+                                },
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPhone 13 2568GB",
+                            ImportPrice = 29000000,
+                            Price = 33000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Purple",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Space Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
                 var productModel9 = new ProductCreateModel
                 {
@@ -510,11 +820,25 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "samsung", "galaxy" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 27000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 32000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Samsung Galaxy S23 Ultra",
+                            ImportPrice = 35000000,
+                            Price = 44000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Samsung Galaxy S23 Ultra",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
                 var productModel10 = new ProductCreateModel
                 {
@@ -527,11 +851,25 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "hp", "laptop" },
                     IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 22000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 28000000,
-                    Stock = 90,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "HP Spectre x360",
+                            ImportPrice = 13000000,
+                            Price = 15000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "HP Spectre x360",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
                 var productModel11 = new ProductCreateModel
                 {
@@ -544,11 +882,25 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "macbook", "apple" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 24000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 30000000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "MacBook Air M2",
+                            ImportPrice = 30000000,
+                            Price = 34000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "MacBook Air M2",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
                 var productModel12 = new ProductCreateModel
                 {
@@ -561,11 +913,25 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "xiaomi", "tablet" },
                     IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 9000000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 12000000,
-                    Stock = 60,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Xiaomi Pad 5",
+                            ImportPrice = 9000000,
+                            Price = 11000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xiaomi Pad 5",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
                 var productModel13 = new ProductCreateModel
                 {
@@ -578,167 +944,875 @@ namespace TechStore.Service.Implementations
                     Tag = new List<string> { "poco", "xiaomi" },
                     IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                    ImportPrice = 6500000,
                     MainImageUrl = CloudinaryFolders.DefaultImage,
-                    Price = 8500000,
-                    Stock = 100,
-                    SalePrice = 0
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Poco X5 Pro",
+                            ImportPrice = 7000000,
+                            Price = 10000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
                 };
-                var productModel14 = new ProductCreateModel { Name = "Asus ROG Phone 7", CategoryId = resultCategory1.Data, BrandId = resultBrand4.Data, ShortDescription = "Điện thoại gaming", Description = "Asus ROG Phone mạnh mẽ", Slug = "asus-rog-phone-7", Tag = new List<string> { "asus", "rog" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 20000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 25000000, Stock = 70, SalePrice = 0 };
-                var productModel15 = new ProductCreateModel { Name = "Lenovo Legion 5 Pro", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Laptop gaming", Description = "Laptop mạnh mẽ cho game thủ", Slug = "lenovo-legion-5-pro", Tag = new List<string> { "lenovo", "gaming" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 26000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 50, SalePrice = 0 };
-                var productModel16 = new ProductCreateModel { Name = "iPad Air 2022", CategoryId = resultCategory3.Data, BrandId = resultBrand1.Data, ShortDescription = "Tablet Apple", Description = "iPad Air nhẹ, mạnh", Slug = "ipad-air-2022", Tag = new List<string> { "ipad", "apple" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 15000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 18000000, Stock = 100, SalePrice = 0 };
-                var productModel17 = new ProductCreateModel { Name = "Surface Pro 9", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Tablet lai laptop", Description = "Microsoft Surface Pro mới nhất", Slug = "surface-pro-9", Tag = new List<string> { "microsoft", "surface" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 25000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 80, SalePrice = 0 };
-                var productModel18 = new ProductCreateModel { Name = "Oppo Find X5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Oppo", Description = "Camera siêu nét", Slug = "oppo-find-x5", Tag = new List<string> { "oppo", "smartphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 16000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 20000000, Stock = 90, SalePrice = 0 };
-                var productModel19 = new ProductCreateModel { Name = "Realme GT Neo 5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Realme", Description = "Pin trâu, sạc siêu nhanh", Slug = "realme-gt-neo-5", Tag = new List<string> { "realme", "smartphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 8000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 11000000, Stock = 100, SalePrice = 0 };
-                var productModel20 = new ProductCreateModel { Name = "Samsung Galaxy Watch 6", CategoryId = resultCategory4.Data, BrandId = resultBrand2.Data, ShortDescription = "Đồng hồ thông minh", Description = "Smartwatch Samsung", Slug = "galaxy-watch-6", Tag = new List<string> { "samsung", "watch" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 5000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 7000000, Stock = 120, SalePrice = 0 };
-                var productModel21 = new ProductCreateModel { Name = "Apple Watch Series 8", CategoryId = resultCategory4.Data, BrandId = resultBrand1.Data, ShortDescription = "Đồng hồ Apple", Description = "Apple Watch mới nhất", Slug = "apple-watch-series-8", Tag = new List<string> { "apple", "watch" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 7000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 9000000, Stock = 100, SalePrice = 0 };
-                var productModel22 = new ProductCreateModel { Name = "Sony WH-1000XM5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Tai nghe chống ồn", Description = "Tai nghe Sony cao cấp", Slug = "sony-wh-1000xm5", Tag = new List<string> { "sony", "headphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 6000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 8000000, Stock = 60, SalePrice = 0 };
-                var productModel23 = new ProductCreateModel { Name = "JBL Charge 5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Loa bluetooth", Description = "Loa di động chống nước", Slug = "jbl-charge-5", Tag = new List<string> { "jbl", "bluetooth" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 3000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 4000000, Stock = 80, SalePrice = 0 };
-                var productModel24 = new ProductCreateModel { Name = "Kindle Paperwhite", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Máy đọc sách", Description = "Máy đọc sách Amazon", Slug = "kindle-paperwhite", Tag = new List<string> { "kindle", "ebook" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 2800000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 3500000, Stock = 90, SalePrice = 0 };
+                var productModel14 = new ProductCreateModel 
+                { 
+                    Name = "Asus ROG Phone 7", 
+                    CategoryId = resultCategory1.Data, 
+                    BrandId = resultBrand4.Data, 
+                    ShortDescription = "Điện thoại gaming", 
+                    Description = "Asus ROG Phone mạnh mẽ", 
+                    Slug = "asus-rog-phone-7", 
+                    Tag = new List<string> { "asus", "rog" }, 
+                    IsFeatured = true, 
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Asus ROG Phone 7",
+                            ImportPrice = 6000000,
+                            Price = 8000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel15 = new ProductCreateModel 
+                { 
+                    Name = "Lenovo Legion 5 Pro", 
+                    CategoryId = resultCategory2.Data, 
+                    BrandId = resultBrand4.Data, 
+                    ShortDescription = "Laptop gaming", 
+                    Description = "Laptop mạnh mẽ cho game thủ",
+                    Slug = "lenovo-legion-5-pro",
+                    Tag = new List<string> { "lenovo", "gaming" }, 
+                    IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), 
+                    MainImageUrl = CloudinaryFolders.DefaultImage, 
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Lenovo Legion 5 Pro i5",
+                            ImportPrice = 27000000,
+                            Price = 35000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Blue",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Lenovo Legion 5 Pro i7",
+                            ImportPrice = 30000000,
+                            Price = 39000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Deep Blue",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel16 = new ProductCreateModel 
+                { 
+                    Name = "iPad Air 2022", 
+                    CategoryId = resultCategory3.Data, 
+                    BrandId = resultBrand1.Data, 
+                    ShortDescription = "Tablet Apple", 
+                    Description = "iPad Air nhẹ, mạnh", 
+                    Slug = "ipad-air-2022", 
+                    Tag = new List<string> { "ipad", "apple" }, 
+                    IsFeatured = false, 
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(), 
+                    MainImageUrl = CloudinaryFolders.DefaultImage, 
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "iPad Air 2022",
+                            ImportPrice = 17000000,
+                            Price = 20000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel17 = new ProductCreateModel
+                {
+                    Name = "Surface Pro 9",
+                    CategoryId = resultCategory2.Data,
+                    BrandId = resultBrand4.Data,
+                    ShortDescription = "Tablet lai laptop",
+                    Description = "Microsoft Surface Pro mới nhất",
+                    Slug = "surface-pro-9",
+                    Tag = new List<string> { "microsoft", "surface" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Surface Pro 9",
+                            ImportPrice = 15000000,
+                            Price = 180000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel18 = new ProductCreateModel
+                {
+                    Name = "Oppo Find X5",
+                    CategoryId = resultCategory1.Data,
+                    BrandId = resultBrand2.Data,
+                    ShortDescription = "Điện thoại Oppo",
+                    Description = "Camera siêu nét",
+                    Slug = "oppo-find-x5",
+                    Tag = new List<string> { "oppo", "smartphone" },
+                    IsFeatured = false,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Oppo Find X5",
+                            ImportPrice = 400000,
+                            Price = 8000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel19 = new ProductCreateModel
+                {
+                    Name = "Realme GT Neo 5",
+                    CategoryId = resultCategory1.Data,
+                    BrandId = resultBrand2.Data,
+                    ShortDescription = "Điện thoại Realme",
+                    Description = "Pin trâu, sạc siêu nhanh",
+                    Slug = "realme-gt-neo-5",
+                    Tag = new List<string> { "realme", "smartphone" },
+                    IsFeatured = false,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Realme GT Neo 5",
+                            ImportPrice = 4000000,
+                            Price = 70000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel20 = new ProductCreateModel
+                {
+                    Name = "Samsung Galaxy Watch 6",
+                    CategoryId = resultCategory4.Data,
+                    BrandId = resultBrand2.Data,
+                    ShortDescription = "Đồng hồ thông minh",
+                    Description = "Smartwatch Samsung",
+                    Slug = "galaxy-watch-6",
+                    Tag = new List<string> { "samsung", "watch" },
+                    IsFeatured = false,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Samsung Galaxy Watch 6",
+                            ImportPrice = 4000000,
+                            Price = 6000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel21 = new ProductCreateModel
+                {
+                    Name = "Apple Watch Series 8",
+                    CategoryId = resultCategory4.Data,
+                    BrandId = resultBrand1.Data,
+                    ShortDescription = "Đồng hồ Apple",
+                    Description = "Apple Watch mới nhất",
+                    Slug = "apple-watch-series-8",
+                    Tag = new List<string> { "apple", "watch" },
+                    IsFeatured = false,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Apple Watch Series 8",
+                            ImportPrice = 400000,
+                            Price = 7000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "White",
+                                    Stock = 35,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Black",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel22 = new ProductCreateModel
+                {
+                    Name = "Sony WH-1000XM5",
+                    CategoryId = resultCategory5.Data,
+                    BrandId = resultBrand5.Data,
+                    ShortDescription = "Tai nghe chống ồn",
+                    Description = "Tai nghe Sony cao cấp",
+                    Slug = "sony-wh-1000xm5",
+                    Tag = new List<string> { "sony", "headphone" },
+                    IsFeatured = false,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Sony WH-1000XM5",
+                            ImportPrice = 8000000,
+                            Price = 15000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Sony WH-1000XM5",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel23 = new ProductCreateModel
+                {
+                    Name = "JBL Charge 5",
+                    CategoryId = resultCategory5.Data,
+                    BrandId = resultBrand5.Data,
+                    ShortDescription = "Loa bluetooth",
+                    Description = "Loa di động chống nước",
+                    Slug = "jbl-charge-5",
+                    Tag = new List<string> { "jbl", "bluetooth" },
+                    IsFeatured = false,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "JBL Charge 5",
+                            ImportPrice = 100000,
+                            Price = 2000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "JBL Charge 5",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
+                var productModel24 = new ProductCreateModel
+                {
+                    Name = "Kindle Paperwhite",
+                    CategoryId = resultCategory5.Data,
+                    BrandId = resultBrand5.Data,
+                    ShortDescription = "Máy đọc sách",
+                    Description = "Máy đọc sách Amazon",
+                    Slug = "kindle-paperwhite",
+                    Tag = new List<string> { "kindle", "ebook" },
+                    IsFeatured = false,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = CloudinaryFolders.DefaultImage,
+                    SalePrice = 0,
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "Kindle Paperwhite",
+                            ImportPrice = 7000000,
+                            Price = 10000000,
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Kindle Paperwhite",
+                                    Stock = 35,
+                                },
+                            },
+                        }
+                    }
+                };
 
-                var resultProduct1 = await _productService.SeedDataProduct(productModel1);
-                var resultProduct2 = await _productService.SeedDataProduct(productModel2);
-                var resultProduct3 = await _productService.SeedDataProduct(productModel3);
-                var resultProduct4 = await _productService.SeedDataProduct(productModel4);
-                var resultProduct5 = await _productService.SeedDataProduct(productModel5);
-                var resultProduct6 = await _productService.SeedDataProduct(productModel6);
-                var resultProduct7 = await _productService.SeedDataProduct(productModel7);
-                var resultProduct8 = await _productService.SeedDataProduct(productModel8);
-                var resultProduct9 = await _productService.SeedDataProduct(productModel9);
-                var resultProduct10 = await _productService.SeedDataProduct(productModel10);
-                var resultProduct11 = await _productService.SeedDataProduct(productModel11);
-                var resultProduct12 = await _productService.SeedDataProduct(productModel12);
-                var resultProduct13 = await _productService.SeedDataProduct(productModel13);
-                var resultProduct14 = await _productService.SeedDataProduct(productModel14);
-                var resultProduct15 = await _productService.SeedDataProduct(productModel15);
-                var resultProduct16 = await _productService.SeedDataProduct(productModel16);
-                var resultProduct17 = await _productService.SeedDataProduct(productModel17);
-                var resultProduct18 = await _productService.SeedDataProduct(productModel18);
-                var resultProduct19 = await _productService.SeedDataProduct(productModel19);
-                var resultProduct20 = await _productService.SeedDataProduct(productModel20);
-                var resultProduct21 = await _productService.SeedDataProduct(productModel21);
-                var resultProduct22 = await _productService.SeedDataProduct(productModel22);
-                var resultProduct23 = await _productService.SeedDataProduct(productModel23);
-                var resultProduct24 = await _productService.SeedDataProduct(productModel24);
+                var resultProduct1 = await _productService.AddProduct(productModel1);
+                var resultProduct2 = await _productService.AddProduct(productModel2);
+                var resultProduct3 = await _productService.AddProduct(productModel3);
+                var resultProduct4 = await _productService.AddProduct(productModel4);
+                var resultProduct5 = await _productService.AddProduct(productModel5);
+                var resultProduct6 = await _productService.AddProduct(productModel6);
+                var resultProduct7 = await _productService.AddProduct(productModel7);
+                var resultProduct8 = await _productService.AddProduct(productModel8);
+                var resultProduct9 = await _productService.AddProduct(productModel9);
+                var resultProduct10 = await _productService.AddProduct(productModel10);
+                var resultProduct11 = await _productService.AddProduct(productModel11);
+                var resultProduct12 = await _productService.AddProduct(productModel12);
+                var resultProduct13 = await _productService.AddProduct(productModel13);
+                var resultProduct14 = await _productService.AddProduct(productModel14);
+                var resultProduct15 = await _productService.AddProduct(productModel15);
+                var resultProduct16 = await _productService.AddProduct(productModel16);
+                var resultProduct17 = await _productService.AddProduct(productModel17);
+                var resultProduct18 = await _productService.AddProduct(productModel18);
+                var resultProduct19 = await _productService.AddProduct(productModel19);
+                var resultProduct20 = await _productService.AddProduct(productModel20);
+                var resultProduct21 = await _productService.AddProduct(productModel21);
+                var resultProduct22 = await _productService.AddProduct(productModel22);
+                var resultProduct23 = await _productService.AddProduct(productModel23);
+                var resultProduct24 = await _productService.AddProduct(productModel24);
+                #endregion
+
+                #region add product
+
+                //var productModel1 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory1.Data,
+                //    BrandId = resultBrand1.Data,
+                //    Name = "Iphone 14 Pro Max",
+                //    ShortDescription = "Điện thoại thông minh",
+                //    Description = "Điện thoại thông minh",
+                //    Slug = "iphone-14-pro-max",
+                //    Tag = new List<string> { "iphone", "iphone14" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 35000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 45000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+
+                //var productModel2 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory1.Data,
+                //    BrandId = resultBrand1.Data,
+                //    Name = "Iphone 14 Pro",
+                //    ShortDescription = "Điện thoại thông minh",
+                //    Description = "Điện thoại thông minh",
+                //    Slug = "iphone-14-pro",
+                //    Tag = new List<string> { "iphone", "iphone14" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 25000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 35000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+
+                //var productModel3 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory2.Data,
+                //    Name = "Dell XPS 13",
+                //    BrandId = resultBrand4.Data,
+                //    ShortDescription = "Máy tính xách tay",
+                //    Description = "Máy tính xách tay",
+                //    Slug = "dell-xps-13",
+                //    Tag = new List<string> { "dell", "dell-xps" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 15000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 25000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+
+                //var productModel4 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory2.Data,
+                //    Name = "Macbook Pro 16",
+                //    BrandId = resultBrand1.Data,
+                //    ShortDescription = "Máy tính xách tay",
+                //    Description = "Máy tính xách tay",
+                //    Slug = "mac-pro-16",
+                //    Tag = new List<string> { "mac", "macbook" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 35000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 50000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+
+                //var productModel5 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory3.Data,
+                //    Name = "Ipad Pro 12.9",
+                //    BrandId = resultBrand1.Data,
+                //    ShortDescription = "Máy tính bảng",
+                //    Description = "Máy tính bảng",
+                //    Slug = "ipad-12-pro",
+                //    Tag = new List<string> { "ipad", "ipad-pro" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 15000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 25000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+
+                //var productModel6 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory3.Data,
+                //    Name = "Samsung Galaxy Tab S8",
+                //    BrandId = resultBrand2.Data,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    ShortDescription = "Máy tính bảng",
+                //    Description = "Máy tính bảng",
+                //    Slug = "samsung-galaxy-tab-s8",
+                //    Tag = new List<string> { "samsung", "samsung-tab" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 15000000,
+                //    Price = 20000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+
+                //var productModel7 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory3.Data,
+                //    Name = "Xiaomi mi 8",
+                //    BrandId = resultBrand3.Data,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    ShortDescription = "Xiao mi",
+                //    Description = "Xiao mi",
+                //    Slug = "xiaomi-mi-8",
+                //    Tag = new List<string> { "xiaomi", "xiaomi-mi8" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 500000,
+                //    Price = 8000000,
+                //    Stock = 70,
+                //    SalePrice = 0
+                //};
+
+                //var productModel8 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory1.Data,
+                //    BrandId = resultBrand1.Data,
+                //    Name = "iPhone 13",
+                //    ShortDescription = "Điện thoại thông minh",
+                //    Description = "iPhone 13 chính hãng Apple",
+                //    Slug = "iphone-13",
+                //    Tag = new List<string> { "iphone", "iphone13" },
+                //    IsFeatured = false,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 18000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 23000000,
+                //    Stock = 80,
+                //    SalePrice = 0
+                //};
+                //var productModel9 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory1.Data,
+                //    BrandId = resultBrand2.Data,
+                //    Name = "Samsung Galaxy S23 Ultra",
+                //    ShortDescription = "Flagship Samsung",
+                //    Description = "Siêu phẩm điện thoại Samsung",
+                //    Slug = "samsung-galaxy-s23-ultra",
+                //    Tag = new List<string> { "samsung", "galaxy" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 27000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 32000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+                //var productModel10 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory2.Data,
+                //    BrandId = resultBrand4.Data,
+                //    Name = "HP Spectre x360",
+                //    ShortDescription = "Laptop 2-trong-1",
+                //    Description = "Laptop cao cấp từ HP",
+                //    Slug = "hp-spectre-x360",
+                //    Tag = new List<string> { "hp", "laptop" },
+                //    IsFeatured = false,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 22000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 28000000,
+                //    Stock = 90,
+                //    SalePrice = 0
+                //};
+                //var productModel11 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory2.Data,
+                //    BrandId = resultBrand1.Data,
+                //    Name = "MacBook Air M2",
+                //    ShortDescription = "Laptop Apple nhẹ",
+                //    Description = "MacBook Air với chip M2",
+                //    Slug = "macbook-air-m2",
+                //    Tag = new List<string> { "macbook", "apple" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 24000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 30000000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+                //var productModel12 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory3.Data,
+                //    BrandId = resultBrand3.Data,
+                //    Name = "Xiaomi Pad 5",
+                //    ShortDescription = "Máy tính bảng Xiaomi",
+                //    Description = "Tablet giá rẻ cấu hình mạnh",
+                //    Slug = "xiaomi-pad-5",
+                //    Tag = new List<string> { "xiaomi", "tablet" },
+                //    IsFeatured = false,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 9000000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 12000000,
+                //    Stock = 60,
+                //    SalePrice = 0
+                //};
+                //var productModel13 = new ProductCreateModell
+                //{
+                //    CategoryId = resultCategory1.Data,
+                //    BrandId = resultBrand3.Data,
+                //    Name = "Poco X5 Pro",
+                //    ShortDescription = "Điện thoại chơi game giá rẻ",
+                //    Description = "Cấu hình mạnh trong phân khúc",
+                //    Slug = "poco-x5-pro",
+                //    Tag = new List<string> { "poco", "xiaomi" },
+                //    IsFeatured = false,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    ImportPrice = 6500000,
+                //    MainImageUrl = CloudinaryFolders.DefaultImage,
+                //    Price = 8500000,
+                //    Stock = 100,
+                //    SalePrice = 0
+                //};
+                //var productModel14 = new ProductCreateModell { Name = "Asus ROG Phone 7", CategoryId = resultCategory1.Data, BrandId = resultBrand4.Data, ShortDescription = "Điện thoại gaming", Description = "Asus ROG Phone mạnh mẽ", Slug = "asus-rog-phone-7", Tag = new List<string> { "asus", "rog" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 20000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 25000000, Stock = 70, SalePrice = 0 };
+                //var productModel15 = new ProductCreateModell { Name = "Lenovo Legion 5 Pro", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Laptop gaming", Description = "Laptop mạnh mẽ cho game thủ", Slug = "lenovo-legion-5-pro", Tag = new List<string> { "lenovo", "gaming" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 26000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 50, SalePrice = 0 };
+                //var productModel16 = new ProductCreateModell { Name = "iPad Air 2022", CategoryId = resultCategory3.Data, BrandId = resultBrand1.Data, ShortDescription = "Tablet Apple", Description = "iPad Air nhẹ, mạnh", Slug = "ipad-air-2022", Tag = new List<string> { "ipad", "apple" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 15000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 18000000, Stock = 100, SalePrice = 0 };
+                //var productModel17 = new ProductCreateModell { Name = "Surface Pro 9", CategoryId = resultCategory2.Data, BrandId = resultBrand4.Data, ShortDescription = "Tablet lai laptop", Description = "Microsoft Surface Pro mới nhất", Slug = "surface-pro-9", Tag = new List<string> { "microsoft", "surface" }, IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 25000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 32000000, Stock = 80, SalePrice = 0 };
+                //var productModel18 = new ProductCreateModell { Name = "Oppo Find X5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Oppo", Description = "Camera siêu nét", Slug = "oppo-find-x5", Tag = new List<string> { "oppo", "smartphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 16000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 20000000, Stock = 90, SalePrice = 0 };
+                //var productModel19 = new ProductCreateModell { Name = "Realme GT Neo 5", CategoryId = resultCategory1.Data, BrandId = resultBrand2.Data, ShortDescription = "Điện thoại Realme", Description = "Pin trâu, sạc siêu nhanh", Slug = "realme-gt-neo-5", Tag = new List<string> { "realme", "smartphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 8000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 11000000, Stock = 100, SalePrice = 0 };
+                //var productModel20 = new ProductCreateModell { Name = "Samsung Galaxy Watch 6", CategoryId = resultCategory4.Data, BrandId = resultBrand2.Data, ShortDescription = "Đồng hồ thông minh", Description = "Smartwatch Samsung", Slug = "galaxy-watch-6", Tag = new List<string> { "samsung", "watch" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 5000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 7000000, Stock = 120, SalePrice = 0 };
+                //var productModel21 = new ProductCreateModell { Name = "Apple Watch Series 8", CategoryId = resultCategory4.Data, BrandId = resultBrand1.Data, ShortDescription = "Đồng hồ Apple", Description = "Apple Watch mới nhất", Slug = "apple-watch-series-8", Tag = new List<string> { "apple", "watch" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 7000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 9000000, Stock = 100, SalePrice = 0 };
+                //var productModel22 = new ProductCreateModell { Name = "Sony WH-1000XM5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Tai nghe chống ồn", Description = "Tai nghe Sony cao cấp", Slug = "sony-wh-1000xm5", Tag = new List<string> { "sony", "headphone" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 6000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 8000000, Stock = 60, SalePrice = 0 };
+                //var productModel23 = new ProductCreateModell { Name = "JBL Charge 5", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Loa bluetooth", Description = "Loa di động chống nước", Slug = "jbl-charge-5", Tag = new List<string> { "jbl", "bluetooth" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 3000000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 4000000, Stock = 80, SalePrice = 0 };
+                //var productModel24 = new ProductCreateModell { Name = "Kindle Paperwhite", CategoryId = resultCategory5.Data, BrandId = resultBrand5.Data, ShortDescription = "Máy đọc sách", Description = "Máy đọc sách Amazon", Slug = "kindle-paperwhite", Tag = new List<string> { "kindle", "ebook" }, IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), ImportPrice = 2800000, MainImageUrl = CloudinaryFolders.DefaultImage, Price = 3500000, Stock = 90, SalePrice = 0 };
+
+                //var resultProduct1 = await _productService.SeedDataProduct(productModel1);
+                //var resultProduct2 = await _productService.SeedDataProduct(productModel2);
+                //var resultProduct3 = await _productService.SeedDataProduct(productModel3);
+                //var resultProduct4 = await _productService.SeedDataProduct(productModel4);
+                //var resultProduct5 = await _productService.SeedDataProduct(productModel5);
+                //var resultProduct6 = await _productService.SeedDataProduct(productModel6);
+                //var resultProduct7 = await _productService.SeedDataProduct(productModel7);
+                //var resultProduct8 = await _productService.SeedDataProduct(productModel8);
+                //var resultProduct9 = await _productService.SeedDataProduct(productModel9);
+                //var resultProduct10 = await _productService.SeedDataProduct(productModel10);
+                //var resultProduct11 = await _productService.SeedDataProduct(productModel11);
+                //var resultProduct12 = await _productService.SeedDataProduct(productModel12);
+                //var resultProduct13 = await _productService.SeedDataProduct(productModel13);
+                //var resultProduct14 = await _productService.SeedDataProduct(productModel14);
+                //var resultProduct15 = await _productService.SeedDataProduct(productModel15);
+                //var resultProduct16 = await _productService.SeedDataProduct(productModel16);
+                //var resultProduct17 = await _productService.SeedDataProduct(productModel17);
+                //var resultProduct18 = await _productService.SeedDataProduct(productModel18);
+                //var resultProduct19 = await _productService.SeedDataProduct(productModel19);
+                //var resultProduct20 = await _productService.SeedDataProduct(productModel20);
+                //var resultProduct21 = await _productService.SeedDataProduct(productModel21);
+                //var resultProduct22 = await _productService.SeedDataProduct(productModel22);
+                //var resultProduct23 = await _productService.SeedDataProduct(productModel23);
+                //var resultProduct24 = await _productService.SeedDataProduct(productModel24);
 
 
 
                 #endregion
 
+                #region add orders
+                var productVariantOptions = await _uow.ProductVariantOptions.GetAllAsync();
+                var users = await _uow.Users.FindManyAsync(u => u.LastName.Contains("User"));
 
-                #region add order
-
-                OrderCreateModel createOrderRequest1 = new OrderCreateModel
+                if (productVariantOptions != null && users != null)
                 {
-                    CustomerId = resultRegister1.Data,
-                    CustomerName = user1.LastName,
-                    CustomerEmail = user1.Email,
-                    ShippingAddress = user1.Address,
-                    PaymentMethod = EPaymentMethod.COD,
-                    CustomerPhonenumber = user1.PhoneNumber,
-                    Items = new List<OrderItemCreateModel>
-                {
-                    new OrderItemCreateModel
+                    for (int i = 0; i < 20; i++)
                     {
-                        ProductId = resultProduct1,
-                        Quantity = 1,
-                        PriceAtOrderTime = productModel1.Price,
-                        Discount = 0,
-                        TotalPrice = productModel1.Price
-                    },
-                    new OrderItemCreateModel
-                    {
-                        ProductId = resultProduct2,
-                        Quantity = 1,
-                        PriceAtOrderTime = productModel2.Price,
-                        Discount = 0,
-                        TotalPrice = productModel2.Price
-                    }
-                }
-                };
+                        var user = users[i % users.Count];
+                        var product = productVariantOptions[i % productVariantOptions.Count];
 
-                OrderCreateModel createOrderRequest2 = new OrderCreateModel
-                {
-                    CustomerId = resultRegister2.Data,
-                    CustomerName = user2.LastName,
-                    ShippingAddress = user2.Address,
-                    CustomerEmail = user2.Email,
-                    CustomerPhonenumber = user2.PhoneNumber,
-                    PaymentMethod = EPaymentMethod.COD,
-                    Items = new List<OrderItemCreateModel>
-                {
-                    new OrderItemCreateModel
-                    {
-                        ProductId = resultProduct3,
-                        Quantity = 1,
-                        PriceAtOrderTime = productModel3.Price,
-                        Discount = 0,
-                        TotalPrice = productModel3.Price
-                    }
-                }
-                };
+                        int quantity = 1 + (i % 3); // số lượng từ 1 đến 3
 
-                OrderCreateModel createOrderRequest3 = new OrderCreateModel
-                {
-                    CustomerId = resultRegister3.Data,
-                    CustomerName = user3.LastName,
-                    ShippingAddress = user3.Address,
-                    CustomerEmail = user3.Email,
-                    CustomerPhonenumber = user3.PhoneNumber,
-                    PaymentMethod = EPaymentMethod.COD,
-                    Items = new List<OrderItemCreateModel>
-                {
-                    new OrderItemCreateModel
-                    {
-                        ProductId = resultProduct4,
-                        Quantity = 1,
-                        PriceAtOrderTime = productModel4.Price,
-                        Discount = 0,
-                        TotalPrice = productModel4.Price
-                    }
-                }
-                };
-
-                var resultOrder1 = await _orderService.CreateCODOnlineOrderAsync(resultRegister1.Data, createOrderRequest1);
-                var resultOrder2 = await _orderService.CreateCODOnlineOrderAsync(resultRegister2.Data, createOrderRequest2);
-                var resultOrder3 = await _orderService.CreateCODOnlineOrderAsync(resultRegister3.Data, createOrderRequest3);
-
-
-                var users = await _uow.Users.GetAllAsync();
-                var products = await _uow.Products.GetAllAsync();
-                var usersList = users.ToList();
-                var productsList = products.ToList();
-
-                for (int i = 0; i < 20; i++)
-                {
-                    var user = usersList[i % usersList.Count];
-                    var product = productsList[i % productsList.Count];
-
-                    int quantity = 1 + (i % 3); // số lượng từ 1 đến 3
-
-                    var order = new OrderCreateModel
-                    {
-                        CustomerId = user.PublicId,
-                        CustomerName = user.LastName,
-                        ShippingAddress = user.Address,
-                        CustomerEmail = user.Email,
-                        CustomerPhonenumber = user.PhoneNumber,
-                        PaymentMethod = EPaymentMethod.COD,
-                        Items = new List<OrderItemCreateModel>
+                        var order = new OrderCreateModel
                         {
-                            new OrderItemCreateModel
+                            CustomerId = user.PublicId,
+                            CustomerName = user.LastName,
+                            ShippingAddress = user.Address,
+                            CustomerEmail = user.Email,
+                            CustomerPhonenumber = user.PhoneNumber,
+                            PaymentMethod = EPaymentMethod.COD,
+                            Items = new List<OrderItemCreateModel>
                             {
-                                ProductId = product.PublicId,
-                                Quantity = quantity,
-                                PriceAtOrderTime = product.Price,
-                                Discount = 0,
-                                TotalPrice = product.Price * quantity
+                                new OrderItemCreateModel
+                                {
+                                    ProductVariantOptionId = product.PublicId,
+                                    Quantity = quantity,
+                                    Discount = 0,
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    var resultOrder = await _orderService.SeedDataOrderAsync(user.PublicId, order);
+                        var resultOrder = await _orderService.CreateCODOnlineOrderAsync(user.PublicId, order);
+                    }
                 }
+
+                //OrderCreateModel createOrderRequest1 = new OrderCreateModel
+                //{
+                //    CustomerId = resultRegister1.Data,
+                //    CustomerName = user1.LastName,
+                //    CustomerEmail = user1.Email,
+                //    ShippingAddress = user1.Address,
+                //    PaymentMethod = EPaymentMethod.COD,
+                //    CustomerPhonenumber = user1.PhoneNumber,
+                //    Items = new List<OrderItemCreateModel>
+                //{
+                //    new OrderItemCreateModel
+                //    {
+                //        ProductVariantOptionId = resultProduct1,
+                //        Quantity = 1,
+                //        PriceAtOrderTime = productModel1.Price,
+                //        Discount = 0,
+                //        TotalPrice = productModel1.Price
+                //    },
+                //    new OrderItemCreateModel
+                //    {
+                //        ProductVariantOptionId = resultProduct2,
+                //        Quantity = 1,
+                //        PriceAtOrderTime = productModel2.Price,
+                //        Discount = 0,
+                //        TotalPrice = productModel2.Price
+                //    }
+                //}
+                //};
+
+                //OrderCreateModel createOrderRequest2 = new OrderCreateModel
+                //{
+                //    CustomerId = resultRegister2.Data,
+                //    CustomerName = user2.LastName,
+                //    ShippingAddress = user2.Address,
+                //    CustomerEmail = user2.Email,
+                //    CustomerPhonenumber = user2.PhoneNumber,
+                //    PaymentMethod = EPaymentMethod.COD,
+                //    Items = new List<OrderItemCreateModel>
+                //{
+                //    new OrderItemCreateModel
+                //    {
+                //        ProductId = resultProduct3,
+                //        Quantity = 1,
+                //        PriceAtOrderTime = productModel3.Price,
+                //        Discount = 0,
+                //        TotalPrice = productModel3.Price
+                //    }
+                //}
+                //};
+
+                //OrderCreateModel createOrderRequest3 = new OrderCreateModel
+                //{
+                //    CustomerId = resultRegister3.Data,
+                //    CustomerName = user3.LastName,
+                //    ShippingAddress = user3.Address,
+                //    CustomerEmail = user3.Email,
+                //    CustomerPhonenumber = user3.PhoneNumber,
+                //    PaymentMethod = EPaymentMethod.COD,
+                //    Items = new List<OrderItemCreateModel>
+                //{
+                //    new OrderItemCreateModel
+                //    {
+                //        ProductId = resultProduct4,
+                //        Quantity = 1,
+                //        PriceAtOrderTime = productModel4.Price,
+                //        Discount = 0,
+                //        TotalPrice = productModel4.Price
+                //    }
+                //}
+                //};
+
+                //var resultOrder1 = await _orderService.CreateCODOnlineOrderAsync(resultRegister1.Data, createOrderRequest1);
+                //var resultOrder2 = await _orderService.CreateCODOnlineOrderAsync(resultRegister2.Data, createOrderRequest2);
+                //var resultOrder3 = await _orderService.CreateCODOnlineOrderAsync(resultRegister3.Data, createOrderRequest3);
+
+
+                //var users = await _uow.Users.GetAllAsync();
+                //var products = await _uow.Products.GetAllAsync();
+                //var usersList = users.ToList();
+                //var productsList = products.ToList();
+
+                //for (int i = 0; i < 20; i++)
+                //{
+                //    var user = usersList[i % usersList.Count];
+                //    var product = productsList[i % productsList.Count];
+
+                //    int quantity = 1 + (i % 3); // số lượng từ 1 đến 3
+
+                //    var order = new OrderCreateModel
+                //    {
+                //        CustomerId = user.PublicId,
+                //        CustomerName = user.LastName,
+                //        ShippingAddress = user.Address,
+                //        CustomerEmail = user.Email,
+                //        CustomerPhonenumber = user.PhoneNumber,
+                //        PaymentMethod = EPaymentMethod.COD,
+                //        Items = new List<OrderItemCreateModel>
+                //        {
+                //            new OrderItemCreateModel
+                //            {
+                //                ProductId = product.PublicId,
+                //                Quantity = quantity,
+                //                PriceAtOrderTime = product.Price,
+                //                Discount = 0,
+                //                TotalPrice = product.Price * quantity
+                //            }
+                //        }
+                //    };
+
+                //    var resultOrder = await _orderService.SeedDataOrderAsync(user.PublicId, order);
+                //}
 
 
 
@@ -801,6 +1875,8 @@ namespace TechStore.Service.Implementations
                 await _uow.QRCodes.DeleteAllAsync();
                 await _uow.Shippers.DeleteAllAsync();
                 await _uow.Sequences.DeleteAllAsync();
+                await _uow.ProductVariantOptions.DeleteAllAsync();
+                await _uow.ProductVariants.DeleteAllAsync();
                 await _uow.Products.DeleteAllAsync();
                 await _uow.Invoices.DeleteAllAsync();
                 await _uow.Payments.DeleteAllAsync();

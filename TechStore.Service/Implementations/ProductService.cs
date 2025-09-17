@@ -9,11 +9,7 @@ using TechStore.Common.Enums;
 using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
-using TechStore.Data.Repositories.Implementations;
-using TechStore.Data.Repositories.Interfaces;
 using TechStore.Data.UnitOfWork;
-using TechStore.Model.DTOs.Brand;
-using TechStore.Model.DTOs.Category;
 using TechStore.Model.DTOs.Product;
 using TechStore.Service.Interfaces;
 using TechStore.Service.Mappers;
@@ -106,22 +102,14 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.NoExitData
             };
 
-            var product = await _uow.Products.GetByIdAsync(id);
+            var product = await _uow.Products.GetProductWithDetailsByIdAsync(id);
             if (product == null)
             {
                 return serviceResult;
             }
 
-            var category = await _uow.Categories.GetByIdAsync(product.Category.PublicId);
-            var brand = await _uow.Brands.GetByIdAsync(product.Brand.PublicId);
-
-            if (category == null || brand == null)
-            {
-                return serviceResult;
-            }
-
             serviceResult.IsSuccess = true;
-            serviceResult.Data = product.ToProductDetail(category, brand);
+            serviceResult.Data = product.ToProductDetail();
             serviceResult.Message = Messenger.GetDataSuccessful;
 
             return serviceResult;
@@ -161,13 +149,11 @@ namespace TechStore.Service.Implementations
             product.Name = productUpdateModel.Name;
             product.ShortDescription = productUpdateModel.ShortDescription;
             product.Description = productUpdateModel.Description;
-            product.Stock = productUpdateModel.Stock;
-            product.Price = productUpdateModel.Price;
             product.CategoryId = category.Id;
             product.BrandId = brand.Id;
             product.MainImageUrl = productUpdateModel.MainImageUrl ?? CloudinaryFolders.DefaultImage;
             product.GalleryImageUrls = productUpdateModel.GalleryImageUrls;
-            product.Tag = productUpdateModel.Tag;
+            product.Tags = productUpdateModel.Tag;
             product.SaleStart = productUpdateModel.SaleStart;
             product.SalePrice = productUpdateModel.SalePrice;
             product.SaleEnd = productUpdateModel.SaleEnd;
@@ -201,17 +187,17 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.UpdateDataError
             };
 
-            var product = await _uow.Products.GetByIdAsync(id);
+            var option = await _uow.ProductVariantOptions.GetByIdAsync(id);
 
-            if (product == null)
+            if (option == null)
             {
                 serviceResult.Message = Messenger.NoExitData;
                 return serviceResult;
             }
 
-            product.Stock += model.Quantity;
+            option.Stock += model.Quantity;
 
-            _uow.Products.Update(product);
+            _uow.ProductVariantOptions.Update(option);
 
             var result = await _uow.CommitAsync();
             if (result < 1)
@@ -236,6 +222,12 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.CreateDataError
             };
 
+            if (model.Variants.Count < 1)
+            {
+                serviceResult.Message = Messenger.IncorrectDataFormat;
+                return serviceResult;
+            }
+
             var category = await _uow.Categories.GetByIdAsync(model.CategoryId);
             if (category == null)
             {
@@ -259,13 +251,10 @@ namespace TechStore.Service.Implementations
                 Category = category,
                 Name = model.Name,
                 Slug = model.Slug ?? CommonFuntion.GenerateSlug(model.Name),
-                ImportPrice = model.ImportPrice,
-                Tag = model.Tag,
+                Tags = model.Tag,
                 IsFeatured = model.IsFeatured,
                 ShortDescription = model.ShortDescription,
                 Description = model.Description,
-                Stock = model.Stock,
-                Price = model.Price,
                 SalePrice = 0,
                 SaleStart = model.SaleStart,
                 SaleEnd = model.SaleEnd,
@@ -278,9 +267,46 @@ namespace TechStore.Service.Implementations
             };
 
             await _uow.Products.AddAsync(product);
+            await _uow.CommitAsync();
+
+            foreach (var variantModel in model.Variants)
+            {
+                var variant = new ProductVariant
+                {
+                    PublicId = await _sequenceService.GetNextProductVariantIdAsync(),
+                    ProductId = product.Id,
+                    Product = product,
+                    Name = variantModel.Name,
+                    Price = variantModel.Price,
+                    ImportPrice = variantModel.ImportPrice,
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    EntityStatus = EEntityStatus.Active
+                };
+                await _uow.ProductVariants.AddAsync(variant);
+                await _uow.CommitAsync();
+
+                if (variantModel.Options != null)
+                {
+                    foreach (var optionModel in variantModel.Options)
+                    {
+                        var option = new ProductVariantOption
+                        {
+                            PublicId = await _sequenceService.GetNextProductVariantOptionIdAsync(),
+                            ProductVariantId = variant.Id,
+                            Name = optionModel.Name,
+                            Price = optionModel.Price,
+                            Stock = optionModel.Stock,
+                            ImageUrl = optionModel.ImageUrl ?? CloudinaryFolders.DefaultImage,
+                            CreatedAt = TimeZoneHelper.GetUtcNow(),
+                            EntityStatus = EEntityStatus.Active
+                        };
+                        await _uow.ProductVariantOptions.AddAsync(option);
+                        await _uow.CommitAsync();
+                    }
+                }
+            }
 
             var result = await _uow.CommitAsync();
-
             if (result < 1)
             {
                 return serviceResult;
@@ -498,7 +524,7 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<string> SeedDataProduct(ProductCreateModel model)
+        public async Task<string> SeedDataProduct(ProductCreateModell model)
         {
             try
             {
@@ -523,13 +549,10 @@ namespace TechStore.Service.Implementations
                     Category = category,
                     Name = model.Name,
                     Slug = model.Slug ?? CommonFuntion.GenerateSlug(model.Name),
-                    ImportPrice = model.ImportPrice,
-                    Tag = model.Tag,
+                    Tags = model.Tag,
                     IsFeatured = model.IsFeatured,
                     ShortDescription = model.ShortDescription,
                     Description = model.Description,
-                    Stock = model.Stock,
-                    Price = model.Price,
                     SalePrice = 0,
                     SaleStart = model.SaleStart,
                     SaleEnd = model.SaleEnd,
@@ -570,71 +593,71 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.GetDataSuccessful
             };
 
-            var customer = await _uow.Users.GetByIdAsync(userId);
+            //var customer = await _uow.Users.GetByIdAsync(userId);
 
-            if (customer == null)
-            {
-                var hotProducts = await GetHotProducts();
-                serviceResult.Data = hotProducts.Data;
-                return serviceResult;
-            }
+            //if (customer == null)
+            //{
+            //    var hotProducts = await GetHotProducts();
+            //    serviceResult.Data = hotProducts.Data;
+            //    return serviceResult;
+            //}
 
-            var orders = await _uow.Orders.FindManyAsync(p => p.CustomerId == customer.Id);
+            //var orders = await _uow.Orders.FindManyAsync(p => p.CustomerId == customer.Id);
 
-            if (orders == null)
-            {
-                var hotProducts = await GetHotProducts();
-                serviceResult.Data = hotProducts.Data;
-                return serviceResult;
-            }
+            //if (orders == null)
+            //{
+            //    var hotProducts = await GetHotProducts();
+            //    serviceResult.Data = hotProducts.Data;
+            //    return serviceResult;
+            //}
 
-            foreach (var order in orders)
-            {
-                var orderItems = await _uow.OrderItems.FindManyAsync(oi => oi.OrderId == order.Id);
+            //foreach (var order in orders)
+            //{
+            //    var orderItems = await _uow.OrderItems.FindManyAsync(oi => oi.OrderId == order.Id);
 
-                var categoryCounts = orderItems
-                    .GroupBy(oi => oi.Product.Category.Name)
-                    .Select(g => new { CategoryName = g.Key, Count = g.Count() })
-                    .OrderByDescending(g => g.Count)
-                    .FirstOrDefault();
+            //    var categoryCounts = orderItems
+            //        .GroupBy(oi => oi.Product.Category.Name)
+            //        .Select(g => new { CategoryName = g.Key, Count = g.Count() })
+            //        .OrderByDescending(g => g.Count)
+            //        .FirstOrDefault();
 
-                if (categoryCounts == null)
-                {
-                    var hotProducts = await GetHotProducts();
-                    serviceResult.Data = hotProducts.Data;
-                    return serviceResult;
-                }
+            //    if (categoryCounts == null)
+            //    {
+            //        var hotProducts = await GetHotProducts();
+            //        serviceResult.Data = hotProducts.Data;
+            //        return serviceResult;
+            //    }
 
-                var categories = new List<Category>();
+            //    var categories = new List<Category>();
 
-                for (int i = 0; i < categories.Count; i++)
-                {
-                    var categoryCount = categories[i];
+            //    for (int i = 0; i < categories.Count; i++)
+            //    {
+            //        var categoryCount = categories[i];
 
-                    var category = await _uow.Categories.FindOneAsync(c => c.Name == categoryCount.Name);
+            //        var category = await _uow.Categories.FindOneAsync(c => c.Name == categoryCount.Name);
 
-                    if (category != null)
-                    {
-                        categories.Add(category);
-                    }
-                }
+            //        if (category != null)
+            //        {
+            //            categories.Add(category);
+            //        }
+            //    }
 
-                foreach (var category in categories)
-                {
-                    var products = await _uow.Products.FindManyAsync(p => p.Category.Id == category.Id);
+            //    foreach (var category in categories)
+            //    {
+            //        var products = await _uow.Products.FindManyAsync(p => p.Category.Id == category.Id);
 
-                    if (serviceResult.Data.Count > 10)
-                    {
-                        break;
-                    }
+            //        if (serviceResult.Data.Count > 10)
+            //        {
+            //            break;
+            //        }
 
-                    foreach (var product in products)
-                    {
-                        serviceResult.Data.Add(product.ToProductListItem());
-                    }
-                }
+            //        foreach (var product in products)
+            //        {
+            //            serviceResult.Data.Add(product.ToProductListItem());
+            //        }
+            //    }
 
-            }
+            //}
 
             return serviceResult;
         }
@@ -719,5 +742,23 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
+        public async Task<ServiceResult<List<ProductListItemModel>>> GetFeaturedProducts()
+        {
+            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            {
+                IsSuccess = true,
+                Data = new List<ProductListItemModel>(),
+                Message = Messenger.NoExitData
+            };
+
+            var products = await _uow.Products.FindManyAsync(p => p.IsFeatured == true);
+            if (products != null)
+            {
+                serviceResult.Data = products.ToListProductListItem();
+                serviceResult.Message = Messenger.GetDataSuccessful;
+            }
+
+            return serviceResult;
+        }
     }
 }

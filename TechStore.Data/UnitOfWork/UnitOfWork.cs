@@ -16,6 +16,8 @@ namespace TechStore.Data.UnitOfWork
         public IBrandRepository Brands { get; }
         public ICategoryRepository Categories { get; }
         public IProductRepository Products { get; }
+        public IProductVariantRepository ProductVariants { get; }
+        public IProductVariantOptionRepository ProductVariantOptions { get; }
         public ICartItemRepository CartItems { get; }
         public ICommentRepository Comments { get; }
         public IInvoiceRepository Invoices { get; }
@@ -37,6 +39,8 @@ namespace TechStore.Data.UnitOfWork
             Brands = new BrandRepository(_context);
             Categories = new CategoryRepository(_context);
             Products = new ProductRepository(_context);
+            ProductVariants = new ProductVariantRepository(_context);
+            ProductVariantOptions = new ProductVariantOptionRepository(_context);
             CartItems = new CartItemRepository(_context);
             Comments = new CommentRepository(_context);
             Invoices = new InvoiceRepository(_context);

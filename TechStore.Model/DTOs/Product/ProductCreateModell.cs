@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TechStore.Model.DTOs.Product
 {
-    public class ProductUpdateModel
+    public class ProductCreateModell
     {
         public required string Name { get; set; }
         public required string CategoryId { get; set; }
@@ -20,9 +20,9 @@ namespace TechStore.Model.DTOs.Product
         public string? MainImageUrl { get; set; }
         public List<string>? GalleryImageUrls { get; set; } = new();
 
-        //public required int Stock { get; set; }
-        //public required decimal Price { get; set; } = 0;
-        //public required decimal ImportPrice { get; set; } = 0;
+        public required int Stock { get; set; }
+        public required decimal Price { get; set; } = 0;
+        public required decimal ImportPrice { get; set; } = 0;
 
         public DateTime? StartSellingDate { get; set; }
         public DateTime? EndSellingDate { get; set; }

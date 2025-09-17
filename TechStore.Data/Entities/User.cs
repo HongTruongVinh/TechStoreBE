@@ -25,7 +25,7 @@ namespace TechStore.Data.Entities
 
         public required string Address { get; set; }
 
-        public string? PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
 
         public required ERole RoleId { get; set; }
 

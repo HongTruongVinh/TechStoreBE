@@ -203,12 +203,9 @@ namespace TechStore.Data.Migrations
                     ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tag = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MainImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GalleryImageUrls = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Stock = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ImportPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     StartSellingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndSellingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsFeatured = table.Column<bool>(type: "bit", nullable: false),
@@ -350,6 +347,43 @@ namespace TechStore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductVariants",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImportPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SoldCount = table.Column<int>(type: "int", nullable: false),
+                    SalePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    SaleStart = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SaleEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProductId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EntityStatus = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductVariants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductVariants_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductVariants_Products_ProductId1",
+                        column: x => x.ProductId1,
+                        principalTable: "Products",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Invoices",
                 columns: table => new
                 {
@@ -375,41 +409,6 @@ namespace TechStore.Data.Migrations
                         name: "FK_Invoices_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderItems",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    PriceAtOrderTime = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EntityStatus = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderItems_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_OrderItems_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -475,6 +474,75 @@ namespace TechStore.Data.Migrations
                         name: "FK_ShippingDetails_Shippers_ShipperId",
                         column: x => x.ShipperId,
                         principalTable: "Shippers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductVariantOptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductVariantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ProductVariantId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EntityStatus = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductVariantOptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductVariantOptions_ProductVariants_ProductVariantId",
+                        column: x => x.ProductVariantId,
+                        principalTable: "ProductVariants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductVariantOptions_ProductVariants_ProductVariantId1",
+                        column: x => x.ProductVariantId1,
+                        principalTable: "ProductVariants",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductVariantOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    PriceAtOrderTime = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EntityStatus = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderItems_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OrderItems_ProductVariantOptions_ProductVariantOptionId",
+                        column: x => x.ProductVariantOptionId,
+                        principalTable: "ProductVariantOptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -548,9 +616,9 @@ namespace TechStore.Data.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItems_ProductId",
+                name: "IX_OrderItems_ProductVariantOptionId",
                 table: "OrderItems",
-                column: "ProductId");
+                column: "ProductVariantOptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_PublicId",
@@ -599,6 +667,38 @@ namespace TechStore.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Products_PublicId",
                 table: "Products",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductVariantOptions_ProductVariantId",
+                table: "ProductVariantOptions",
+                column: "ProductVariantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductVariantOptions_ProductVariantId1",
+                table: "ProductVariantOptions",
+                column: "ProductVariantId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductVariantOptions_PublicId",
+                table: "ProductVariantOptions",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductVariants_ProductId",
+                table: "ProductVariants",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductVariants_ProductId1",
+                table: "ProductVariants",
+                column: "ProductId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductVariants_PublicId",
+                table: "ProductVariants",
                 column: "PublicId",
                 unique: true);
 
@@ -684,7 +784,7 @@ namespace TechStore.Data.Migrations
                 name: "Vouchers");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "ProductVariantOptions");
 
             migrationBuilder.DropTable(
                 name: "Orders");
@@ -693,16 +793,22 @@ namespace TechStore.Data.Migrations
                 name: "Shippers");
 
             migrationBuilder.DropTable(
-                name: "Brands");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
+                name: "ProductVariants");
 
             migrationBuilder.DropTable(
                 name: "QRCodes");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Brands");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

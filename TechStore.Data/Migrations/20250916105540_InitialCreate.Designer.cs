@@ -12,7 +12,7 @@ using TechStore.Data.Context;
 namespace TechStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250829125400_InitialCreate")]
+    [Migration("20250916105540_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -434,7 +434,7 @@ namespace TechStore.Data.Migrations
                     b.Property<decimal>("PriceAtOrderTime")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("ProductId")
+                    b.Property<Guid>("ProductVariantOptionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PublicId")
@@ -457,7 +457,7 @@ namespace TechStore.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductVariantOptionId");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
@@ -551,9 +551,6 @@ namespace TechStore.Data.Migrations
                     b.Property<string>("GalleryImageUrls")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("ImportPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<bool>("IsFeatured")
                         .HasColumnType("bit");
 
@@ -565,9 +562,6 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PublicId")
                         .IsRequired()
@@ -599,10 +593,7 @@ namespace TechStore.Data.Migrations
                     b.Property<DateTime>("StartSellingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Tag")
+                    b.Property<string>("Tags")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -625,6 +616,130 @@ namespace TechStore.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.ProductVariant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ImportPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("SaleEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("SalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("SaleStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SoldCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductId1");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("ProductVariants");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.ProductVariantOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ProductVariantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductVariantId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductVariantId");
+
+                    b.HasIndex("ProductVariantId1");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("ProductVariantOptions");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.QRCode", b =>
@@ -1024,15 +1139,15 @@ namespace TechStore.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TechStore.Data.Entities.Product", "Product")
+                    b.HasOne("TechStore.Data.Entities.ProductVariantOption", "ProductVariantOption")
                         .WithMany()
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ProductVariantOptionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("Product");
+                    b.Navigation("ProductVariantOption");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.Payment", b =>
@@ -1065,6 +1180,36 @@ namespace TechStore.Data.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("TechStore.Data.Entities.ProductVariant", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TechStore.Data.Entities.Product", null)
+                        .WithMany("Variants")
+                        .HasForeignKey("ProductId1");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.ProductVariantOption", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TechStore.Data.Entities.ProductVariant", null)
+                        .WithMany("Options")
+                        .HasForeignKey("ProductVariantId1");
+
+                    b.Navigation("ProductVariant");
+                });
+
             modelBuilder.Entity("TechStore.Data.Entities.ShippingDetail", b =>
                 {
                     b.HasOne("TechStore.Data.Entities.Order", "Order")
@@ -1093,6 +1238,16 @@ namespace TechStore.Data.Migrations
                     b.Navigation("Payment");
 
                     b.Navigation("ShippingDetail");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.Product", b =>
+                {
+                    b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.ProductVariant", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.User", b =>

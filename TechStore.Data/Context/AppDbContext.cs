@@ -18,6 +18,8 @@ namespace TechStore.Data.Context
         public DbSet<Brand> Brands => Set<Brand>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Product> Products => Set<Product>();
+        public DbSet<ProductVariant> ProductVariants  => Set<ProductVariant>();
+        public DbSet<ProductVariantOption> ProductVariantOptions => Set<ProductVariantOption>();
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<InvalidToken> InvalidTokens => Set<InvalidToken>();
@@ -152,9 +154,9 @@ namespace TechStore.Data.Context
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(p => p.Product)
+                entity.HasOne(p => p.ProductVariantOption)
                 .WithMany()
-                .HasForeignKey(p => p.ProductId)
+                .HasForeignKey(p => p.ProductVariantOptionId)
                 .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -185,6 +187,44 @@ namespace TechStore.Data.Context
                 entity.HasOne(p => p.Brand)
                 .WithMany()
                 .HasForeignKey(p => p.BrandId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(p => p.Variants)
+                .WithOne(v => v.Product)
+                .HasForeignKey(v => v.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ProductVariant>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.Property(p => p.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+                entity.HasOne(v => v.Product)
+                .WithMany()
+                .HasForeignKey(v => v.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(v => v.Options)
+                .WithOne(op => op.ProductVariant)
+                .HasForeignKey(op => op.ProductVariantId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ProductVariantOption>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.Property(p => p.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+                entity.HasOne(op => op.ProductVariant)
+                .WithMany()
+                .HasForeignKey(v => v.ProductVariantId)
                 .OnDelete(DeleteBehavior.Restrict);
             });
 

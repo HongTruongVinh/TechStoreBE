@@ -195,5 +195,34 @@ namespace TechStoreAPI.Controllers
                 };
             }
         }
+
+        [HttpGet("featured")]
+        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetFeaturedProducts()
+        {
+            var serviceResult = await _productService.GetFeaturedProducts();
+
+            if (serviceResult.IsSuccess)
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.NoExitData,
+                    RetCode = ERetCode.NoExitData,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+        }
     }
 }

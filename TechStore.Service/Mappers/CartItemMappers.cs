@@ -10,17 +10,17 @@ namespace TechStore.Service.Mappers
 {
     public static class CartItemMappers
     {
-        public static CartItemResponseModel ToCartItemResponseModel(this CartItem cartItem, Product product)
+        public static CartItemResponseModel ToCartItemResponseModel(this CartItem cartItem, ProductVariantOption productVariantOption)
         {
             return new CartItemResponseModel
             {
                 CartItemId = cartItem.PublicId,
                 CartId = cartItem.PublicId,
-                ProductId = product.PublicId,
-                ProductName = product.Name,
-                MainImageUrl = product.MainImageUrl,
+                ProductId = productVariantOption.ProductVariant.Product.PublicId,
+                ProductName = productVariantOption.ProductVariant.Product.Name,
+                MainImageUrl = productVariantOption.ProductVariant.Product.MainImageUrl,
                 Quantity = cartItem.Quantity,
-                PriceAtOrderTime = product.Price,
+                PriceAtOrderTime = productVariantOption.ProductVariant.Price,
                 Discount = cartItem.Discount,
                 TotalPrice = cartItem.TotalPrice
             };

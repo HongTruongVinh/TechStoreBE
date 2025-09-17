@@ -157,28 +157,28 @@ namespace TechStore.Service.Implementations
                 });
             }
 
-            foreach (var order in orderModels)
-            {
-                if (order.CreatedAt.Year == currentYear)
-                {
-                    int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
+            //foreach (var order in orderModels)
+            //{
+            //    if (order.CreatedAt.Year == currentYear)
+            //    {
+            //        int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
 
-                    decimal incomeOfOrderItem = 0m;
+            //        decimal incomeOfOrderItem = 0m;
 
-                    foreach (var item in order.Items)
-                    {
-                        var product = products.Where(x => x.PublicId == item.ProductId).FirstOrDefault();
+            //        foreach (var item in order.Items)
+            //        {
+            //            var product = products.Where(x => x.PublicId == item.ProductVariantOptionId).FirstOrDefault();
 
-                        if (product != null)
-                        {
-                            incomeOfOrderItem += item.TotalPrice - product.ImportPrice * item.Quantity;
-                        }
-                    }
+            //            if (product != null)
+            //            {
+            //                incomeOfOrderItem += item.TotalPrice - product.Variants.Where(v => v.Id == ).ImportPrice * item.Quantity;
+            //            }
+            //        }
 
 
-                    data[monthIndex].Value += incomeOfOrderItem;
-                }
-            }
+            //        data[monthIndex].Value += incomeOfOrderItem;
+            //    }
+            //}
 
             return data;
         }
@@ -312,45 +312,45 @@ namespace TechStore.Service.Implementations
         {
             var productModels = new List<AdminProductListItemModel>();
 
-            var recentTop15Products = orders
-                .Where(o => o.CreatedAt >= DateTime.UtcNow.AddDays(-30)) // lọc đơn hàng gần đây
-                .SelectMany(o => o.Items) // gom tất cả OrderItem lại
-                .GroupBy(item => new { item.ProductId, item.ProductName, item.CategoryName })
-                .Select(g => new
-                {
-                    ProductId = g.Key.ProductId,
-                    Name = g.Key.ProductName,
-                    CategoryName = g.Key.CategoryName,
-                    SoldCount = g.Sum(x => x.Quantity)
-                })
-                .OrderByDescending(x => x.SoldCount)
-                .Take(6)
-                .ToList();
+            //var recentTop15Products = orders
+            //    .Where(o => o.CreatedAt >= DateTime.UtcNow.AddDays(-30)) // lọc đơn hàng gần đây
+            //    .SelectMany(o => o.Items) // gom tất cả OrderItem lại
+            //    .GroupBy(item => new { item.ProductVariantOptionId, item.ProductName, item.CategoryName })
+            //    .Select(g => new
+            //    {
+            //        ProductId = g.Key.ProductId,
+            //        Name = g.Key.ProductName,
+            //        CategoryName = g.Key.CategoryName,
+            //        SoldCount = g.Sum(x => x.Quantity)
+            //    })
+            //    .OrderByDescending(x => x.SoldCount)
+            //    .Take(6)
+            //    .ToList();
 
-            if (recentTop15Products.Count > 0)
-            {
-                foreach (var item in recentTop15Products)
-                {
-                    var product = products.Where(x => x.PublicId == item.ProductId).FirstOrDefault();
+            //if (recentTop15Products.Count > 0)
+            //{
+            //    foreach (var item in recentTop15Products)
+            //    {
+            //        var product = products.Where(x => x.PublicId == item.ProductId).FirstOrDefault();
 
-                    if (product != null)
-                    {
-                        var productModel = new AdminProductListItemModel
-                        {
-                            ProductId = product.PublicId,
-                            CategoryName = item.CategoryName,
-                            Name = product.Name,
-                            SoldCount = item.SoldCount,
-                            Price = product.Price,
-                            MainImageUrl = product.MainImageUrl,
-                            AverageRating = product.AverageRating,
-                            Stock = product.Stock,
-                            RatedCount = product.RatedCount,
-                        };
-                        productModels.Add(productModel);
-                    }
-                }
-            }
+            //        if (product != null)
+            //        {
+            //            var productModel = new AdminProductListItemModel
+            //            {
+            //                ProductId = product.PublicId,
+            //                CategoryName = item.CategoryName,
+            //                Name = product.Name,
+            //                SoldCount = item.SoldCount,
+            //                Price = product.Price,
+            //                MainImageUrl = product.MainImageUrl,
+            //                AverageRating = product.AverageRating,
+            //                Stock = product.Stock,
+            //                RatedCount = product.RatedCount,
+            //            };
+            //            productModels.Add(productModel);
+            //        }
+            //    }
+            //}
 
             return productModels;
         }
@@ -472,20 +472,20 @@ namespace TechStore.Service.Implementations
 
         private async Task<List<Order>> GetCategoryOfOrderItem(List<Order> orders)
         {
-            foreach (var order in orders)
-            {
-                foreach (var item in order.OrderItems)
-                {
-                    if (item.Product != null)
-                    {
-                        var category = await _uow.Categories.FindOneAsync(c => c.Id == item.Product.CategoryId);
-                        if (category != null)
-                        {
-                            item.Product.Category = category;
-                        }
-                    }
-                }
-            }
+            //foreach (var order in orders)
+            //{
+            //    foreach (var item in order.OrderItems)
+            //    {
+            //        if (item.Product != null)
+            //        {
+            //            var category = await _uow.Categories.FindOneAsync(c => c.Id == item.Product.CategoryId);
+            //            if (category != null)
+            //            {
+            //                item.Product.Category = category;
+            //            }
+            //        }
+            //    }
+            //}
             return orders;
         }
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TechStore.Common.Enums;
 using TechStore.Model.DTOs.Brand;
 using TechStore.Model.DTOs.Category;
+using TechStore.Model.DTOs.ProductVariant;
 namespace TechStore.Model.DTOs.Product
 {
     public class AdminProductDetailModel
@@ -18,11 +19,11 @@ namespace TechStore.Model.DTOs.Product
 
         public required string Description { get; set; } = "";
 
-        public required int Stock { get; set; }
+        //public required int Stock { get; set; }
 
-        public required decimal Price { get; set; } = 0;
+        //public required decimal Price { get; set; } = 0;
 
-        public required decimal ImportPrice { get; set; } = 0;
+        //public required decimal ImportPrice { get; set; } = 0;
 
         public DateTime StartSellingDate { get; set; } 
 
@@ -65,5 +66,7 @@ namespace TechStore.Model.DTOs.Product
         public string? CreatedBy { get; set; }
 
         public string? UpdatedBy { get; set; }
+
+        public required List<AdminProductVariantDetailModel> Variants { get; set; }
     }
 }

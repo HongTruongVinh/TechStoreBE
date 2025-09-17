@@ -9,10 +9,10 @@ namespace TechStore.Data.Entities
     public class OrderItem : BaseEntity
     {
         public required Guid OrderId { get; set; }
-        public Order? Order { get; set; }
+        public Order Order { get; set; } = null!;
 
-        public required Guid ProductId { get; set; }
-        public Product Product { get; set; } = null!;
+        public required Guid ProductVariantOptionId { get; set; }
+        public ProductVariantOption ProductVariantOption { get; set; } = null!;
 
         public required int Quantity { get; set; }
 

@@ -167,12 +167,12 @@ namespace TechStore.Service.Mappers
 
             foreach (var orderItem in order.OrderItems)
             {
-                var product = orderItem.Product;
-                var category = orderItem.Product.Category;
+                var product = orderItem.ProductVariantOption.ProductVariant.Product;
+                var category = orderItem.ProductVariantOption.ProductVariant.Product.Category;
 
                 var orderItemResponeModel = new OrderItemResponseModel
                 {
-                    ProductId = product.PublicId,
+                    ProductVariantOptionId = product.PublicId,
                     OrderId = order.PublicId,
                     Quantity = orderItem.Quantity,
                     PriceAtOrderTime = orderItem.PriceAtOrderTime,
@@ -236,12 +236,12 @@ namespace TechStore.Service.Mappers
 
             foreach (var orderItem in orderItems)
             {
-                var product = orderItem.Product;
-                var category = orderItem.Product.Category;
+                var product = orderItem.ProductVariantOption.ProductVariant.Product;
+                var category = orderItem.ProductVariantOption.ProductVariant.Product.Category;
 
                 var orderItemResponeModel = new OrderItemResponseModel
                 {
-                    ProductId = product.PublicId,
+                    ProductVariantOptionId = product.PublicId,
                     OrderId = order.PublicId,
                     Quantity = orderItem.Quantity,
                     PriceAtOrderTime = orderItem.PriceAtOrderTime,

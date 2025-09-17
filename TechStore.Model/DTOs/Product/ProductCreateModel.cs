@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechStore.Model.DTOs.ProductVariant;
 
 namespace TechStore.Model.DTOs.Product
 {
@@ -20,10 +21,6 @@ namespace TechStore.Model.DTOs.Product
         public string? MainImageUrl { get; set; }
         public List<string>? GalleryImageUrls { get; set; } = new();
 
-        public required int Stock { get; set; }
-        public required decimal Price { get; set; } = 0;
-        public required decimal ImportPrice { get; set; } = 0;
-
         public DateTime? StartSellingDate { get; set; }
         public DateTime? EndSellingDate { get; set; }
         public required bool IsFeatured { get; set; }
@@ -31,5 +28,7 @@ namespace TechStore.Model.DTOs.Product
         public required decimal SalePrice { get; set; }
         public DateTime? SaleStart { get; set; }
         public DateTime? SaleEnd { get; set; }
+
+        public required List<ProductVariantCreateModel> Variants { get; set; }
     }
 }

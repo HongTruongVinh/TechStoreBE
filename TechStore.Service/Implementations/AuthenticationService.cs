@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using TechStore.Common.CommonFunction;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
 using TechStore.Common.Helpers;
@@ -447,6 +448,87 @@ namespace TechStore.Service.Implementations
             {
                 return null;
             }
+        }
+
+        public async Task<ServiceResult<bool>> CustomerRegisterAccount(CustomerRegisterModel model)
+        {
+            ServiceResult<bool> serviceResult = new ServiceResult<bool>
+            {
+                IsSuccess = false,
+                Data = false,
+                Message = Messenger.SystemError
+            };
+
+            if (!Validator.IsValidPassword(model.Password) || 
+                !Validator.IsValidVietnamPhone(model.PhoneNumber))
+            {
+                serviceResult.Message = Messenger.IncorrectDataFormat;
+                return serviceResult;
+            }
+
+            if (model.Email != null)
+            {
+                if (!Validator.IsValidEmail(model.Email))
+                {
+                    serviceResult.Message = Messenger.IncorrectDataFormat;
+                    return serviceResult;
+                }
+            }
+
+            var isExistEmail = await _uow.Users.FindOneAsync(u => u.Email == model.Email);
+            var isExistPhoneNumber = await _uow.Users.FindOneAsync(u => u.PhoneNumber == model.PhoneNumber);
+
+            if (isExistEmail != null || isExistPhoneNumber != null)
+            {
+                serviceResult.Message = "";
+
+                if (isExistEmail != null)
+                {
+                    serviceResult.Message += Messenger.EmailAlreadyExist + " ";
+                }
+
+                if (isExistPhoneNumber != null)
+                {
+                    serviceResult.Message += Messenger.PhonenNumberAlreadyExist;
+                }
+
+                return serviceResult;
+            }
+
+            var userId = await _sequenceService.GetNextUserIdAsync();
+
+            User user = new User
+            {
+                PublicId = userId,
+                LastName = model.LastName,
+                FirstName = model.FirstName,
+                Address = model.Address,
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email,
+                PasswordHash = model.Password,
+                Status = EUserStatus.Active,
+                RoleId = ERole.Customer,
+
+                EntityStatus = EEntityStatus.Active,
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+            };
+
+            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
+
+            await _uow.Users.AddAsync(user);
+            var result = await _uow.CommitAsync();
+
+            if (result < 0)
+            {
+                serviceResult.Message = Messenger.SystemError;
+                return serviceResult;
+            }
+
+            serviceResult.Data = true;
+            serviceResult.IsSuccess = true;
+            serviceResult.Message = Messenger.UpdateSuccessFull;
+
+            return serviceResult;
         }
     }
 }

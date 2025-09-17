@@ -62,6 +62,20 @@ namespace TechStore.Service.Implementations
             return Id;
         }
 
+        public async Task<string> GetNextProductVariantIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.ProductVariant);
+            var Id = $"PV-{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public async Task<string> GetNextProductVariantOptionIdAsync()
+        {
+            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.ProductVariantOption);
+            var Id = $"PVO-{sequenceNumber:D4}";
+            return Id;
+        }
+
         public async Task<string> GetNextCartItemIdAsync()
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.CartItem);

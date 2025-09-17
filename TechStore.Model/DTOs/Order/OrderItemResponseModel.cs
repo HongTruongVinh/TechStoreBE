@@ -12,7 +12,7 @@ namespace TechStore.Model.DTOs.Order
 
         public string? OrderId { get; set; }
 
-        public required string ProductId { get; set; }
+        public required string ProductVariantOptionId { get; set; }
 
         public required string ProductName { get; set; }
 

@@ -16,6 +16,7 @@ namespace TechStore.Model.DTOs.Product
         public string? CategoryName { get; set; }
         public int? Stock { get; set; }
         public decimal? Price { get; set; } = 0;
+        public decimal? SalePrice { get; set; } = 0;
 
         public long? AverageRating { get; set; }
         public int? SoldCount { get; set; }

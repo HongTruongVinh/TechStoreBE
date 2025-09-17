@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TechStore.Common.Constants
 {
@@ -30,5 +31,6 @@ namespace TechStore.Common.Constants
         public const string AdminLoginSuccessfull = "Hello Admin!";
         public const string IsNotAdmin = "You are not an Admin!";
         public const string NoPermission = "You have no permission to access!";
+        public const string IncorrectDataFormat = "Incorrect data format!";
     }
 }

@@ -31,11 +31,41 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> UpdateProductCount(string id, ProductCountUpdateModel model);
         Task<ServiceResult<bool>> DeleteProduct(string id);
         Task<ServiceResult<string>> AddProduct(ProductCreateModel model);
-        Task<string> SeedDataProduct(ProductCreateModel model);
         Task<ServiceResult<AdminProductDetailModel>> GetAdminProductById(string id);
         Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts(int pageNumber, int pageSize);
 
         Task<ServiceResult<List<ProductListItemModel>>> GetUserRecommendedProducts(string userId);
         Task<ServiceResult<List<ProductListItemModel>>> GetHotProducts();
+        Task<ServiceResult<List<ProductListItemModel>>> GetFeaturedProducts();
     }
+
+    //public interface IProductService
+    //{
+
+    //    // 2. Lọc sản phẩm (theo category, price, brand, sort, v.v.)
+    //    Task<ServiceResult<List<ProductListItemModel>>> GetProductsFilteredAsync(
+    //        int pageNumber,
+    //        int pageSize,
+    //        string? categoryId = null,
+    //        decimal? minPrice = null,
+    //        decimal? maxPrice = null,
+    //        string? brandId = null
+    //    );
+
+    //    Task<ServiceResult<List<ProductListItemModel>>> GetProductsAsync(int page, int pageSize);
+    //    Task<ServiceResult<List<ProductListItemModel>>> SearchByNameAsync(string keyword, int page, int pageSize);
+    //    Task<ServiceResult<ProductDetailModel>> GetProductById(string id);
+
+    //    Task<ServiceResult<bool>> UpdateProductInformation(string id, ProductUpdateModel model);
+    //    Task<ServiceResult<bool>> UpdateProductCount(string id, ProductCountUpdateModel model);
+    //    Task<ServiceResult<bool>> DeleteProduct(string id);
+    //    Task<ServiceResult<string>> AddProduct(ProductCreateModel model);
+    //    Task<string> SeedDataProduct(ProductCreateModel model);
+    //    Task<ServiceResult<AdminProductDetailModel>> GetAdminProductById(string id);
+    //    Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts(int pageNumber, int pageSize);
+
+    //    Task<ServiceResult<List<ProductListItemModel>>> GetUserRecommendedProducts(string userId);
+    //    Task<ServiceResult<List<ProductListItemModel>>> GetHotProducts();
+    //    Task<ServiceResult<List<ProductListItemModel>>> GetFeaturedProducts();
+    //}
 }

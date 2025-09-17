@@ -9,23 +9,18 @@ namespace TechStore.Data.Entities
     public class Product : BaseEntity
     {
         public required Guid CategoryId { get; set; }
-        public required Category Category { get; set; }
+        public Category Category { get; set; } = null!;
         public required Guid BrandId { get; set; }
-        public required Brand Brand { get; set; }
+        public Brand Brand { get; set; } = null!;
 
         public required string Name { get; set; }
         public required string ShortDescription { get; set; } = "";
         public required string Description { get; set; } = "";
 
         public required string Slug { get; set; }
-        public required List<string> Tag { get; set; }
+        public required List<string> Tags { get; set; }
         public required string MainImageUrl { get; set; }
         public List<string>? GalleryImageUrls { get; set; } = new();
-
-
-        public required int Stock { get; set; }
-        public required decimal Price { get; set; } = 0;
-        public required decimal ImportPrice { get; set; } = 0;
 
 
         public DateTime StartSellingDate { get; set; } = DateTime.UtcNow;
@@ -42,5 +37,7 @@ namespace TechStore.Data.Entities
         public DateTime? SaleEnd { get; set; }
 
         public bool IsOnSale => SaleStart <= DateTime.Now && SaleEnd >= DateTime.Now;
+
+        public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
     }
 }

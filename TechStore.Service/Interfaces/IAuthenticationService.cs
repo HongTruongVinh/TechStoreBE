@@ -12,6 +12,7 @@ namespace TechStore.Service.Interfaces
     public interface IAuthenticationService
     {
         Task<ServiceResult<string>> Register(RegisterModel registerModel);
+        Task<ServiceResult<bool>> CustomerRegisterAccount(CustomerRegisterModel registerModel);
         Task<ServiceResult<LoginResponseModel>> CustomerLogin(LoginRequestModel loginModel);
         Task<ServiceResult<LoginResponseModel>> AdminLogin(LoginRequestModel loginModel);
 

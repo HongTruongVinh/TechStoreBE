@@ -21,6 +21,7 @@ namespace TechStore.Data.Repositories.Implementations
                                 .Where(predicate)
                                 .Include(p => p.Category)
                                 .Include(p => p.Brand)
+                                .Include(p => p.Variants).ThenInclude(vo => vo.Options)
                                 .Skip((pageNumber - 1) * pageSize)
                                 .Take(pageSize)
                                 .ToListAsync();
@@ -48,11 +49,11 @@ namespace TechStore.Data.Repositories.Implementations
                 }
             }
 
-            if (minPrice.HasValue)
-                query = query.Where(p => p.Price >= minPrice.Value);
+            //if (minPrice.HasValue)
+            //    query = query.Where(p => p.Price >= minPrice.Value);
 
-            if (maxPrice.HasValue)
-                query = query.Where(p => p.Price <= maxPrice.Value);
+            //if (maxPrice.HasValue)
+            //    query = query.Where(p => p.Price <= maxPrice.Value);
 
             if (!string.IsNullOrEmpty(brandId))
             {
@@ -97,6 +98,7 @@ namespace TechStore.Data.Repositories.Implementations
             return await _dbSet
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
+                .Include(p => p.Variants).ThenInclude(vo => vo.Options)
                 .FirstOrDefaultAsync(p => p.PublicId == publicId);
         }
     }

@@ -12,6 +12,8 @@ namespace TechStore.Common.Constants
         public const string CartItem = "CartItems";
         public const string Category = "Categories";
         public const string Product = "Products";
+        public const string ProductVariant = "ProductVariant";
+        public const string ProductVariantOption = "ProductVariantOption";
         public const string Order = "Orders";
         public const string OrderItem = "OrderItems";
         public const string Invoice = "Invoices";

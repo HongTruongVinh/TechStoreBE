@@ -13,6 +13,8 @@ namespace TechStore.Data.UnitOfWork
         IBrandRepository Brands { get; }
         ICategoryRepository Categories { get; }
         IProductRepository Products { get; }
+        IProductVariantRepository ProductVariants { get; }
+        IProductVariantOptionRepository ProductVariantOptions { get; }
         ICartItemRepository CartItems { get; }
         ICommentRepository Comments { get; }
         IInvoiceRepository Invoices { get; }

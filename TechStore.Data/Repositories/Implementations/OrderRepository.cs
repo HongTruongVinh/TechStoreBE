@@ -23,11 +23,15 @@ namespace TechStore.Data.Repositories.Implementations
             var orders = await _dbSet
                                 .Where(predicate)
                                 .Include(o => o.OrderItems)
-                                    .ThenInclude(oi => oi.Product)
-                                        .ThenInclude(p => p.Category)
+                                    .ThenInclude(oi => oi.ProductVariantOption)
+                                        .ThenInclude(pvo => pvo.ProductVariant)
+                                            .ThenInclude(pv => pv.Product)
+                                                .ThenInclude(p => p.Category)
                                 .Include(o => o.OrderItems)
-                                    .ThenInclude(oi => oi.Product)
-                                        .ThenInclude(p => p.Brand)
+                                    .ThenInclude(oi => oi.ProductVariantOption)
+                                        .ThenInclude(pvo => pvo.ProductVariant)
+                                            .ThenInclude(pv => pv.Product)
+                                                .ThenInclude(p => p.Brand)
                                 .ToListAsync();
 
             return orders;
@@ -38,8 +42,10 @@ namespace TechStore.Data.Repositories.Implementations
             var order = await _dbSet
                                 .Where(predicate)
                                 .Include(o => o.OrderItems)
-                                    .ThenInclude(oi => oi.Product)
-                                        .ThenInclude(p => p.Category)
+                                    .ThenInclude(oi => oi.ProductVariantOption)
+                                        .ThenInclude(pvo => pvo.ProductVariant)
+                                            .ThenInclude(pv => pv.Product)
+                                                .ThenInclude(p => p.Category)
                                 .Include(o => o.Payment)
                                 .FirstOrDefaultAsync();
             return order;
