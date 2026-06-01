@@ -74,5 +74,20 @@ namespace TechStore.Data.Repositories
         {
             return await _dbSet.CountAsync(predicate);
         }
+
+        public async Task<bool> ExistsByGuidAsync(string key, Guid guidValue)
+        {
+            var result = await _dbSet.AnyAsync(e => EF.Property<Guid>(e, key) == guidValue);
+            return result;
+        }
+
+        public async Task<List<T>> FindManyWithNumberAsync(Expression<Func<T, bool>> predicate, int pageNumber, int pageSize)
+            => await _dbSet.Where(predicate).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        public IQueryable<T> Table
+        => _dbSet;
+
+        public IQueryable<T> TableNoTracking
+            => _dbSet.AsNoTracking();
     }
 }

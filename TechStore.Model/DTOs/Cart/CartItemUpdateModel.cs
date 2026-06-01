@@ -8,7 +8,7 @@ namespace TechStore.Model.DTOs.Cart
 {
     public class CartItemUpdateModel
     {
-        public required string ProductId { get; set; }
+        public required string ProductVariantOptionId { get; set; }
         public required int Quantity { get; set; } = 0;
     }
 }

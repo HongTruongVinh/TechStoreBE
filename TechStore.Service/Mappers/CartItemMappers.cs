@@ -14,15 +14,20 @@ namespace TechStore.Service.Mappers
         {
             return new CartItemResponseModel
             {
-                CartItemId = cartItem.PublicId,
-                CartId = cartItem.PublicId,
+                Id = cartItem.PublicId,
+                Slug = productVariantOption.ProductVariant.Product.Slug,
                 ProductId = productVariantOption.ProductVariant.Product.PublicId,
+                ProductVariantOptionId = productVariantOption.PublicId,
                 ProductName = productVariantOption.ProductVariant.Product.Name,
-                MainImageUrl = productVariantOption.ProductVariant.Product.MainImageUrl,
+                VariantName = productVariantOption.ProductVariant.Name,
+                OptionName = productVariantOption.Name,
+                MainImageUrl = productVariantOption.ImageUrl,
                 Quantity = cartItem.Quantity,
-                PriceAtOrderTime = productVariantOption.ProductVariant.Price,
+                Price = productVariantOption.ProductVariant.Price,
+                SalePrice = productVariantOption.ProductVariant.SalePrice,
                 Discount = cartItem.Discount,
-                TotalPrice = cartItem.TotalPrice
+                TotalPrice = productVariantOption.ProductVariant.Price * cartItem.Quantity,
+                Stock = productVariantOption.Stock
             };
         }
     }

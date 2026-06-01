@@ -19,10 +19,12 @@ namespace TechStore.Service.Implementations
         public async Task<long> GetNextSequenceValueAsync(string sequenceName)
         {
             var sequence = await _uow.Sequences.FindOneAsync(sequence => sequence.Id == sequenceName);
+            //var sequence =  _uow.Sequences.FindTracked(sequence => sequence.Id == sequenceName);
 
             if (sequence == null)
             {
                 await _uow.Sequences.AddAsync(new Data.Entities.Sequence { Id = sequenceName, Value = 1 });
+                //await _uow.CommitAsync();
                 return 1;
             }
 
@@ -57,8 +59,11 @@ namespace TechStore.Service.Implementations
 
         public async Task<string> GetNextProductIdAsync()
         {
-            var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Product);
-            var Id = $"PROD-{sequenceNumber:D4}"; // Ví dụ: PROD-0001
+            //var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Product);
+            //var Id = $"PROD-{sequenceNumber:D4}";
+
+            var sequenceNumber = await _uow.Products.CountAsync() + 1;
+            var Id = $"{sequenceNumber}";
             return Id;
         }
 
@@ -79,14 +84,23 @@ namespace TechStore.Service.Implementations
         public async Task<string> GetNextCartItemIdAsync()
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.CartItem);
-            var Id = $"CAIT-{sequenceNumber:D4}";
+            var Id = $"CART-{sequenceNumber:D4}";
             return Id;
         }
 
         public async Task<string> GetNextOrderIdAsync()
         {
+            var today = DateTime.UtcNow.Date;
+
+            //var countToday = await _uow.Orders
+            //    .CountAsync(o => o.CreatedAt.Date == today);
+
+            //return $"ORD-{today:yyyyMMdd}-{(countToday + 1):D6}";
+
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Order);
-            var Id = $"ORD-{sequenceNumber:D4}";
+            //var Id = $"ORD-{sequenceNumber:D4}";
+
+            var Id = $"ORD-{today:yyyyMMdd}-{(sequenceNumber + 1):D6}";
             return Id;
         }
 

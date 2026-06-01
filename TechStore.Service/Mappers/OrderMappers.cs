@@ -14,63 +14,64 @@ namespace TechStore.Service.Mappers
 {
     public static class OrderMappers
     {
-        public static OrderDetailResponseModel ToOrderDetailModelAsync(this Order order, 
-            QRCode? qrCode, Invoice? invoice, Payment? payment, ShippingDetail? shippingDetail, Shipper? shipper)
-        {
-            OrderDetailResponseModel orderDetailResponseModel = new OrderDetailResponseModel
-            {
-                OrderId = order.PublicId,
-                CustomerId = order.Customer?.PublicId ?? "",
-                CustomerName = order.CustomerName,
-                ShippingAddress = order.ShippingAddress ?? "",
-                CustomerPhonenumber = order.CustomerPhoneNumber,
-                CustomerEmail = order.CustomerEmail ?? "",
-                TotalPrice = order.TotalPrice,
-                ShippingCharge = order.ShippingCharge,
-                DiscountAmount = order.DiscountAmount,
-                FinalAmount = order.FinalAmount,
-                PaymentMethod = order.PaymentMethod,
-                OrderStatus = order.OrderStatus,
-                CreatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.CreatedAt),
-                UpdatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.UpdatedAt ?? TimeZoneHelper.GetGmt7Now()),
-                Items = order.OrderItems.ToList().ToListOrderItemResponseModels(),
+        //public static OrderDetailResponseModel ToOrderDetailModelAsync(this Order order, 
+        //    QRCode? qrCode, Invoice? invoice, Payment? payment, ShippingDetail? shippingDetail, Shipper? shipper)
+        //{
+        //    OrderDetailResponseModel orderDetailResponseModel = new OrderDetailResponseModel
+        //    {
+        //        OrderId = order.PublicId,
+        //        CustomerId = order.Customer?.PublicId ?? "",
+        //        CustomerName = order.CustomerName,
+        //        ShippingAddress = order.ShippingAddress ?? "",
+        //        CustomerPhonenumber = order.CustomerPhoneNumber,
+        //        CustomerEmail = order.CustomerEmail ?? "",
+        //        TotalPrice = order.TotalPrice,
+        //        ShippingCharge = order.ShippingCharge,
+        //        DiscountAmount = order.DiscountAmount,
+        //        FinalAmount = order.FinalAmount,
+        //        PaymentMethod = order.PaymentMethod,
+        //        OrderStatus = order.OrderStatus,
+        //        Payments = new List<PaymentResponseModel>(),
+        //        CreatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.CreatedAt),
+        //        UpdatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.UpdatedAt ?? TimeZoneHelper.GetGmt7Now()),
+        //        Items = order.OrderItems.ToList().ToListOrderItemResponseModels(),
 
-            };
+        //    };
 
-            if (qrCode != null)
-            {
-                orderDetailResponseModel.QRCode = Convert.ToBase64String(qrCode.ImageData);
-            }
+        //    if (qrCode != null)
+        //    {
+        //        orderDetailResponseModel.QRCode = Convert.ToBase64String(qrCode.ImageData);
+        //    }
 
-            if (invoice != null)
-            {
-                orderDetailResponseModel.Invoice = invoice.ToInvoiceModel(order);
+        //    if (invoice != null)
+        //    {
+        //        orderDetailResponseModel.Invoice = invoice.ToInvoiceModel(order);
 
-                if (payment != null)
-                {
-                    orderDetailResponseModel.Payment = payment.ToPaymentResponseModel(order, qrCode);
-                }
+        //        if (payment != null)
+        //        {
+        //            orderDetailResponseModel.Payment = payment.ToPaymentResponseModel(order, qrCode);
+        //        }
 
-                if (shippingDetail != null && shipper != null)
-                {
-                    orderDetailResponseModel.ShippingDetailId = shipper.PublicId;
-                    orderDetailResponseModel.ShipperName = shipper.Name;
-                    orderDetailResponseModel.TrackingNumber = shippingDetail.TrackingNumber;
-                    orderDetailResponseModel.ShippedDate = shippingDetail.ShippedDate;
-                    orderDetailResponseModel.EstimatedArrival = shippingDetail.EstimatedArrival;
-                    orderDetailResponseModel.ShippingNote = shippingDetail.ShippingNote;
-                    orderDetailResponseModel.FailureCount = shippingDetail.FailureCount;
-                }
-            }
+        //        if (shippingDetail != null && shipper != null)
+        //        {
+        //            orderDetailResponseModel.ShippingDetailId = shipper.PublicId;
+        //            orderDetailResponseModel.ShipperName = shipper.Name;
+        //            orderDetailResponseModel.TrackingNumber = shippingDetail.TrackingNumber;
+        //            orderDetailResponseModel.ShippedDate = shippingDetail.ShippedDate;
+        //            orderDetailResponseModel.EstimatedArrival = shippingDetail.EstimatedArrival;
+        //            orderDetailResponseModel.ShippingNote = shippingDetail.ShippingNote;
+        //            orderDetailResponseModel.FailureCount = shippingDetail.FailureCount;
+        //        }
+        //    }
 
-            return orderDetailResponseModel;
-        }
+        //    return orderDetailResponseModel;
+        //}
 
         public static OrderListItemModel ToOrderListItemModel(this Order order)
         {
             return new OrderListItemModel
             {
-                OrderId = order.PublicId,
+                Id = order.PublicId,
                 CustomerId = order.Customer?.PublicId ?? "",
                 CustomerName = order.CustomerName,
                 CustomerPhonenumber = order.CustomerPhoneNumber,
@@ -85,6 +86,7 @@ namespace TechStore.Service.Mappers
                 OrderType = order.OrderType,
                 UpdatedAt = order.UpdatedAt ?? DateTime.UtcNow,
                 CreatedAt = order.CreatedAt,
+                OrderItems = order.OrderItems.ToList().ToListOrderItemResponseModels()
             };
         }
 
@@ -125,7 +127,8 @@ namespace TechStore.Service.Mappers
 
                 Status = order.OrderStatus,
                 PaymentQRCode = paymentQROCde != null ? Convert.ToBase64String(paymentQROCde.ImageData) : "",
-                PaymentId = order.Payment?.PublicId ?? "",
+                //PaymentId = order.Payment?.PublicId ?? "",
+                PaymentId = "",
                 PaymentStatus = payment.PaymentStatus,
                 PaymentMethod = payment.PaymentMethod == EPaymentMethod.Cash? "Tiền mặt" : "Online",
                 TransactionCode = payment.TransactionCode,
@@ -141,13 +144,13 @@ namespace TechStore.Service.Mappers
 
         public static OrderResponseModel ToOrderResponseModel(
             this Order order, 
-            User? customer = null)
+            User customer)
         {
             var customerId = customer != null ? customer.PublicId : order.Customer != null ? order.Customer.PublicId : "";
 
             var orderResponseModel = new OrderResponseModel
             {
-                OrderId = order.PublicId,
+                Id = order.PublicId,
                 CustomerId = customerId,
                 CustomerName = order.CustomerName ?? "",
                 ShippingAddress = order.ShippingAddress ?? "",
@@ -172,13 +175,16 @@ namespace TechStore.Service.Mappers
 
                 var orderItemResponeModel = new OrderItemResponseModel
                 {
-                    ProductVariantOptionId = product.PublicId,
+                    //ProductVariantOptionId = product.PublicId,
+                    ProductVariantOptionId = orderItem.ProductVariantOptionPublicId,
                     OrderId = order.PublicId,
                     Quantity = orderItem.Quantity,
                     PriceAtOrderTime = orderItem.PriceAtOrderTime,
                     Discount = orderItem.Discount,
                     TotalPrice = orderItem.TotalPrice,
                     ProductName = product.Name,
+                    OptionName = orderItem.ProductVariantOption.Name,
+                    VariantName = orderItem.ProductVariantOption.ProductVariant.Name,
                     CategoryName = category.Name,
                     MainImageUrl = product.MainImageUrl,
                 };
@@ -223,6 +229,8 @@ namespace TechStore.Service.Mappers
                 FinalAmount = order.FinalAmount,
                 PaymentMethod = order.PaymentMethod,
                 OrderStatus = order.OrderStatus,
+                Notes = order.Note,
+                Payments = new List<PaymentResponseModel>(),
                 CreatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.CreatedAt),
                 UpdatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.UpdatedAt ?? TimeZoneHelper.GetGmt7Now()),
                 Items = new List<OrderItemResponseModel>()
@@ -232,7 +240,7 @@ namespace TechStore.Service.Mappers
             var shippingDetail = order.ShippingDetail;
             var orderTrackingQR = order.QRCode;
             var invoice = order.Invoice;
-            var payment = order.Payment;
+            var payments = order.Payments;
 
             foreach (var orderItem in orderItems)
             {
@@ -248,8 +256,10 @@ namespace TechStore.Service.Mappers
                     Discount = orderItem.Discount,
                     TotalPrice = orderItem.TotalPrice,
                     ProductName = product.Name,
+                    OptionName = orderItem.ProductVariantOption.Name,
+                    VariantName = orderItem.ProductVariantOption.ProductVariant.Name,
                     CategoryName = category.Name,
-                    MainImageUrl = product.MainImageUrl,
+                    MainImageUrl = orderItem.ProductVariantOption.ImageUrl,
                 };
 
                 orderResponseModel.Items.Add(orderItemResponeModel);
@@ -281,9 +291,14 @@ namespace TechStore.Service.Mappers
                 orderResponseModel.Invoice = invoice.ToInvoiceModel(order);
             }
 
-            if (payment != null)
+            //if (payment != null)
+            //{
+            //    orderResponseModel.Payment = payment.ToPaymentResponseModel(order, orderTrackingQR);
+            //}
+
+            foreach(var payment in payments)
             {
-                orderResponseModel.Payment = payment.ToPaymentResponseModel(order, orderTrackingQR);
+                orderResponseModel.Payments.Add(payment.ToPaymentResponseModel(order, orderTrackingQR));
             }
 
             return orderResponseModel;

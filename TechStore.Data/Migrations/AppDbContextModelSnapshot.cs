@@ -95,7 +95,7 @@ namespace TechStore.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ProductId")
+                    b.Property<Guid>("ProductVariantOptionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PublicId")
@@ -341,7 +341,7 @@ namespace TechStore.Data.Migrations
                     b.Property<string>("CustomerEmail")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("CustomerId")
+                    b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CustomerName")
@@ -434,6 +434,10 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid>("ProductVariantOptionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ProductVariantOptionPublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PublicId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -471,6 +475,9 @@ namespace TechStore.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("CheckoutSnapshotJson")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -480,7 +487,10 @@ namespace TechStore.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("OrderId")
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("PaymentMethod")
@@ -503,13 +513,17 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Payments");
                 });
@@ -546,6 +560,7 @@ namespace TechStore.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("GalleryImageUrls")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsFeatured")
@@ -563,6 +578,9 @@ namespace TechStore.Data.Migrations
                     b.Property<string>("PublicId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("PublishDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("RatedCount")
                         .HasColumnType("int");
@@ -603,6 +621,12 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Warranty")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
@@ -627,6 +651,10 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
@@ -642,9 +670,6 @@ namespace TechStore.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProductId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PublicId")
@@ -672,8 +697,6 @@ namespace TechStore.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
@@ -711,9 +734,6 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid>("ProductVariantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ProductVariantId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("PublicId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -730,8 +750,6 @@ namespace TechStore.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductVariantId");
-
-                    b.HasIndex("ProductVariantId1");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
@@ -832,6 +850,71 @@ namespace TechStore.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.SearchKeyword", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ClickedProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DeviceType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsSuccessful")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Keyword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedKeyword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ResultCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SearchTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("SearchKeywords");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.Sequence", b =>
@@ -1003,6 +1086,7 @@ namespace TechStore.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PictureUrl")
@@ -1117,7 +1201,9 @@ namespace TechStore.Data.Migrations
                 {
                     b.HasOne("TechStore.Data.Entities.User", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TechStore.Data.Entities.QRCode", "QRCode")
                         .WithMany()
@@ -1150,12 +1236,19 @@ namespace TechStore.Data.Migrations
             modelBuilder.Entity("TechStore.Data.Entities.Payment", b =>
                 {
                     b.HasOne("TechStore.Data.Entities.Order", "Order")
-                        .WithOne("Payment")
-                        .HasForeignKey("TechStore.Data.Entities.Payment", "OrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TechStore.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.Product", b =>
@@ -1180,14 +1273,10 @@ namespace TechStore.Data.Migrations
             modelBuilder.Entity("TechStore.Data.Entities.ProductVariant", b =>
                 {
                     b.HasOne("TechStore.Data.Entities.Product", "Product")
-                        .WithMany()
+                        .WithMany("Variants")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("TechStore.Data.Entities.Product", null)
-                        .WithMany("Variants")
-                        .HasForeignKey("ProductId1");
 
                     b.Navigation("Product");
                 });
@@ -1195,14 +1284,10 @@ namespace TechStore.Data.Migrations
             modelBuilder.Entity("TechStore.Data.Entities.ProductVariantOption", b =>
                 {
                     b.HasOne("TechStore.Data.Entities.ProductVariant", "ProductVariant")
-                        .WithMany()
+                        .WithMany("Options")
                         .HasForeignKey("ProductVariantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("TechStore.Data.Entities.ProductVariant", null)
-                        .WithMany("Options")
-                        .HasForeignKey("ProductVariantId1");
 
                     b.Navigation("ProductVariant");
                 });
@@ -1232,7 +1317,7 @@ namespace TechStore.Data.Migrations
 
                     b.Navigation("OrderItems");
 
-                    b.Navigation("Payment");
+                    b.Navigation("Payments");
 
                     b.Navigation("ShippingDetail");
                 });

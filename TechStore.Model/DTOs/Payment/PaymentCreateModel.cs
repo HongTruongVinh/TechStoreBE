@@ -9,7 +9,7 @@ namespace TechStore.Model.DTOs.Payment
 {
     public class PaymentCreateModel
     {
-        public required string OrderId { get; set; }
+        public string? OrderId { get; set; }
 
         public required long Amount { get; set; } = 0;
 

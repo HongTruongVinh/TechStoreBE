@@ -10,12 +10,12 @@ namespace TechStore.Model.DTOs.Order
 {
     public class OrderCreateModel
     {
-        public required string CustomerId { get; set; }
         public required string CustomerName { get; set; }
-        public required string CustomerPhonenumber { get; set; }
+        public required string CustomerPhoneNumber { get; set; }
         public string? CustomerEmail { get; set; }
         public required string ShippingAddress { get; set; }
         public string? VoucherCode { get; set; }
+        public string? Note { get; set; }
         public required List<OrderItemCreateModel> Items { get; set; }
 
         public required EPaymentMethod PaymentMethod { get; set; }

@@ -8,9 +8,9 @@ namespace TechStore.Model.DTOs.ProductVariantOption
 {
     public class ProductVariantOptionUpdateModel
     {
-        public required string Name { get; set; }
-        public required string ImageUrl { get; set; }
-        public required int Stock { get; set; }
+        public required string? Name { get; set; }
+        public required string? ImageUrl { get; set; }
+        public required int? Stock { get; set; }
         public decimal? Price { get; set; }
     }
 }

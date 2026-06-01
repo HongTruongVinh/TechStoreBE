@@ -18,12 +18,19 @@ namespace TechStore.Data.Repositories.Interfaces
             decimal? maxPrice = null,
             string? brand = null);
 
-        Task<List<Product>?> GetTopNewestProductsAsync(int count);
 
         Task<List<Product>?> SearchByNameAsync(string keyword, int pageNumber, int pageSize);
+        Task<List<Product>?> GetProductsByCategoryAsync(Guid categoryId, int pageNumber, int pageSize);
+        Task<List<Product>?> GetProductsByCategoryAndBrandAsync(Guid categoryId, Guid brandId, int pageNumber, int pageSize);
 
         Task<List<Product>?> GetProductsAsync(Expression<Func<Product, bool>> predicate, int pageNumber, int pageSize);
 
         Task<Product?> GetProductWithDetailsByIdAsync(string publicId);
+        Task<List<Product>?> GetFeatureProductsWithDetailsAsync(int pageNumber, int pageSize);
+
+        Task<List<Product>?> GetTopNewestProductsAsync(int count);
+        Task<List<Product>> GetTopSoldProductsAsync(int count);
+        Task<List<Product>> GetTopRatedProductsAsync(int count);
     }
 }
+

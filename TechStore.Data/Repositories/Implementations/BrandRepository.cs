@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,9 @@ namespace TechStore.Data.Repositories.Implementations
     {
         public BrandRepository(AppDbContext context) : base(context) { }
 
+        public async Task<Brand?> GetBySlugAsync(string slug)
+        {
+            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<string>(e, "Slug") == slug);
+        }
     }
 }

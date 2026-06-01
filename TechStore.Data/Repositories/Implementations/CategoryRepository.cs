@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,11 @@ namespace TechStore.Data.Repositories.Implementations
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         public CategoryRepository(AppDbContext context) : base(context) { }
+
+        public async Task<Category?> GetBySlugAsync(string slug)
+        {
+            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<string>(e, "Slug") == slug);
+        }
 
     }
 }

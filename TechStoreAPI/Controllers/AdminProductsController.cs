@@ -5,8 +5,10 @@ using System.Net;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
 using TechStore.Common.Models;
-using TechStore.Service.Interfaces;
 using TechStore.Model.DTOs.Product;
+using TechStore.Model.DTOs.ProductVariant;
+using TechStore.Model.DTOs.ProductVariantOption;
+using TechStore.Service.Interfaces;
 
 namespace TechStoreAPI.Controllers
 {
@@ -226,7 +228,181 @@ namespace TechStoreAPI.Controllers
                     PartnerCode = Messenger.SuccessFull,
                     RetCode = ERetCode.Successfull,
                     Data = serviceResult.Data,
-                    SystemMessage = Messenger.SuccessFull,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.UpdateDataError,
+                    RetCode = ERetCode.BadRequest,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        [HttpPost("{productId}/variants")]
+        public async Task<ApiResponse<string>> AddProductVariant(string productId, ProductVariantCreateModel model)
+        {
+            var serviceResult = await _productService.AddProductVariantAsync(productId, model);
+
+            if (serviceResult.IsSuccess)
+            {
+                return new ApiResponse<string>
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new ApiResponse<string>
+                {
+                    PartnerCode = Messenger.UpdateDataError,
+                    RetCode = ERetCode.BadRequest,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        [HttpPut("{productId}/variants/{variantId}")]
+        public async Task<ApiResponse<bool>> UpdateProductVariant(string productId, string variantId, ProductVariantUpdateModel model)
+        {
+            var serviceResult = await _productService.UpdateProductVariantAsync(productId, variantId, model);
+
+            if (serviceResult.IsSuccess)
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.UpdateDataError,
+                    RetCode = ERetCode.BadRequest,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        [HttpDelete("{productId}/variants/{variantId}")]
+        public async Task<ApiResponse<bool>> DeleteProductVariant(string productId, string variantId)
+        {
+            var serviceResult = await _productService.DeleteProductVariantAsync(productId, variantId);
+
+            if (serviceResult.IsSuccess)
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.SystemError,
+                    RetCode = ERetCode.BadRequest,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        [HttpPost("{productId}/variants/{variantId}/options")]
+        public async Task<ApiResponse<string>> UpdateProductVariantOption(string productId, string variantId, ProductVariantOptionCreateModel model)
+        {
+            var serviceResult = await _productService.AddProductVariantOptionAsync(productId, variantId, model);
+
+            if (serviceResult.IsSuccess)
+            {
+                return new ApiResponse<string>
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new ApiResponse<string>
+                {
+                    PartnerCode = Messenger.UpdateDataError,
+                    RetCode = ERetCode.BadRequest,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        [HttpPut("{productId}/variants/{variantId}/options/{optionId}")]
+        public async Task<ApiResponse<bool>> UpdateProductVariantOption(string productId, string variantId, string optionId, ProductVariantOptionUpdateModel model)
+        {
+            var serviceResult = await _productService.UpdateProductVariantOptionAsync(productId, variantId, optionId, model);
+
+            if (serviceResult.IsSuccess)
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.UpdateDataError,
+                    RetCode = ERetCode.BadRequest,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        [HttpDelete("{productId}/variants/{variantId}/options/{optionId}")]
+        public async Task<ApiResponse<bool>> DeleteProductVariantOption(string productId, string variantId, string optionId)
+        {
+            var serviceResult = await _productService.DeleteProductVariantOptionAsync(productId, variantId, optionId);
+
+            if (serviceResult.IsSuccess)
+            {
+                return new ApiResponse<bool>
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
                     StatusCode = (int)HttpStatusCode.OK
                 };
             }

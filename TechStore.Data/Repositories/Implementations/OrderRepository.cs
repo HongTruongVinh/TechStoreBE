@@ -32,6 +32,7 @@ namespace TechStore.Data.Repositories.Implementations
                                         .ThenInclude(pvo => pvo.ProductVariant)
                                             .ThenInclude(pv => pv.Product)
                                                 .ThenInclude(p => p.Brand)
+                                .OrderByDescending(o => o.CreatedAt)
                                 .ToListAsync();
 
             return orders;
@@ -46,7 +47,7 @@ namespace TechStore.Data.Repositories.Implementations
                                         .ThenInclude(pvo => pvo.ProductVariant)
                                             .ThenInclude(pv => pv.Product)
                                                 .ThenInclude(p => p.Category)
-                                .Include(o => o.Payment)
+                                .Include(o => o.Payments)
                                 .FirstOrDefaultAsync();
             return order;
         }

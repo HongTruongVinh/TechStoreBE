@@ -111,6 +111,33 @@ namespace TechStore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SearchKeywords",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SessionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Keyword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NormalizedKeyword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SearchTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ResultCount = table.Column<int>(type: "int", nullable: false),
+                    ClickedProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeviceType = table.Column<int>(type: "int", nullable: false),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsSuccessful = table.Column<bool>(type: "bit", nullable: false),
+                    PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EntityStatus = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SearchKeywords", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sequences",
                 columns: table => new
                 {
@@ -158,7 +185,7 @@ namespace TechStore.Data.Migrations
                     Birthday = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Gender = table.Column<int>(type: "int", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -202,10 +229,11 @@ namespace TechStore.Data.Migrations
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Warranty = table.Column<int>(type: "int", nullable: false),
                     Slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tags = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MainImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GalleryImageUrls = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GalleryImageUrls = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartSellingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndSellingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsFeatured = table.Column<bool>(type: "bit", nullable: false),
@@ -213,9 +241,11 @@ namespace TechStore.Data.Migrations
                     TotalReviews = table.Column<int>(type: "int", nullable: false),
                     SoldCount = table.Column<int>(type: "int", nullable: false),
                     RatedCount = table.Column<int>(type: "int", nullable: false),
+                    ViewCount = table.Column<int>(type: "int", nullable: false),
                     SalePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SaleStart = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SaleEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PublishDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -246,7 +276,7 @@ namespace TechStore.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductVariantOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -273,7 +303,7 @@ namespace TechStore.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderType = table.Column<int>(type: "int", nullable: false),
                     OrderStatus = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -306,7 +336,8 @@ namespace TechStore.Data.Migrations
                         name: "FK_Orders_Users_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -353,13 +384,13 @@ namespace TechStore.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ImportPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SoldCount = table.Column<int>(type: "int", nullable: false),
                     SalePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     SaleStart = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SaleEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProductId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -376,11 +407,6 @@ namespace TechStore.Data.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductVariants_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -418,11 +444,14 @@ namespace TechStore.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentMethod = table.Column<int>(type: "int", nullable: false),
                     TransactionCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentStatus = table.Column<int>(type: "int", nullable: false),
+                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckoutSnapshotJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -439,6 +468,12 @@ namespace TechStore.Data.Migrations
                         principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Payments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -488,7 +523,6 @@ namespace TechStore.Data.Migrations
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ProductVariantId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     PublicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -505,11 +539,6 @@ namespace TechStore.Data.Migrations
                         principalTable: "ProductVariants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductVariantOptions_ProductVariants_ProductVariantId1",
-                        column: x => x.ProductVariantId1,
-                        principalTable: "ProductVariants",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -519,6 +548,7 @@ namespace TechStore.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductVariantOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductVariantOptionPublicId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     PriceAtOrderTime = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -645,14 +675,18 @@ namespace TechStore.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_OrderId",
                 table: "Payments",
-                column: "OrderId",
-                unique: true);
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_PublicId",
                 table: "Payments",
                 column: "PublicId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_UserId",
+                table: "Payments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_BrandId",
@@ -676,11 +710,6 @@ namespace TechStore.Data.Migrations
                 column: "ProductVariantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductVariantOptions_ProductVariantId1",
-                table: "ProductVariantOptions",
-                column: "ProductVariantId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductVariantOptions_PublicId",
                 table: "ProductVariantOptions",
                 column: "PublicId",
@@ -690,11 +719,6 @@ namespace TechStore.Data.Migrations
                 name: "IX_ProductVariants_ProductId",
                 table: "ProductVariants",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductVariants_ProductId1",
-                table: "ProductVariants",
-                column: "ProductId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductVariants_PublicId",
@@ -711,6 +735,12 @@ namespace TechStore.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_PublicId",
                 table: "Reports",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SearchKeywords_PublicId",
+                table: "SearchKeywords",
                 column: "PublicId",
                 unique: true);
 
@@ -773,6 +803,9 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reports");
+
+            migrationBuilder.DropTable(
+                name: "SearchKeywords");
 
             migrationBuilder.DropTable(
                 name: "Sequences");

@@ -6,11 +6,11 @@ namespace TechStoreAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InitialDataController : ControllerBase
+    public class A_InitialDataController : ControllerBase
     {
         private readonly InitialDataService _service;
 
-        public InitialDataController(InitialDataService service)
+        public A_InitialDataController(InitialDataService service)
         {
             _service = service;
         }

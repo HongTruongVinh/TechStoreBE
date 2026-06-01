@@ -23,6 +23,6 @@ namespace TechStore.Model.DTOs.User
 
         public required string Address { get; set; }
 
-        public string? PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
     }
 }

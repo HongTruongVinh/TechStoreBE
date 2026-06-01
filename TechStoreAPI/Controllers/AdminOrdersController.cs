@@ -84,30 +84,50 @@ namespace TechStoreAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ApiResponse<OrderDetailResponseModel>> GetOrderById(string id)
         {
-            var serviceResult = await _orderService.GetOrderByIdAsync(id);
+            var userId = User.FindFirstValue(AppClaims.UserId);
 
-            if (serviceResult.IsSuccess)
+            if (userId != null)
             {
-                return new()
+                var serviceResult = await _orderService.AdminGetOrderByIdAsync(userId, id);
+
+                if (serviceResult.IsSuccess)
                 {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
+                    return new()
+                    {
+                        PartnerCode = Messenger.SuccessFull,
+                        RetCode = ERetCode.Successfull,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.NoExitData,
+                        RetCode = ERetCode.NoExitData,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
             }
             else
             {
-                return new()
+                ApiResponse<OrderDetailResponseModel> result = new()
                 {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
+                    PartnerCode = Messenger.SystemError,
+                    RetCode = ERetCode.SystemError,
+                    Data = null,
+                    SystemMessage = string.Empty,
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed
                 };
+
+                return result;
             }
+            
+
         }
 
         [HttpPut("cancel/{id}")]
@@ -490,7 +510,7 @@ namespace TechStoreAPI.Controllers
 
             if (userId != null)
             {
-                var serviceResult = await _orderService.CreateInStoreOrderAsync(userId, model);
+                var serviceResult = await _orderService.CreateInStoreOrderAsync(userId, "",model);
 
                 if (serviceResult.IsSuccess)
                 {

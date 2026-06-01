@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -26,5 +27,12 @@ namespace TechStore.Data.Repositories
 
         Task<int> CountAsync();
         Task<int> CountAsync(Expression<Func<T, bool>> predicate);
+
+        Task<bool> ExistsByGuidAsync(string key, Guid guidValue);
+
+        Task<List<T>> FindManyWithNumberAsync(Expression<Func<T, bool>> predicate, int pageNumber, int pageSize);
+
+        IQueryable<T> Table { get; }
+        IQueryable<T> TableNoTracking { get; }
     }
 }

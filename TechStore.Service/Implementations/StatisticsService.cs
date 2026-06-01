@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -47,38 +48,29 @@ namespace TechStore.Service.Implementations
                 ComplatedOfDeliveringOrders = new RadialBarChartData(),
                 CategoryChartData = new List<ChartData>(),
                 TotalRevenueChartData = new List<ChartDecimalData>(),
-                TotalIncomeChartData = new List<ChartDecimalData>(),
+                TotalProfitChartData = new List<ChartDecimalData>(),
                 TotalOrdersChartData = new List<ChartData>(),
                 HotProducts = new List<AdminProductListItemModel>(),
-                BestSellProducts = new List<AdminProductListItemModel>(),
-                BestRatedProducts = new List<AdminProductListItemModel>(),
+                TopSoldProducts = new List<AdminProductListItemModel>(),
+                TopRatedProducts = new List<AdminProductListItemModel>(),
                 LoyalCustomer = new List<UserListItemResponseModel>(),
                 RecentlyActions = new List<ActionModel>()
             };
 
+            DateTime currentDatetime = DateTime.Now.Date;
 
-            var orders = await _uow.Orders.GetOrdersIncludeItemsAsync(o => true);
-            var products = await _uow.Products.GetAllAsync();
-            var users = await _uow.Users.GetAllAsync();
-
-            if (orders != null)
-            {
-                orders = await GetCategoryOfOrderItem(orders);
-
-                var orderModels = orders.Select(o => o.ToOrderResponseModel()).ToList();
-                overviewData.ProcessingOfPendingOrders = GetProcessingOfPendingOrders(orderModels);
-                overviewData.DeliveringOfProcessingOrders = GetDeliveringOfProcessingOrders(orderModels);
-                overviewData.ComplatedOfDeliveringOrders = GetComplatedOfDeliveringOrders(orderModels);
-                overviewData.CategoryChartData = GetCategoryChartData(orderModels);
-                overviewData.TotalRevenueChartData = GetMonthlyRevenueSeries(orderModels);
-                overviewData.TotalIncomeChartData = GetMonthlyIncomeSeriesAsync(orderModels, products.ToList());
-                overviewData.TotalOrdersChartData = GetMonthlyTotalOrdersSeries(orderModels);
-                overviewData.HotProducts = GetHotProducts(orderModels, products.ToList());
-                overviewData.BestSellProducts = GetBestSellProducts(products.ToList());
-                overviewData.BestRatedProducts = GetBestRatedProducts(products.ToList());
-                overviewData.LoyalCustomer = GetLoyalCustomers(orderModels, users.ToList());
-                overviewData.RecentlyActions = GetActionsRecently(orderModels, users.ToList());
-            }
+            overviewData.ProcessingOfPendingOrders = await GetProcessingOfPendingOrders();
+            overviewData.DeliveringOfProcessingOrders = await GetDeliveringOfProcessingOrders();
+            overviewData.ComplatedOfDeliveringOrders = await GetComplatedOfDeliveringOrders();
+            overviewData.CategoryChartData = await GetCategoryChartData(currentDatetime.Year);
+            overviewData.TotalRevenueChartData = await GetMonthlyRevenueSeries(currentDatetime);//doanh thu
+            overviewData.TotalProfitChartData = await GetMonthlyProfitSeriesAsync();//loi nhuan
+            overviewData.TotalOrdersChartData = await GetMonthlyTotalOrdersSeries();
+            overviewData.HotProducts = await GetHotProducts();
+            overviewData.TopSoldProducts = await GetTopSoldProducts();
+            overviewData.TopRatedProducts = await GetTopRatedProductsAsync();
+            overviewData.LoyalCustomer = await GetLoyalCustomers();
+            overviewData.RecentlyActions = await GetActionsRecently();
 
 
             serviceResult.Data = overviewData;
@@ -86,12 +78,14 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        private List<ChartData> GetCategoryChartData(List<OrderResponseModel> orderModels)
+        private async Task<List<ChartData>> GetCategoryChartData(int year)
         {
             var data = new List<ChartData>();
 
-            var categoryStatistics = orderModels.SelectMany(order => order.Items).
-                GroupBy(item => item.CategoryName)
+            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Year == year);
+
+            var categoryStatistics = orders.SelectMany(order => order.OrderItems).
+                GroupBy(item => item.ProductVariantOption.ProductVariant.Product.Category.Name)
                 .Select(group => new ChartData
                 {
                     Name = group.Key,
@@ -105,9 +99,10 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public List<ChartDecimalData> GetMonthlyRevenueSeries(List<OrderResponseModel> allOrderModels)
+        public async Task<List<ChartDecimalData>> GetMonthlyRevenueSeries(DateTime fromDate)
         {
-            var orderModels = allOrderModels.Where(x => x.OrderStatus == EOrderStatus.Completed).ToList();
+            //var orderModels = allOrderModels.Where(x => x.OrderStatus == EOrderStatus.Completed).ToList();
+            var orders = await _uow.Orders.FindManyAsync(o => o.CreatedAt.Year == fromDate.Year);
 
             var data = new List<ChartDecimalData>();
 
@@ -124,7 +119,7 @@ namespace TechStore.Service.Implementations
                 });
             }
 
-            foreach (var order in orderModels)
+            foreach (var order in orders)
             {
                 if (order.CreatedAt.Year == currentYear)
                 {
@@ -136,9 +131,12 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public List<ChartDecimalData> GetMonthlyIncomeSeriesAsync(List<OrderResponseModel> allOrderModels, List<Product> products)
+        public async Task<List<ChartDecimalData>> GetMonthlyProfitSeriesAsync()
         {
-            var orderModels = allOrderModels.Where(x => x.OrderStatus == EOrderStatus.Completed).ToList();
+            //var orderModels = allOrderModels.Where(x => x.OrderStatus == EOrderStatus.Completed).ToList();
+            //var orders = await _uow.Orders.FindManyAsync(o => o.OrderStatus == EOrderStatus.Completed);
+            var orders = await _uow.Orders.TableNoTracking.Where(o => o.OrderStatus == EOrderStatus.Completed).Include(o => o.OrderItems).ToListAsync();
+
 
             var data = new List<ChartDecimalData>();
             //var orders = await _orderService.GetAllOrdersAsync();
@@ -157,36 +155,36 @@ namespace TechStore.Service.Implementations
                 });
             }
 
-            //foreach (var order in orderModels)
-            //{
-            //    if (order.CreatedAt.Year == currentYear)
-            //    {
-            //        int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
+            foreach (var order in orders)
+            {
+                if (order.CreatedAt.Year == currentYear)
+                {
+                    int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
 
-            //        decimal incomeOfOrderItem = 0m;
+                    decimal incomeOfOrderItem = 0m;
 
-            //        foreach (var item in order.Items)
-            //        {
-            //            var product = products.Where(x => x.PublicId == item.ProductVariantOptionId).FirstOrDefault();
+                    foreach (var item in order.OrderItems)
+                    {
+                        var pVO = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByInternalIdAsync(item.ProductVariantOptionId);
 
-            //            if (product != null)
-            //            {
-            //                incomeOfOrderItem += item.TotalPrice - product.Variants.Where(v => v.Id == ).ImportPrice * item.Quantity;
-            //            }
-            //        }
+                        if (pVO != null)
+                        {
+                            incomeOfOrderItem += item.TotalPrice - pVO.ProductVariant.ImportPrice * item.Quantity;
+                        }
+                    }
 
 
-            //        data[monthIndex].Value += incomeOfOrderItem;
-            //    }
-            //}
+                    data[monthIndex].Value += incomeOfOrderItem;
+                }
+            }
 
             return data;
         }
 
-        public List<ChartData> GetMonthlyTotalOrdersSeries(List<OrderResponseModel> orderModels)
+        public async Task<List<ChartData>> GetMonthlyTotalOrdersSeries()
         {
             var data = new List<ChartData>();
-            //var orders = await _orderService.GetAllOrdersAsync();
+            var orders = await _uow.Orders.FindManyAsync(o => o.CreatedAt.Year == DateTime.Now.Date.Year);
 
             var now = DateTime.UtcNow;
             var currentYear = now.Year;
@@ -202,7 +200,7 @@ namespace TechStore.Service.Implementations
                 });
             }
 
-            foreach (var order in orderModels)
+            foreach (var order in orders)
             {
                 if (order.CreatedAt.Year == currentYear)
                 {
@@ -215,7 +213,7 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public RadialBarChartData GetProcessingOfPendingOrders(List<OrderResponseModel> orderModels)
+        public async Task<RadialBarChartData> GetProcessingOfPendingOrders()
         {
             var data = new RadialBarChartData
             {
@@ -224,11 +222,8 @@ namespace TechStore.Service.Implementations
                 ProgressPercent = 0
             };
 
-            var pendingOrderCount = orderModels.
-                Where(x => x.OrderStatus == EOrderStatus.Pending).Count();
-
-            var processingOrderCount = orderModels.
-                Where(x => x.OrderStatus == EOrderStatus.Processing).Count();
+            var pendingOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Pending);
+            var processingOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Processing);
 
             if (pendingOrderCount == 0)
             {
@@ -246,7 +241,7 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public RadialBarChartData GetDeliveringOfProcessingOrders(List<OrderResponseModel> orderModels)
+        public async Task<RadialBarChartData> GetDeliveringOfProcessingOrders()
         {
             var data = new RadialBarChartData
             {
@@ -254,12 +249,8 @@ namespace TechStore.Service.Implementations
                 Progress = 0,
                 ProgressPercent = 0
             };
-
-            var processingOrderCount = orderModels.
-                Where(x => x.OrderStatus == EOrderStatus.Processing).Count();
-
-            var deliveringOrderCount = orderModels.
-                Where(x => x.OrderStatus == EOrderStatus.Delivering).Count();
+            var deliveringOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Delivering);
+            var processingOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Processing);
 
             if (processingOrderCount == 0)
             {
@@ -277,7 +268,7 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public RadialBarChartData GetComplatedOfDeliveringOrders(List<OrderResponseModel> orderModels)
+        public async Task<RadialBarChartData> GetComplatedOfDeliveringOrders()
         {
             var data = new RadialBarChartData
             {
@@ -286,11 +277,8 @@ namespace TechStore.Service.Implementations
                 ProgressPercent = 0
             };
 
-            var deliveringOrderCount = orderModels.
-                Where(x => x.OrderStatus == EOrderStatus.Delivering).Count();
-
-            var complatedOrderCount = orderModels.
-                Where(x => x.OrderStatus == EOrderStatus.Completed).Count();
+            var deliveringOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Delivering);
+            var complatedOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Completed);
 
             if (deliveringOrderCount == 0)
             {
@@ -308,95 +296,87 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public List<AdminProductListItemModel> GetHotProducts(List<OrderResponseModel> orders, List<Product> products)
+        public async Task<List<AdminProductListItemModel>> GetHotProducts()
         {
             var productModels = new List<AdminProductListItemModel>();
 
-            //var recentTop15Products = orders
-            //    .Where(o => o.CreatedAt >= DateTime.UtcNow.AddDays(-30)) // lọc đơn hàng gần đây
-            //    .SelectMany(o => o.Items) // gom tất cả OrderItem lại
-            //    .GroupBy(item => new { item.ProductVariantOptionId, item.ProductName, item.CategoryName })
-            //    .Select(g => new
-            //    {
-            //        ProductId = g.Key.ProductId,
-            //        Name = g.Key.ProductName,
-            //        CategoryName = g.Key.CategoryName,
-            //        SoldCount = g.Sum(x => x.Quantity)
-            //    })
-            //    .OrderByDescending(x => x.SoldCount)
-            //    .Take(6)
-            //    .ToList();
+            int curentMonth = DateTime.Now.Date.Month;
 
-            //if (recentTop15Products.Count > 0)
-            //{
-            //    foreach (var item in recentTop15Products)
-            //    {
-            //        var product = products.Where(x => x.PublicId == item.ProductId).FirstOrDefault();
+            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Month >= curentMonth - 1);
 
-            //        if (product != null)
-            //        {
-            //            var productModel = new AdminProductListItemModel
-            //            {
-            //                ProductId = product.PublicId,
-            //                CategoryName = item.CategoryName,
-            //                Name = product.Name,
-            //                SoldCount = item.SoldCount,
-            //                Price = product.Price,
-            //                MainImageUrl = product.MainImageUrl,
-            //                AverageRating = product.AverageRating,
-            //                Stock = product.Stock,
-            //                RatedCount = product.RatedCount,
-            //            };
-            //            productModels.Add(productModel);
-            //        }
-            //    }
-            //}
-
-            return productModels;
-        }
-
-        public List<AdminProductListItemModel> GetBestSellProducts(List<Product> products)
-        {
-            var productModels = new List<AdminProductListItemModel>();
-
-            var top10SoldProducts = products
-            .OrderByDescending(p => p.SoldCount)
-            .Take(7)
-            .ToList();
-
-            if (top10SoldProducts.Count > 0)
-            {
-                foreach (var product in top10SoldProducts)
+            var recentTopProducts = orders
+                .Where(o => o.CreatedAt >= DateTime.UtcNow.AddDays(-30)) // lọc đơn hàng gần đây
+                .SelectMany(o => o.OrderItems) // gom tất cả OrderItem lại
+                .GroupBy(item => new { item.ProductVariantOptionId })
+                .Select(g => new
                 {
-                    productModels.Add(product.ToAdminProductListItem());
+                    PVOId = g.Key.ProductVariantOptionId,
+                    SoldCount = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.SoldCount)
+                .Take(6)
+                .ToList();
+
+            if (recentTopProducts.Count > 0)
+            {
+                foreach (var item in recentTopProducts)
+                {
+                    var pVO = await _uow.ProductVariantOptions.FindOneAsync(p => p.Id == item.PVOId);
+
+                    if (pVO != null)
+                    {
+                        var productModel = new AdminProductListItemModel
+                        {
+                            ProductVariantOptionId = pVO.PublicId,
+                            CategoryName = pVO.ProductVariant.Product.Category.Name,
+                            Name = pVO.ProductVariant.Product.Name + " " + pVO.ProductVariant.Name + " " + pVO.Name,
+                            SoldCount = item.SoldCount,
+                            Price = pVO.ProductVariant.Price,
+                            MainImageUrl = pVO.ImageUrl,
+                            AverageRating = pVO.ProductVariant.Product.AverageRating,
+                            Stock = pVO.Stock,
+                            RatedCount = pVO.ProductVariant.Product.RatedCount,
+                        };
+                        productModels.Add(productModel);
+                    }
                 }
             }
 
             return productModels;
         }
 
-        public List<AdminProductListItemModel> GetBestRatedProducts(List<Product> products)
+        public async Task<List<AdminProductListItemModel>> GetTopSoldProducts()
         {
             var productModels = new List<AdminProductListItemModel>();
 
-            var top10RatedProducts = products
-            .OrderByDescending(p => p.AverageRating)
-            .Take(7)
-            .ToList();
+            var topSoldProducts = await _uow.Products.GetTopSoldProductsAsync(7);
 
-            if (top10RatedProducts.Count > 0)
+            foreach (var product in topSoldProducts)
             {
-                foreach (var product in top10RatedProducts)
-                {
-                    productModels.Add(product.ToAdminProductListItem());
-                }
+                productModels.Add(product.ToAdminProductListItem());
             }
 
             return productModels;
         }
 
-        public List<UserListItemResponseModel> GetLoyalCustomers(List<OrderResponseModel> orders, List<User> users)
+        public async Task<List<AdminProductListItemModel>> GetTopRatedProductsAsync()
         {
+            var productModels = new List<AdminProductListItemModel>();
+
+            var top10RatedProducts =  await _uow.Products.GetTopRatedProductsAsync(7);
+
+            foreach (var product in top10RatedProducts)
+            {
+                productModels.Add(product.ToAdminProductListItem());
+            }
+
+            return productModels;
+        }
+
+        public async Task<List<UserListItemResponseModel>> GetLoyalCustomers()
+        {
+            var orders = await _uow.Orders.FindManyAsync(o => true);
+
             var userModels = new List<UserListItemResponseModel>();
             var top6LoyalCustomers = orders
                 .GroupBy(o => o.CustomerId)
@@ -412,7 +392,7 @@ namespace TechStore.Service.Implementations
             {
                 foreach (var item in top6LoyalCustomers)
                 {
-                    var user = users.Where(x => x.PublicId == item.UserId).FirstOrDefault();
+                    var user = await _uow.Users.FindOneAsync(x => x.Id == item.UserId);
                     if (user != null)
                     {
                         userModels.Add(user.ToUserListItemModel());
@@ -422,14 +402,17 @@ namespace TechStore.Service.Implementations
             return userModels;
         }
 
-        public List<ActionModel> GetActionsRecently(List<OrderResponseModel> orders, List<User> users)
+        public async Task<List<ActionModel>> GetActionsRecently()
         {
             var actionModels = new List<ActionModel>();
+
+            var orders = await _uow.Orders.FindManyAsync(o => true);
+
 
             var newOrders = new ActionModel
             {
                 Title = "Các đơn hàng mới",
-                Description = orders.Where(x => x.OrderStatus == EOrderStatus.Pending && x.CreatedAt.Date == DateTime.UtcNow.Date).Count() + " đơn hàng được đặt",
+                Description = await _uow.Orders.CountAsync(x => x.OrderStatus == EOrderStatus.Pending && x.CreatedAt.Date == DateTime.UtcNow.Date) + " đơn hàng được đặt",
                 Time = TimeZoneHelper.GetUtcNow()
             };
             actionModels.Add(newOrders);
@@ -437,7 +420,7 @@ namespace TechStore.Service.Implementations
             var processingOrders = new ActionModel
             {
                 Title = "Số đơn hàng được xử lý",
-                Description = orders.Where(x => x.OrderStatus == EOrderStatus.Processing && x.CreatedAt.Date == DateTime.UtcNow.Date).Count() + " đơn hàng xử lý",
+                Description = await _uow.Orders.CountAsync(x => x.OrderStatus == EOrderStatus.Processing && x.CreatedAt.Date == DateTime.UtcNow.Date) + " đơn hàng xử lý",
                 Time = TimeZoneHelper.GetUtcNow()
             };
             actionModels.Add(processingOrders);
@@ -445,7 +428,7 @@ namespace TechStore.Service.Implementations
             var newUsers = new ActionModel
             {
                 Title = "Số người đăng ký mới",
-                Description = users.Where(x => x.CreatedAt.Date == DateTime.UtcNow.Date).Count() + " đăng ký mới tuần này",
+                Description = await _uow.Users.CountAsync(x => x.CreatedAt.Date == DateTime.UtcNow.Date) + " đăng ký mới tuần này",
                 Time = TimeZoneHelper.GetUtcNow()
             };
             actionModels.Add(newUsers);
@@ -461,7 +444,7 @@ namespace TechStore.Service.Implementations
             var deliveringOrders = new ActionModel
             {
                 Title = "Số đơn hàng đâng vận chuyển",
-                Description = orders.Where(x => x.OrderStatus == EOrderStatus.Delivering).Count() + " đơn hàng đang được giao",
+                Description = await _uow.Orders.CountAsync(x => x.OrderStatus == EOrderStatus.Delivering) + " đơn hàng đang được giao",
                 Time = TimeZoneHelper.GetUtcNow()
             };
             actionModels.Add(deliveringOrders);
@@ -470,23 +453,5 @@ namespace TechStore.Service.Implementations
             return actionModels;
         }
 
-        private async Task<List<Order>> GetCategoryOfOrderItem(List<Order> orders)
-        {
-            //foreach (var order in orders)
-            //{
-            //    foreach (var item in order.OrderItems)
-            //    {
-            //        if (item.Product != null)
-            //        {
-            //            var category = await _uow.Categories.FindOneAsync(c => c.Id == item.Product.CategoryId);
-            //            if (category != null)
-            //            {
-            //                item.Product.Category = category;
-            //            }
-            //        }
-            //    }
-            //}
-            return orders;
-        }
     }
 }

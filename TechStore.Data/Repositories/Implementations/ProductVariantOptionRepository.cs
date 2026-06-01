@@ -14,12 +14,20 @@ namespace TechStore.Data.Repositories.Implementations
     {
         public ProductVariantOptionRepository(AppDbContext context) : base(context) { }
 
-        public async Task<ProductVariantOption?> GetProductVariantOptionDetailByIdAsync(string publicId)
+        public async Task<ProductVariantOption?> GetProductVariantOptionDetailByPublicIdAsync(string publicId)
         {
             return await _dbSet
                 .Include(p => p.ProductVariant)
                 .ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(p => p.PublicId == publicId);
+        }
+
+        public async Task<ProductVariantOption?> GetProductVariantOptionDetailByInternalIdAsync(Guid id)
+        {
+            return await _dbSet
+                .Include(p => p.ProductVariant)
+                .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
     }
 }

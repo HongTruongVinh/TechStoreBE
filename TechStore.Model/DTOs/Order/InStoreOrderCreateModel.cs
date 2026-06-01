@@ -9,7 +9,8 @@ namespace TechStore.Model.DTOs.Order
 {
     public class InStoreOrderCreateModel
     {
-        public required string CustomerName { get; set; }
+        public required string FirstName { get; set; }
+        public required string LastName { get; set; }
         public required string CustomerPhonenumber { get; set; }
         public string? CustomerEmail { get; set; }
         public string? VoucherCode { get; set; }

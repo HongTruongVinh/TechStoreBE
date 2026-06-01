@@ -20,15 +20,15 @@ namespace TechStore.Model.DTOs.Statistic
 
         public required List<ChartDecimalData> TotalRevenueChartData { get; set; }
 
-        public required List<ChartDecimalData> TotalIncomeChartData { get; set; }
+        public required List<ChartDecimalData> TotalProfitChartData { get; set; }
 
         public required List<ChartData> TotalOrdersChartData { get; set; }
 
         public required List<AdminProductListItemModel> HotProducts { get; set; }
 
-        public required List<AdminProductListItemModel> BestSellProducts { get; set; }
+        public required List<AdminProductListItemModel> TopSoldProducts { get; set; }
 
-        public required List<AdminProductListItemModel> BestRatedProducts { get; set; }
+        public required List<AdminProductListItemModel> TopRatedProducts { get; set; }
 
         public required List<UserListItemResponseModel> LoyalCustomer { get; set; }
         public required List<ActionModel> RecentlyActions { get; set; }

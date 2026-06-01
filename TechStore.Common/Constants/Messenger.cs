@@ -32,5 +32,8 @@ namespace TechStore.Common.Constants
         public const string IsNotAdmin = "You are not an Admin!";
         public const string NoPermission = "You have no permission to access!";
         public const string IncorrectDataFormat = "Incorrect data format!";
+        public const string IncorrectAmount = "Incorrect amount!";
+        public const string PaymentVerified = "Payment verified successfully!";
+        public const string PaymentNotVerified = "Payment not verified!";
     }
 }

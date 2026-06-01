@@ -17,22 +17,17 @@ namespace TechStore.Service.Implementations
 {
     public class HomeService : IHomeService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IProductRepository _productRepository;
-
-        private readonly IOrderService _orderService;
-        private readonly IProductService _productService;
+        private readonly IUnitOfWork _uow;
+        //private readonly IProductService _productService;
         public HomeService(
-            IUnitOfWork unitOfWork,
-            IOrderService orderService,
-            IProductService productService,
-            IProductRepository productRepository
+            IUnitOfWork unitOfWork
+            //IOrderService orderService,
+            //IProductService productService,
+            //IProductRepository productRepository
             )
         {
-            _orderService = orderService;
-            _productService = productService;
-            _productRepository = productRepository;
-            _unitOfWork = unitOfWork;
+            //_productService = productService;
+            _uow = unitOfWork;
         }
 
         public async Task<ServiceResult<HomeResponseModel>> GetHomeProduct()
@@ -44,40 +39,54 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.GetDataSuccessful
             };
 
-            var homeData = new HomeResponseModel
-            {
-                Banner = new List<string>(),
-                HotProducts = new List<ProductListItemModel>(),
-                NewProducts = new List<ProductListItemModel>(),
-                FeatureProducts = new List<ProductListItemModel>(),
-            };
+            //var homeData = new HomeResponseModel
+            //{
+            //    Banner = new List<string>(),
+            //    HotProducts = new List<ProductListItemModel>(),
+            //    NewProducts = new List<ProductListItemModel>(),
+            //    FeatureProducts = new List<ProductListItemModel>(),
+            //};
 
-            var featureProducts = await _unitOfWork.Products.GetProductsAsync(p => p.IsFeatured == true, 1, 20);
+            //var featureProducts = await _uow.Products.GetProductsAsync(p => p.IsFeatured == true, 1, 20);
 
-            if (featureProducts == null || featureProducts.Count == 0)
-            {
-                return serviceResult;
-            }
+            //if (featureProducts == null || featureProducts.Count == 0)
+            //{
+            //    return serviceResult;
+            //}
 
-            foreach (var product in featureProducts)
-            {
-                homeData.Banner.Add(product.MainImageUrl);
-            }
+            //foreach (var product in featureProducts)
+            //{
+            //    homeData.Banner.Add(product.MainImageUrl);
+            //}
 
-            homeData.FeatureProducts = featureProducts.ToListProductListItem();
-            var hotProducts = await _productService.GetHotProducts();
-            homeData.HotProducts = hotProducts.Data ?? new List<ProductListItemModel>();
+            //foreach (var product in featureProducts)
+            //{
+            //    //foreach(var variant in product.Variants)
+            //    //{
+            //    //    homeData.FeatureProducts.Add(variant.ToProductListItem());
+            //    //}
+            //    homeData.FeatureProducts.Add(product.ToProductListItem());
+            //}
+            //var hotProducts = await _productService.GetHotProducts();
+            //homeData.HotProducts = hotProducts.Data ?? new List<ProductListItemModel>();
 
-            var newProducts = await _unitOfWork.Products.GetTopNewestProductsAsync(10);
+            //var newProducts = await _uow.Products.GetTopNewestProductsAsync(10);
 
-            if (newProducts == null || newProducts.Count == 0)
-            {
-                return serviceResult;
-            }
+            //if (newProducts == null || newProducts.Count == 0)
+            //{
+            //    return serviceResult;
+            //}
 
-            homeData.NewProducts = newProducts.ToListProductListItem() ?? new List<ProductListItemModel>();
+            //foreach (var product in newProducts)
+            //{
+            //    //foreach (var variant in product.Variants)
+            //    //{
+            //    //    homeData.NewProducts.Add(variant.ToProductListItem());
+            //    //}
+            //    homeData.NewProducts.Add(product.ToProductListItem());
+            //}
 
-            serviceResult.Data = homeData;
+            //serviceResult.Data = homeData;
             return serviceResult;
         }
 
@@ -90,7 +99,7 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.GetDataSuccessful
             };
 
-            var featureProducts = await _unitOfWork.Products.GetProductsAsync(p => p.IsFeatured == true, 1, 20);
+            var featureProducts = await _uow.Products.GetProductsAsync(p => p.IsFeatured == true, 1, 20);
 
             if (featureProducts == null || featureProducts.Count == 0)
             {
@@ -102,6 +111,85 @@ namespace TechStore.Service.Implementations
                 serviceResult.Data.Add(product.MainImageUrl);
             }
 
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<List<ProductListItemModel>>> GetFeaturedProducts()
+        {
+            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            {
+                IsSuccess = true,
+                Data = new List<ProductListItemModel>(),
+                Message = Messenger.GetDataSuccessful
+            };
+
+            var products = await _uow.Products.GetProductsAsync(p => p.IsFeatured, 1, 16);
+            if (products != null)
+            {
+                foreach (var product in products)
+                {
+                    serviceResult.Data.Add(product.ToProductListItem());
+                }
+            }
+
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<List<ProductListItemModel>>> GetProductsByBrandName(string brandName, int page, int pageSize)
+        {
+            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            {
+                IsSuccess = true,
+                Data = new List<ProductListItemModel>(),
+                Message = Messenger.NoExitData
+            };
+
+            var brand = await _uow.Brands.FindOneAsync(b => b.Name.ToLower().Contains(brandName.ToLower()));
+
+            if (brand == null)
+            {
+                return serviceResult;
+            }
+
+            var products = await _uow.Products.GetProductsAsync(p => p.BrandId == brand.Id, page, pageSize);
+            if (products != null)
+            {
+                foreach (var product in products)
+                {
+                    serviceResult.Data.Add(product.ToProductListItem());
+                }
+            }
+
+            serviceResult.Message = Messenger.GetDataSuccessful;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<List<ProductListItemModel>>> GetSamsungProducts()
+        {
+            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            {
+                IsSuccess = true,
+                Data = new List<ProductListItemModel>(),
+                Message = Messenger.NoExitData
+            };
+
+            var brand = await _uow.Brands.FindOneAsync(b => b.Name.ToLower() == "samsung");
+
+            if (brand == null)
+            {
+                return serviceResult;
+            }
+
+            var products = await _uow.Products.GetProductsAsync(p => p.BrandId == brand.Id, 1, 16);
+            if (products != null)
+            {
+                foreach (var product in products)
+                {
+                    serviceResult.Data.Add(product.ToProductListItem());
+                }
+            }
+
+            serviceResult.Message = Messenger.GetDataSuccessful;
             return serviceResult;
         }
     }

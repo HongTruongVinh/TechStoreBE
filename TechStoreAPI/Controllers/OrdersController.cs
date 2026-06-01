@@ -7,6 +7,7 @@ using TechStore.Common.Constants;
 using TechStore.Common.Enums;
 using TechStore.Common.Models;
 using TechStore.Model.DTOs.Order;
+using TechStore.Model.DTOs.Payment;
 using TechStore.Service.Interfaces;
 
 namespace TechStoreAPI.Controllers
@@ -23,9 +24,54 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<ApiResponse<List<OrderResponseModel>>> GetListOrder(string userId)
+        public async Task<ApiResponse<List<OrderListItemModel>>> GetListOrder(string userId)
         {
             //var userId = User.FindFirstValue(AppClaims.UserId);
+
+            if (userId != null)
+            {
+                var serviceResult = await _orderService.GetCustomerOrdersAsync(userId);
+
+                if (serviceResult.IsSuccess)
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.SuccessFull,
+                        RetCode = ERetCode.Successfull,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.NoExitData,
+                        RetCode = ERetCode.NoExitData,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+            }
+            else
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = null,
+                    SystemMessage = Messenger.LoginError,
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed
+                };
+            }
+        }
+
+        [HttpGet]
+        public async Task<ApiResponse<List<OrderListItemModel>>> GetUserOrders()
+        {
+            var userId = User.FindFirstValue(AppClaims.UserId);
 
             if (userId != null)
             {
@@ -70,29 +116,44 @@ namespace TechStoreAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ApiResponse<OrderDetailResponseModel>> GetOrderById(string id)
         {
+            var userId = User.FindFirstValue(AppClaims.UserId);
 
-            var serviceResult = await _orderService.GetOrderByIdAsync(id);
-
-            if (serviceResult.IsSuccess)
+            if (userId != null)
             {
-                return new()
+                var serviceResult = await _orderService.GetOrderByIdAsync(userId, id);
+
+                if (serviceResult.IsSuccess)
                 {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
+                    return new()
+                    {
+                        PartnerCode = Messenger.SuccessFull,
+                        RetCode = ERetCode.Successfull,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.NoExitData,
+                        RetCode = ERetCode.NoExitData,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
             }
             else
             {
                 return new()
                 {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = null,
+                    SystemMessage = Messenger.LoginError,
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed
                 };
             }
         }
@@ -144,10 +205,10 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpPost("cod-order/{userId}")]
-        public async Task<ApiResponse<string>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)
+        [HttpPost("cod-order")]
+        public async Task<ApiResponse<string>> CreateCODOnlineOrderAsync(OrderCreateModel orderCreateModel)
         {
-            //var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.FindFirstValue(AppClaims.UserId);
 
             if (userId != null)
             {
@@ -191,51 +252,51 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpPost("pre-pay-order/{userId}")]
-        public async Task<ApiResponse<string>> CreatePrePayOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)
-        {
-            //var userId = User.FindFirstValue(AppClaims.UserId);
+        //[HttpPost("prepay-order")]
+        //public async Task<ApiResponse<PaymentDataModel>> CreatePrePayOnlineOrderAsync(OrderCreateModel orderCreateModel)
+        //{
+        //    var userId = User.FindFirstValue(AppClaims.UserId);
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.CreatePrePayOnlineOrderAsync(userId, orderCreateModel);
+        //    if (userId != null)
+        //    {
+        //        var serviceResult = await _orderService.CreatePrePayOnlineOrderAsync(userId, orderCreateModel);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<string> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = null,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
+        //        if (serviceResult.IsSuccess)
+        //        {
+        //            return new()
+        //            {
+        //                PartnerCode = Messenger.SuccessFull,
+        //                RetCode = ERetCode.Successfull,
+        //                Data = serviceResult.Data,
+        //                SystemMessage = serviceResult.Message,
+        //                StatusCode = (int)HttpStatusCode.OK
+        //            };
+        //        }
+        //        else
+        //        {
+        //            return new()
+        //            {
+        //                PartnerCode = Messenger.NoExitData,
+        //                RetCode = ERetCode.NoExitData,
+        //                Data = serviceResult.Data,
+        //                SystemMessage = serviceResult.Message,
+        //                StatusCode = (int)HttpStatusCode.OK
+        //            };
+        //        }
+        //    }
+        //    else
+        //    {
+        //        ApiResponse<PaymentDataModel> result = new()
+        //        {
+        //            PartnerCode = Messenger.SuccessFull,
+        //            RetCode = ERetCode.Successfull,
+        //            Data = null,
+        //            SystemMessage = Messenger.LoginError,
+        //            StatusCode = (int)HttpStatusCode.ExpectationFailed
+        //        };
 
-                return result;
-            }
-        }
+        //        return result;
+        //    }
+        //}
     }
 }

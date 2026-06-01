@@ -12,6 +12,7 @@ namespace TechStore.Data.Entities
         public Order Order { get; set; } = null!;
 
         public required Guid ProductVariantOptionId { get; set; }
+        public required string ProductVariantOptionPublicId { get; set; }
         public ProductVariantOption ProductVariantOption { get; set; } = null!;
 
         public required int Quantity { get; set; }

@@ -11,6 +11,8 @@ using TechStore.Common.Models;
 using TechStore.Data.Entities;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Product;
+using TechStore.Model.DTOs.ProductVariant;
+using TechStore.Model.DTOs.ProductVariantOption;
 using TechStore.Service.Interfaces;
 using TechStore.Service.Mappers;
 
@@ -48,6 +50,10 @@ namespace TechStore.Service.Implementations
 
             foreach (var product in products)
             {
+                //foreach (var variant in product.Variants)
+                //{
+                //    productModels.Add(variant.ToProductListItem());
+                //}
                 productModels.Add(product.ToProductListItem());
             }
 
@@ -83,6 +89,11 @@ namespace TechStore.Service.Implementations
 
             foreach (var product in products)
             {
+                //foreach (var variant in product.Variants)
+                //{
+                //    productModels.Add(variant.ToProductListItem());
+                //}
+
                 productModels.Add(product.ToProductListItem());
             }
 
@@ -151,8 +162,6 @@ namespace TechStore.Service.Implementations
             product.Description = productUpdateModel.Description;
             product.CategoryId = category.Id;
             product.BrandId = brand.Id;
-            product.MainImageUrl = productUpdateModel.MainImageUrl ?? CloudinaryFolders.DefaultImage;
-            product.GalleryImageUrls = productUpdateModel.GalleryImageUrls;
             product.Tags = productUpdateModel.Tag;
             product.SaleStart = productUpdateModel.SaleStart;
             product.SalePrice = productUpdateModel.SalePrice;
@@ -160,7 +169,17 @@ namespace TechStore.Service.Implementations
             product.StartSellingDate = productUpdateModel.StartSellingDate ?? DateTime.UtcNow;
             product.EndSellingDate = productUpdateModel.EndSellingDate;
             product.IsFeatured = productUpdateModel.IsFeatured;
+            product.PublishDate = productUpdateModel.PublishDate;
 
+            if (productUpdateModel.MainImageUrl != null)
+            {
+                product.MainImageUrl = productUpdateModel.MainImageUrl;
+            }
+
+            if (productUpdateModel.GalleryImageUrls != null)
+            {
+                product.GalleryImageUrls = productUpdateModel.GalleryImageUrls;
+            }
 
             _uow.Products.Update(product);
 
@@ -222,101 +241,114 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.CreateDataError
             };
 
-            if (model.Variants.Count < 1)
+            try
             {
-                serviceResult.Message = Messenger.IncorrectDataFormat;
-                return serviceResult;
-            }
-
-            var category = await _uow.Categories.GetByIdAsync(model.CategoryId);
-            if (category == null)
-            {
-                serviceResult.Message = Messenger.UpdateDataError;
-                return serviceResult;
-            }
-
-            var brand = await _uow.Brands.GetByIdAsync(model.BrandId);
-            if (brand == null)
-            {
-                serviceResult.Message = Messenger.UpdateDataError;
-                return serviceResult;
-            }
-
-            var product = new Product
-            {
-                PublicId = await _sequenceService.GetNextProductIdAsync(),
-                BrandId = brand.Id,
-                Brand = brand,
-                CategoryId = category.Id,
-                Category = category,
-                Name = model.Name,
-                Slug = model.Slug ?? CommonFuntion.GenerateSlug(model.Name),
-                Tags = model.Tag,
-                IsFeatured = model.IsFeatured,
-                ShortDescription = model.ShortDescription,
-                Description = model.Description,
-                SalePrice = 0,
-                SaleStart = model.SaleStart,
-                SaleEnd = model.SaleEnd,
-                MainImageUrl = model.MainImageUrl ?? CloudinaryFolders.DefaultImage,
-                GalleryImageUrls = model.GalleryImageUrls,
-                StartSellingDate = model.StartSellingDate ?? DateTime.UtcNow,
-                EndSellingDate = model.EndSellingDate,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active
-            };
-
-            await _uow.Products.AddAsync(product);
-            await _uow.CommitAsync();
-
-            foreach (var variantModel in model.Variants)
-            {
-                var variant = new ProductVariant
+                if (model.Variants.Count < 1)
                 {
-                    PublicId = await _sequenceService.GetNextProductVariantIdAsync(),
-                    ProductId = product.Id,
-                    Product = product,
-                    Name = variantModel.Name,
-                    Price = variantModel.Price,
-                    ImportPrice = variantModel.ImportPrice,
+                    serviceResult.Message = Messenger.IncorrectDataFormat;
+                    return serviceResult;
+                }
+
+                var category = await _uow.Categories.GetByIdAsync(model.CategoryId);
+                if (category == null)
+                {
+                    serviceResult.Message = Messenger.UpdateDataError;
+                    return serviceResult;
+                }
+
+                var brand = await _uow.Brands.GetByIdAsync(model.BrandId);
+                if (brand == null)
+                {
+                    serviceResult.Message = Messenger.UpdateDataError;
+                    return serviceResult;
+                }
+
+                var product = new Product
+                {
+                    PublicId = await _sequenceService.GetNextProductIdAsync(),
+                    BrandId = brand.Id,
+                    Brand = brand,
+                    CategoryId = category.Id,
+                    Category = category,
+                    Name = model.Name,
+                    Slug = model.Slug ?? CommonFuntion.GenerateSlug(model.Name),
+                    Tags = model.Tag,
+                    IsFeatured = model.IsFeatured,
+                    ShortDescription = model.ShortDescription,
+                    Description = model.Description,
+                    Warranty = model.Warranty,
+                    PublishDate = model.PublishDate,
+                    SalePrice = 0,
+                    SaleStart = model.SaleStart,
+                    SaleEnd = model.SaleEnd,
+                    MainImageUrl = model.MainImageUrl ?? CloudinaryFolders.DefaultImage,
+                    GalleryImageUrls = model.GalleryImageUrls,
+                    StartSellingDate = model.StartSellingDate ?? DateTime.UtcNow,
+                    EndSellingDate = model.EndSellingDate,
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
                     EntityStatus = EEntityStatus.Active
                 };
-                await _uow.ProductVariants.AddAsync(variant);
-                await _uow.CommitAsync();
 
-                if (variantModel.Options != null)
+                await _uow.Products.AddAsync(product);
+                //await _uow.CommitAsync();
+
+                foreach (var variantModel in model.Variants)
                 {
-                    foreach (var optionModel in variantModel.Options)
+                    var variant = new ProductVariant
                     {
-                        var option = new ProductVariantOption
+                        //PublicId = await _sequenceService.GetNextProductVariantIdAsync(),
+                        PublicId = Random.Shared.Next(100000, 999999).ToString(),
+                        ProductId = product.Id,
+                        Product = product,
+                        Name = variantModel.Name,
+                        Description = variantModel.Description,
+                        Price = variantModel.Price,
+                        ImportPrice = variantModel.ImportPrice,
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        EntityStatus = EEntityStatus.Active
+                    };
+                    await _uow.ProductVariants.AddAsync(variant);
+                    //await _uow.CommitAsync();
+
+                    if (variantModel.Options != null)
+                    {
+                        foreach (var optionModel in variantModel.Options)
                         {
-                            PublicId = await _sequenceService.GetNextProductVariantOptionIdAsync(),
-                            ProductVariantId = variant.Id,
-                            Name = optionModel.Name,
-                            Price = optionModel.Price,
-                            Stock = optionModel.Stock,
-                            ImageUrl = optionModel.ImageUrl ?? CloudinaryFolders.DefaultImage,
-                            CreatedAt = TimeZoneHelper.GetUtcNow(),
-                            EntityStatus = EEntityStatus.Active
-                        };
-                        await _uow.ProductVariantOptions.AddAsync(option);
-                        await _uow.CommitAsync();
+                            var option = new ProductVariantOption
+                            {
+                                //PublicId = await _sequenceService.GetNextProductVariantOptionIdAsync(),
+                                PublicId = Random.Shared.Next(100000, 999999).ToString(),
+                                ProductVariantId = variant.Id,
+                                Name = optionModel.Name,
+                                Price = optionModel.Price ?? 0,
+                                Stock = optionModel.Stock,
+                                ImageUrl = optionModel.ImageUrl ?? CloudinaryFolders.DefaultImage,
+                                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                                EntityStatus = EEntityStatus.Active
+                            };
+                            await _uow.ProductVariantOptions.AddAsync(option);
+                            //await _uow.CommitAsync();
+                        }
                     }
                 }
-            }
 
-            var result = await _uow.CommitAsync();
-            if (result < 1)
+                var result = await _uow.CommitAsync();
+                if (result < 1)
+                {
+                    return serviceResult;
+                }
+
+                serviceResult.IsSuccess = true;
+                serviceResult.Data = product.PublicId;
+                serviceResult.Message = Messenger.SuccessFull;
+                return serviceResult;
+            }
+            catch
             {
                 return serviceResult;
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = product.PublicId;
-            serviceResult.Message = Messenger.SuccessFull;
-
-            return serviceResult;
+            //return serviceResult;
         }
 
         public async Task<ServiceResult<bool>> DeleteProduct(string id)
@@ -524,65 +556,6 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<string> SeedDataProduct(ProductCreateModell model)
-        {
-            try
-            {
-                var category = await _uow.Categories.GetByIdAsync(model.CategoryId);
-                if (category == null)
-                {
-                    return "Loi khong co category";
-                }
-
-                var brand = await _uow.Brands.GetByIdAsync(model.BrandId);
-                if (brand == null)
-                {
-                    return "Loi khong co brand";
-                }
-
-                var product = new Product
-                {
-                    PublicId = await _sequenceService.GetNextProductIdAsync(),
-                    BrandId = brand.Id,
-                    Brand = brand,
-                    CategoryId = category.Id,
-                    Category = category,
-                    Name = model.Name,
-                    Slug = model.Slug ?? CommonFuntion.GenerateSlug(model.Name),
-                    Tags = model.Tag,
-                    IsFeatured = model.IsFeatured,
-                    ShortDescription = model.ShortDescription,
-                    Description = model.Description,
-                    SalePrice = 0,
-                    SaleStart = model.SaleStart,
-                    SaleEnd = model.SaleEnd,
-                    MainImageUrl = model.MainImageUrl ?? CloudinaryFolders.DefaultImage,
-                    GalleryImageUrls = model.GalleryImageUrls,
-                    StartSellingDate = model.StartSellingDate ?? TimeZoneHelper.GetUtcNow(),
-                    EndSellingDate = model.EndSellingDate,
-                    CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    SoldCount = Random.Shared.Next(0, 51), // Randomly generated sold count for seeding
-                    AverageRating = Random.Shared.Next(1, 6), // Randomly generated average rating between 1 and 5
-                    RatedCount = Random.Shared.Next(0, 31), // Randomly generated rated count for seeding
-                    EntityStatus = EEntityStatus.Active
-                };
-
-                await _uow.Products.AddAsync(product);
-
-                var result = await _uow.CommitAsync();
-
-                if (result < 1)
-                {
-                    return "loi khi them san pham moi";
-                }
-
-                return product.PublicId;
-            }
-            catch
-            {
-                return "loi khi them san pham moi";
-            }
-        }
 
         public async Task<ServiceResult<List<ProductListItemModel>>> GetUserRecommendedProducts(string userId)
         {
@@ -729,14 +702,83 @@ namespace TechStore.Service.Implementations
             {
                 IsSuccess = true,
                 Data = new List<ProductListItemModel>(),
-                Message = Messenger.NoExitData
+                Message = Messenger.GetDataSuccessful
             };
 
             var products = await _uow.Products.SearchByNameAsync(keyword, pageNumber, pageSize);
             if (products != null)
             {
-                serviceResult.Data = products.ToListProductListItem();
-                serviceResult.Message = Messenger.GetDataSuccessful;
+                foreach (var product in products)
+                {
+                    //foreach (var variant in product.Variants)
+                    //{
+                    //    serviceResult.Data.Add(variant.ToProductListItem());
+                    //}
+                    serviceResult.Data.Add(product.ToProductListItem());
+                }
+            }
+
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<List<ProductListItemModel>>> GetProductsByCategory(string categorySlug, int pageNumber, int pageSize)
+        {
+            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            {
+                IsSuccess = true,
+                Data = new List<ProductListItemModel>(),
+                Message = Messenger.NoExitData
+            };
+
+            var category = await _uow.Categories.GetBySlugAsync(categorySlug);
+            if (category == null)
+            {
+                return serviceResult;
+            }
+
+            var products = await _uow.Products.GetProductsByCategoryAsync(category.Id, pageNumber, pageSize);
+            if (products != null)
+            {
+                foreach (var product in products)
+                {
+                    //foreach (var variant in product.Variants)
+                    //{
+                    //    serviceResult.Data.Add(variant.ToProductListItem());
+                    //}
+                    serviceResult.Data.Add(product.ToProductListItem());
+                }
+            }
+
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<List<ProductListItemModel>>> GetProductsByCategoryAndBrand(string categorySlug, string brandSlug, int pageNumber, int pageSize)
+        {
+            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            {
+                IsSuccess = true,
+                Data = new List<ProductListItemModel>(),
+                Message = Messenger.NoExitData
+            };
+
+            var category = await _uow.Categories.GetBySlugAsync(categorySlug);
+            var brand = await _uow.Brands.GetBySlugAsync(brandSlug);
+            if (category == null || brand == null)
+            {
+                return serviceResult;
+            }
+
+            var products = await _uow.Products.GetProductsByCategoryAndBrandAsync(category.Id, brand.Id, pageNumber, pageSize);
+            if (products != null)
+            {
+                foreach (var product in products)
+                {
+                    //foreach (var variant in product.Variants)
+                    //{
+                    //    serviceResult.Data.Add(variant.ToProductListItem());
+                    //}
+                    serviceResult.Data.Add(product.ToProductListItem());
+                }
             }
 
             return serviceResult;
@@ -748,16 +790,271 @@ namespace TechStore.Service.Implementations
             {
                 IsSuccess = true,
                 Data = new List<ProductListItemModel>(),
-                Message = Messenger.NoExitData
+                Message = Messenger.GetDataSuccessful
             };
 
-            var products = await _uow.Products.FindManyAsync(p => p.IsFeatured == true);
+            var products = await _uow.Products.GetFeatureProductsWithDetailsAsync(1, 16);
             if (products != null)
             {
-                serviceResult.Data = products.ToListProductListItem();
-                serviceResult.Message = Messenger.GetDataSuccessful;
+                foreach (var product in products)
+                {
+                    serviceResult.Data.Add(product.ToProductListItem());
+                }
             }
 
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<string>> AddProductVariantAsync(string productId, ProductVariantCreateModel model)
+        {
+            var serviceResult = new ServiceResult<string>
+            {
+                IsSuccess = false,
+                Data = Messenger.CreateDataError,
+                Message = Messenger.SystemError
+            };
+
+            var product = await _uow.Products.GetByIdAsync(productId);
+
+            if (product == null)
+            {
+                serviceResult.Message = Messenger.NoExitData;
+                return serviceResult;
+            }
+
+            var variant = new ProductVariant
+            {
+                PublicId = await _sequenceService.GetNextProductVariantIdAsync(),
+                ProductId = product.Id,
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                ImportPrice = model.ImportPrice,
+                SalePrice = model.SalePrice,
+                SaleStart = model.SaleStart,
+                SaleEnd = model.SaleEnd,
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                EntityStatus = EEntityStatus.Active
+            };
+            await _uow.ProductVariants.AddAsync(variant);
+
+            if (model.Options != null)
+            {
+                foreach (var optionModel in model.Options)
+                {
+                    var option = new ProductVariantOption
+                    {
+                        PublicId = await _sequenceService.GetNextProductVariantOptionIdAsync(),
+                        ProductVariantId = variant.Id,
+                        Name = optionModel.Name,
+                        Price = optionModel.Price ?? 0,
+                        Stock = optionModel.Stock,
+                        ImageUrl = optionModel.ImageUrl ?? CloudinaryFolders.DefaultImage,
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        EntityStatus = EEntityStatus.Active
+                    };
+                    await _uow.ProductVariantOptions.AddAsync(option);
+                }
+            }
+
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return serviceResult;
+            }
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Data = Messenger.SuccessFull;
+            serviceResult.Message = Messenger.SuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<bool>> UpdateProductVariantAsync(string productId, string variantId, ProductVariantUpdateModel model)
+        {
+            var serviceResult = new ServiceResult<bool>
+            {
+                IsSuccess = false,
+                Data = false,
+                Message = Messenger.SystemError
+            };
+
+            var productVariant = await _uow.ProductVariants.GetByIdAsync(variantId);
+
+            if (productVariant == null)
+            {
+                serviceResult.Message = Messenger.NoExitData;
+                return serviceResult;
+            }
+
+            productVariant.UpdatedAt = TimeZoneHelper.GetUtcNow();
+            productVariant.Name = string.IsNullOrEmpty(model.Name) ? productVariant.Name : model.Name;
+            productVariant.Price = model.Price ?? productVariant.Price;
+            productVariant.ImportPrice = model.ImportPrice ?? productVariant.ImportPrice;
+            productVariant.SalePrice = model.SalePrice ?? productVariant.SalePrice;
+            productVariant.SaleStart = model.SaleStart ?? productVariant.SaleStart;
+            productVariant.SaleEnd = model.SaleEnd ?? productVariant.SaleEnd;
+
+            _uow.ProductVariants.Update(productVariant);
+            var result = await _uow.CommitAsync();
+
+            if(result < 1)
+            {
+                return serviceResult;
+            }
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Data = true;
+            serviceResult.Message = Messenger.UpdateSuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<bool>> DeleteProductVariantAsync(string productId, string variantId)
+        {
+            var serviceResult = new ServiceResult<bool>
+            {
+                IsSuccess = false,
+                Data = false,
+                Message = Messenger.SystemError
+            };
+
+            var productVariant = await _uow.ProductVariants.GetByIdAsync(variantId);
+
+            if (productVariant == null)
+            {
+                serviceResult.Message = Messenger.NoExitData;
+                return serviceResult;
+            }
+
+            //productVariant.UpdatedAt = TimeZoneHelper.GetUtcNow();
+            //productVariant.EntityStatus = EEntityStatus.Deleted;
+
+            _uow.ProductVariants.Remove(productVariant);
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return serviceResult;
+            }
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Data = true;
+            serviceResult.Message = Messenger.SuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<string>> AddProductVariantOptionAsync(string productId, string variantId, ProductVariantOptionCreateModel model)
+        {
+            var serviceResult = new ServiceResult<string>
+            {
+                IsSuccess = false,
+                Data = Messenger.CreateDataError,
+                Message = Messenger.SystemError
+            };
+
+            var productVariantOption = await _uow.ProductVariants.GetByIdAsync(variantId);
+
+            if (productVariantOption == null)
+            {
+                serviceResult.Message = Messenger.NoExitData;
+                return serviceResult;
+            }
+
+            var option = new ProductVariantOption
+            {
+                PublicId = await _sequenceService.GetNextProductVariantOptionIdAsync(),
+                ProductVariantId = productVariantOption.Id,
+                Name = model.Name,
+                Price = model.Price ?? 0,
+                Stock = model.Stock,
+                ImageUrl = model.ImageUrl ?? CloudinaryFolders.DefaultImage,
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                EntityStatus = EEntityStatus.Active
+            };
+
+            await _uow.ProductVariantOptions.AddAsync(option);
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return serviceResult;
+            }
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Data = Messenger.SuccessFull;
+            serviceResult.Message = Messenger.SuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<bool>> UpdateProductVariantOptionAsync(string productId, string variantId, string optionId, ProductVariantOptionUpdateModel model)
+        {
+            var serviceResult = new ServiceResult<bool>
+            {
+                IsSuccess = false,
+                Data = false,
+                Message = Messenger.SystemError
+            };
+
+            var productVariantOption = await _uow.ProductVariantOptions.GetByIdAsync(optionId);
+
+            if (productVariantOption == null)
+            {
+                serviceResult.Message = Messenger.NoExitData;
+                return serviceResult;
+            }
+
+            productVariantOption.UpdatedAt = TimeZoneHelper.GetUtcNow();
+            productVariantOption.Name = string.IsNullOrEmpty(model.Name) ? productVariantOption.Name : model.Name;
+            productVariantOption.ImageUrl = string.IsNullOrEmpty(model.ImageUrl) ? productVariantOption.ImageUrl : model.ImageUrl;
+            productVariantOption.Price = model.Price ?? productVariantOption.Price;
+            productVariantOption.Stock = model.Stock ?? productVariantOption.Stock;
+
+            _uow.ProductVariantOptions.Update(productVariantOption);
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return serviceResult;
+            }
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Data = true;
+            serviceResult.Message = Messenger.UpdateSuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<bool>> DeleteProductVariantOptionAsync(string productId, string variantId, string optionId)
+        {
+            var serviceResult = new ServiceResult<bool>
+            {
+                IsSuccess = false,
+                Data = false,
+                Message = Messenger.SystemError
+            };
+
+            var productVariantOption = await _uow.ProductVariantOptions.GetByIdAsync(optionId);
+
+            if (productVariantOption == null)
+            {
+                serviceResult.Message = Messenger.NoExitData;
+                return serviceResult;
+            }
+
+            //productVariantOption.UpdatedAt = TimeZoneHelper.GetUtcNow();
+            //productVariantOption.EntityStatus = EEntityStatus.Deleted;
+            
+
+            _uow.ProductVariantOptions.Remove(productVariantOption);
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return serviceResult;
+            }
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Data = true;
+            serviceResult.Message = Messenger.SuccessFull;
             return serviceResult;
         }
     }

@@ -9,9 +9,9 @@ namespace TechStore.Data.Entities
     public class CartItem : BaseEntity
     {
         public required Guid UserId { get; set; }
-        public required User User { get; set; }
+        public User User { get; set; } = null!;
 
-        public required Guid ProductId { get; set; }
+        public required Guid ProductVariantOptionId { get; set; }
 
         public required int Quantity { get; set; }
 
@@ -20,3 +20,6 @@ namespace TechStore.Data.Entities
         public required decimal TotalPrice { get; set; } = 0;
     }
 }
+
+
+

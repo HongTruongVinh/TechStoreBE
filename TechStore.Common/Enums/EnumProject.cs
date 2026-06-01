@@ -42,10 +42,8 @@ namespace TechStore.Common.Enums
 
     public enum EPaymentMethod
     {
-        CreditCard,
-        Momo,
-        PayPal,
         COD,
+        DomesticBank,
         Cash
     }
 
@@ -104,6 +102,12 @@ namespace TechStore.Common.Enums
     {
         Payment,
         OrderTracking
+    }
+
+    public enum EDeviceType
+    {
+        Mobile,
+        Desktop
     }
 
     public enum ERegisterType

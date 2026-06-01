@@ -12,5 +12,6 @@ namespace TechStore.Data.Repositories.Implementations
     public class CartItemRepository : Repository<CartItem>, ICartItemRepository
     {
         public CartItemRepository(AppDbContext context) : base(context) { }
+
     }
 }

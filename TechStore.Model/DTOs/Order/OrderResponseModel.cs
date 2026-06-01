@@ -10,7 +10,7 @@ namespace TechStore.Model.DTOs.Order
 {
     public class OrderResponseModel
     {
-        public required string OrderId { get; set; }
+        public required string Id { get; set; }
         public required string CustomerId { get; set; }
         public required string CustomerName { get; set; }
 

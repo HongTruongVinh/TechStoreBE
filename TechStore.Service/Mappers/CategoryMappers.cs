@@ -15,7 +15,7 @@ namespace TechStore.Service.Mappers
         {
             return new CategoryResponseModel
             {
-                CategoryId = category.PublicId,
+                Id = category.PublicId,
                 Name = category.Name,
                 Description = category.Description,
                 Slug = category.Slug,
@@ -34,5 +34,6 @@ namespace TechStore.Service.Mappers
 
             return models;
         }
+
     }
 }

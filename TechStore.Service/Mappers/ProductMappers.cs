@@ -17,9 +17,12 @@ namespace TechStore.Service.Mappers
         {
             return new AdminProductListItemModel
             {
-                ProductId = product.PublicId,
+                ProductVariantOptionId = product.PublicId,
                 Name = product.Name,
                 MainImageUrl = product.MainImageUrl,
+                CategoryName = "",
+                Stock = 0,
+                Price = 0,
 
                 AverageRating = product.AverageRating,
                 RatedCount = product.RatedCount,
@@ -33,11 +36,18 @@ namespace TechStore.Service.Mappers
             return new ProductListItemModel
             {
                 ProductId = product.PublicId,
-                Name = product.Name,
+                ProductVariantId = product.PublicId,
+                ProductName = product.Name,
+                ProductVariantName = product.Name,
+                Slug = product.Slug,
+                Warranty = product.Warranty,
+
                 CategoryName = product.Category?.Name,
-                ShortDescription = product.ShortDescription,
                 MainImageUrl = product.MainImageUrl,
+
+                Price = product.Variants.Min(v => v.Price),
                 SalePrice = product.SalePrice,
+
                 AverageRating = product.AverageRating,
                 RatedCount = product.RatedCount,
                 SoldCount = product.SoldCount,
@@ -45,13 +55,50 @@ namespace TechStore.Service.Mappers
             };
         }
 
-        public static List<ProductListItemModel> ToListProductListItem(this List<Product> product)
+        public static List<ProductListItemModel> ToListProductListItem(this List<Product> products)
         {
             var list = new List<ProductListItemModel>();
 
-            foreach (var item in product)
+            foreach (var item in products)
             {
                 list.Add(ToProductListItem(item));
+            }
+
+            return list;
+        }
+
+        public static ProductListItemModel VariantToProductListItem(this ProductVariant productVariant)
+        {
+            return new ProductListItemModel
+            {
+                ProductId = productVariant.Product.PublicId,
+                ProductVariantId = productVariant.PublicId,
+                ProductName = productVariant.Product.Name,
+                ProductVariantName = productVariant.Name,
+                Slug = productVariant.Product.Slug,
+                Warranty = productVariant.Product.Warranty,
+
+                CategoryName = productVariant.Product.Category?.Name,
+                MainImageUrl = productVariant.Product.MainImageUrl,
+
+                Price = productVariant.Price,
+                SalePrice = 0,
+
+                AverageRating = productVariant.Product.AverageRating,
+                RatedCount = productVariant.Product.RatedCount,
+                SoldCount = productVariant.SoldCount,
+
+                StartSellingDate = productVariant.Product.StartSellingDate
+            };
+        }
+
+        public static List<ProductListItemModel> VariantsToListProductListItem(this List<ProductVariant> productVariants)
+        {
+            var list = new List<ProductListItemModel>();
+
+            foreach (var item in productVariants)
+            {
+                list.Add(VariantToProductListItem(item));
             }
 
             return list;
@@ -67,9 +114,10 @@ namespace TechStore.Service.Mappers
 
                 Description = product.Description,
                 MainImageUrl = product.MainImageUrl,
-                GalleryImageUrls = product.GalleryImageUrls ?? new List<string>(),
+                GalleryImageUrls = product.GalleryImageUrls,
 
                 SoldCount = product.SoldCount,
+                Warranty = product.Warranty,
 
                 SalePrice = product.SalePrice,
                 SaleStart = product.SaleStart,
@@ -89,6 +137,7 @@ namespace TechStore.Service.Mappers
 
                 IsOnSale = product.IsOnSale,
                 IsFeatured = product.IsFeatured,
+                PublishDate = product.PublishDate,
 
                 Variants = product.Variants.Select(v => v.ToProductVariantResponseModel()).ToList()
             };
@@ -104,7 +153,7 @@ namespace TechStore.Service.Mappers
 
                 Description = product.Description,
                 MainImageUrl = product.MainImageUrl,
-                GalleryImageUrls = product.GalleryImageUrls ?? new List<string>(),
+                GalleryImageUrls = product.GalleryImageUrls,
 
                 SoldCount = product.SoldCount,
 
@@ -130,6 +179,8 @@ namespace TechStore.Service.Mappers
                 IsFeatured = product.IsFeatured,
                 EntityStatus = product.EntityStatus,
 
+                PublishDate = product.PublishDate,
+
                 Variants = product.Variants.Select(v => v.ToAdminProductVariantResponseModel()).ToList()
             };
         }
@@ -138,8 +189,10 @@ namespace TechStore.Service.Mappers
         {
             return new ProductVariantDetailModel
             {
+                Id = variant.PublicId,
                 ProductId = variant.Product.PublicId,
                 Name = variant.Name,
+                Description = variant.Description,
                 Price = variant.Price,
                 SoldCount = variant.SoldCount,
                 Options = variant.Options.Select(o => o.ToProductVariantOptionResponseModel()).ToList(),
@@ -150,8 +203,10 @@ namespace TechStore.Service.Mappers
         {
             return new AdminProductVariantDetailModel
             {
+                Id = variant.PublicId,
                 ProductId = variant.Product.PublicId,
                 Name = variant.Name,
+                Description = variant.Description,
                 Price = variant.Price,
                 ImportPrice = variant.ImportPrice,
                 SoldCount = variant.SoldCount,
@@ -163,6 +218,7 @@ namespace TechStore.Service.Mappers
         {
             return new ProductVariantOptionDetailModel
             {
+                Id = option.PublicId,
                 ProductVariantId = option.ProductVariant.PublicId,
                 Name = option.Name,
                 ImageUrl = option.ImageUrl,

@@ -9,15 +9,12 @@ namespace TechStore.Model.DTOs.ProductVariant
 {
     public class ProductVariantCreateModel
     {
-        public string? ProductId { get; set; }
-
         public required string Name { get; set; }
+        public required string Description { get; set; }
 
-        public int Stock { get; set; } = 0;
-        public decimal Price { get; set; } = 0;
-        public decimal ImportPrice { get; set; } = 0;
-
-        public int SoldCount { get; set; } = 0;
+        public int? Stock { get; set; }
+        public required decimal Price { get; set; }
+        public required decimal ImportPrice { get; set; }
 
         public decimal? SalePrice { get; set; }
         public DateTime? SaleStart { get; set; }

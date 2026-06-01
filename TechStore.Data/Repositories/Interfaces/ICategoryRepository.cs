@@ -9,6 +9,6 @@ namespace TechStore.Data.Repositories.Interfaces
 {
     public interface ICategoryRepository : IRepository<Category>
     {
-
+        Task<Category?> GetBySlugAsync(string slug);
     }
 }

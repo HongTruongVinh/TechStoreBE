@@ -17,17 +17,20 @@ namespace TechStore.Model.DTOs.Product
         public required string Description { get; set; } = "";
         public string? Slug { get; set; }
 
+        public required int Warranty { get; set; }
+
         public required List<string> Tag { get; set; }
         public string? MainImageUrl { get; set; }
-        public List<string>? GalleryImageUrls { get; set; } = new();
+        public required List<string> GalleryImageUrls { get; set; } = new();
 
         public DateTime? StartSellingDate { get; set; }
         public DateTime? EndSellingDate { get; set; }
         public required bool IsFeatured { get; set; }
 
-        public required decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; } = 0;
         public DateTime? SaleStart { get; set; }
         public DateTime? SaleEnd { get; set; }
+        public DateTime? PublishDate { get; set; }
 
         public required List<ProductVariantCreateModel> Variants { get; set; }
     }

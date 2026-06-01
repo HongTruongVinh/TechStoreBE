@@ -88,6 +88,27 @@ namespace TechStore.Data.Repositories.Implementations
         {
             return await _dbSet.Where(p => p.Name.Contains(keyword))
                 .OrderByDescending(p => p.StartSellingDate)
+                .Include(p => p.Variants)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>?> GetProductsByCategoryAsync(Guid categoryId, int pageNumber, int pageSize)
+        {
+            return await _dbSet.Where(p => p.CategoryId == categoryId)
+                .OrderByDescending(p => p.StartSellingDate)
+                .Include(p => p.Variants)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>?> GetProductsByCategoryAndBrandAsync(Guid categoryId, Guid brandId, int pageNumber, int pageSize)
+        {
+            return await _dbSet.Where(p => p.CategoryId == categoryId && p.BrandId == brandId)
+                .OrderByDescending(p => p.StartSellingDate)
+                .Include(p => p.Variants)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -100,6 +121,36 @@ namespace TechStore.Data.Repositories.Implementations
                 .Include(p => p.Brand)
                 .Include(p => p.Variants).ThenInclude(vo => vo.Options)
                 .FirstOrDefaultAsync(p => p.PublicId == publicId);
+        }
+
+        public async Task<List<Product>?> GetFeatureProductsWithDetailsAsync(int pageNumber, int pageSize)
+        {
+            return await _dbSet
+                .Where(p => p.IsFeatured == true)
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.Variants).ThenInclude(vo => vo.Options)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>> GetTopSoldProductsAsync(int count)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .OrderByDescending(p => p.SoldCount)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>> GetTopRatedProductsAsync(int count)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .OrderByDescending(p => p.AverageRating)
+                .Take(count)
+                .ToListAsync();
         }
     }
 }

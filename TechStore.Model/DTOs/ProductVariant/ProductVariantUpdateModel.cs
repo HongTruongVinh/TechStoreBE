@@ -9,7 +9,8 @@ namespace TechStore.Model.DTOs.ProductVariant
 {
     public class ProductVariantUpdateModel
     {
-        public string? VariantName { get; set; }
+        public string? Name { get; set; }
+        public required string Description { get; set; }
 
         public int? Stock { get; set; }
         public decimal? Price { get; set; }
@@ -20,7 +21,5 @@ namespace TechStore.Model.DTOs.ProductVariant
         public decimal? SalePrice { get; set; }
         public DateTime? SaleStart { get; set; }
         public DateTime? SaleEnd { get; set; }
-
-        public required List<ProductVariantOptionCreateModel> Options { get; set; }
     }
 }

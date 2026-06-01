@@ -22,15 +22,18 @@ namespace TechStore.Service.Implementations
         private readonly IUnitOfWork _uow;
         private readonly SequenceGeneratorService _sequenceService;
         private readonly IQRCodeService _qrCodeService;
+        private readonly IVietQrService _vietQrService;
 
         public OrderService(IUnitOfWork uow,
             SequenceGeneratorService sequenceService,
-            IQRCodeService qRCodeService
+            IQRCodeService qRCodeService,
+            IVietQrService vietQrService
             )
         {
             _uow = uow;
             _sequenceService = sequenceService;
             _qrCodeService = qRCodeService;
+            _vietQrService = vietQrService;
         }
 
         public async Task<ServiceResult<string>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)
@@ -49,27 +52,39 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
+            if (orderCreateModel.PaymentMethod != EPaymentMethod.COD)
+            {
+                serviceResult.Message = Messenger.NoExitData + " Invalid Payment Method";
+                return serviceResult;
+            }
+
             var orderId = await _sequenceService.GetNextOrderIdAsync();
+
+            //orderCreateModel.CustomerId = userId;
 
             // Tính toán tổng tiền
             decimal totalPrice = 0;
             decimal totalDiscount = 0;
             var order = new Order
             {
+                Id = Guid.NewGuid(),
                 PublicId = orderId,
+                Customer = customer,
                 CustomerId = customer.Id,
                 OrderType = EOrderType.Online,
                 CustomerName = orderCreateModel.CustomerName,
-                CustomerPhoneNumber = orderCreateModel.CustomerPhonenumber,
+                CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
                 CustomerEmail = orderCreateModel.CustomerEmail ?? "",
                 TotalPrice = 0,
                 ShippingCharge = 0,
                 DiscountAmount = totalDiscount,
                 FinalAmount = 0,
-                PaymentMethod = orderCreateModel.PaymentMethod,
+                PaymentMethod = EPaymentMethod.COD,
+                Payments = new List<Payment>(),
                 OrderStatus = EOrderStatus.Pending,
                 OrderItems = new List<OrderItem>(),
                 ShippingAddress = orderCreateModel.ShippingAddress,
+                Note = orderCreateModel.Note,
 
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
                 UpdatedAt = TimeZoneHelper.GetUtcNow(),
@@ -77,13 +92,13 @@ namespace TechStore.Service.Implementations
                 EntityStatus = EEntityStatus.Active,
             };
 
-            await _uow.Orders.AddAsync(order);
-            await _uow.CommitAsync();
+            //await _uow.Orders.AddAsync(order);
+            //await _uow.CommitAsync();
 
-            List<OrderItem> orderItems = new List<OrderItem>();
+            var today = DateTime.UtcNow.Date;
             foreach (var item in orderCreateModel.Items)
             {
-                var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByIdAsync(item.ProductVariantOptionId);
+                var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByPublicIdAsync(item.ProductVariantOptionId);
 
                 if (productVariantOption == null)
                 {
@@ -101,10 +116,11 @@ namespace TechStore.Service.Implementations
                     productVariantOption.Stock -= item.Quantity;
                     _uow.ProductVariantOptions.Update(productVariantOption);
 
-                    orderItems.Add(new OrderItem
+                    order.OrderItems.Add(new OrderItem
                     {
-                        PublicId = Random.Shared.Next(100000, 1000000).ToString(),
+                        PublicId = $"{today:yyyyMMdd}{(Random.Shared.Next(100000, 1000000).ToString() + 1):D6}",
                         ProductVariantOptionId = productVariantOption.Id,
+                        ProductVariantOptionPublicId = productVariantOption.PublicId,
                         OrderId = order.Id,
                         Order = order,
                         Quantity = item.Quantity,
@@ -123,24 +139,25 @@ namespace TechStore.Service.Implementations
 
             var finalAmount = totalPrice - totalDiscount;
 
-            await _uow.OrderItems.AddRangeAsync(orderItems);
+            //await _uow.OrderItems.AddRangeAsync(orderItems);
 
 
-            string orderTrackingQR = ServerAddress.WEBSITE_ADDRESS;
-            var addQRCodeResult = await _qrCodeService.AddTrackingOrderQRCodeAsync(order, orderTrackingQR, order.PublicId, EQRCodeType.OrderTracking, null);
+            //string orderTrackingQR = ServerAddress.WEBSITE_ADDRESS;
+            //var addQRCodeResult = await _qrCodeService.AddTrackingOrderQRCodeAsync(order, orderTrackingQR, order.PublicId, EQRCodeType.OrderTracking, null);
 
-            if (addQRCodeResult.IsSuccess == false)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
+            //if (addQRCodeResult.IsSuccess == false)
+            //{
+            //    serviceResult.Message = Messenger.SystemError;
+            //    return serviceResult;
+            //}
 
             order.TotalPrice = totalPrice;
             order.DiscountAmount = totalDiscount;
             order.FinalAmount = finalAmount;
-            order.OrderItems = orderItems;
+            //order.OrderItems = orderItems;
 
-            _uow.Orders.Update(order);
+            await _uow.Orders.AddAsync(order);
+            //_uow.Orders.Update(order);
 
             var result = await _uow.CommitAsync();
 
@@ -156,7 +173,7 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)
+        public async Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, string paymentId, OrderCreateModel orderCreateModel)
         {
             var serviceResult = new ServiceResult<string>
             {
@@ -172,9 +189,22 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
+            if (orderCreateModel.PaymentMethod != EPaymentMethod.DomesticBank)
+            {
+                serviceResult.Message = Messenger.NoExitData + " Invalid Payment Method";
+                return serviceResult;
+            }
+
+            var payment = await _uow.Payments.FindOneAsync(p => p.PublicId == paymentId);
+            if (payment == null)
+            {
+                serviceResult.Message = Messenger.NoExitData;
+                return serviceResult;
+            }
+
             var orderId = await _sequenceService.GetNextOrderIdAsync();
             var invoiceId = await _sequenceService.GetNextInvoiceIdAsync();
-            var paymentId = await _sequenceService.GetNextPaymentIdAsync();
+            //var paymentId = await _sequenceService.GetNextPaymentIdAsync();
 
             // Tính toán tổng tiền
             decimal totalPrice = 0;
@@ -182,20 +212,24 @@ namespace TechStore.Service.Implementations
 
             var order = new Order
             {
+                Id = Guid.NewGuid(),
                 PublicId = orderId,
+                Customer = customer,
                 CustomerId = customer.Id,
                 OrderType = EOrderType.Online,
                 CustomerName = orderCreateModel.CustomerName,
-                CustomerPhoneNumber = orderCreateModel.CustomerPhonenumber,
+                CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
                 CustomerEmail = orderCreateModel.CustomerEmail ?? "",
                 TotalPrice = 0,
                 ShippingCharge = 0,
                 DiscountAmount = totalDiscount,
                 FinalAmount = 0,
-                PaymentMethod = orderCreateModel.PaymentMethod,
-                OrderStatus = EOrderStatus.Pending,
+                PaymentMethod = EPaymentMethod.DomesticBank,
+                OrderStatus = EOrderStatus.Processing,
                 OrderItems = new List<OrderItem>(),
                 ShippingAddress = orderCreateModel.ShippingAddress,
+                Note = orderCreateModel.Note,
+                Payments = new List<Payment>(),
 
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
                 UpdatedAt = TimeZoneHelper.GetUtcNow(),
@@ -203,13 +237,12 @@ namespace TechStore.Service.Implementations
                 EntityStatus = EEntityStatus.Active,
             };
 
-            await _uow.Orders.AddAsync(order);
-            await _uow.CommitAsync();
-
-            List<OrderItem> orderItems = new List<OrderItem>();
+            //await _uow.Orders.AddAsync(order);
+            //await _uow.CommitAsync();
+            var today = DateTime.UtcNow.Date;
             foreach (var item in orderCreateModel.Items)
             {
-                var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByIdAsync(item.ProductVariantOptionId);
+                var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByPublicIdAsync(item.ProductVariantOptionId);
 
                 if (productVariantOption == null)
                 {
@@ -227,163 +260,11 @@ namespace TechStore.Service.Implementations
                     productVariantOption.Stock -= item.Quantity;
                     _uow.ProductVariantOptions.Update(productVariantOption);
 
-                    orderItems.Add(new OrderItem
+                    order.OrderItems.Add(new OrderItem
                     {
-                        PublicId = Random.Shared.Next(100000, 1000000).ToString(),
+                        PublicId = $"{today:yyyyMMdd}{(Random.Shared.Next(100000, 1000000).ToString() + 1):D6}",
                         ProductVariantOptionId = productVariantOption.Id,
-                        Order = order,
-                        OrderId = order.Id,
-                        Quantity = item.Quantity,
-                        PriceAtOrderTime = productVariantOption.ProductVariant.Price,
-                        Discount = item.Discount,
-                        TotalPrice = item.Quantity * productVariantOption.Price,
-                        CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active,
-                    });
-                }
-
-                decimal itemTotal = item.Quantity * productVariantOption.ProductVariant.Price;
-                totalPrice += itemTotal;
-                totalDiscount += item.Discount;
-            }
-
-            var finalAmount = totalPrice - totalDiscount;
-
-            var invoice = new Invoice
-            {
-                PublicId = invoiceId,
-                OrderId = order.Id,
-                Order = order,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                CreatedBy = customer.Id,
-                TotalPrice = totalPrice,
-                DiscountAmount = 0,
-                FinalAmount = finalAmount,
-                InvoiceStatus = EInvoiceStatus.Unpaid,
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            var payment = new Payment
-            {
-                PublicId = paymentId,
-                OrderId = order.Id,
-                Order = order,
-                PaymentMethod = orderCreateModel.PaymentMethod,
-                Amount = finalAmount,
-                TransactionCode = "",
-                PaymentStatus = EPaymentStatus.Pending,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            string orderTrackingQR = ServerAddress.WEBSITE_ADDRESS;
-            var addQRCodeResult = await _qrCodeService.AddTrackingOrderQRCodeAsync(order, orderTrackingQR, order.PublicId, EQRCodeType.OrderTracking, null);
-
-            if (addQRCodeResult.IsSuccess == false)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
-
-            await _uow.OrderItems.AddRangeAsync(orderItems);
-            await _uow.Invoices.AddAsync(invoice);
-            await _uow.Payments.AddAsync(payment);
-
-            order.Invoice = invoice;
-            order.Payment = payment;
-            order.TotalPrice = totalPrice;
-            order.DiscountAmount = totalDiscount;
-            order.FinalAmount = finalAmount;
-
-            _uow.Orders.Update(order);
-
-            var result = await _uow.CommitAsync();
-
-            if (result < 1)
-            {
-                return serviceResult;
-            }
-
-            serviceResult.Data = order.PublicId;
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.SuccessFull;
-            return serviceResult;
-
-        }
-
-        public async Task<ServiceResult<string>> CreateInStoreOrderAsync(string userId, InStoreOrderCreateModel orderCreateModel)
-        {
-            var serviceResult = new ServiceResult<string>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.BadRequest,
-            };
-
-            var cashier = await _uow.Users.GetByIdAsync(userId);
-            if (cashier == null)
-            {
-                serviceResult.Message = Messenger.NoExitData + " " + userId;
-                return serviceResult;
-            }
-
-            var orderId = await _sequenceService.GetNextOrderIdAsync();
-            var invoiceId = await _sequenceService.GetNextInvoiceIdAsync();
-            var paymentId = await _sequenceService.GetNextPaymentIdAsync();
-
-            // Tính toán tổng tiền
-            decimal totalPrice = 0;
-            decimal totalDiscount = 0;
-
-            var order = new Order
-            {
-                PublicId = orderId,
-                OrderType = EOrderType.InStore,
-                CustomerName = orderCreateModel.CustomerName,
-                CustomerPhoneNumber = orderCreateModel.CustomerPhonenumber,
-                CustomerEmail = orderCreateModel.CustomerEmail ?? "",
-                TotalPrice = 0,
-                ShippingCharge = 0,
-                DiscountAmount = totalDiscount,
-                FinalAmount = 0,
-                PaymentMethod = orderCreateModel.PaymentMethod,
-                OrderStatus = EOrderStatus.Pending,
-                OrderItems = new List<OrderItem>(),
-
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                CreatedBy = cashier.Id,
-                UpdatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            await _uow.Orders.AddAsync(order);
-            await _uow.CommitAsync();
-
-            List<OrderItem> orderItems = new List<OrderItem>();
-            foreach (var item in orderCreateModel.Items)
-            {
-                var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByIdAsync(item.ProductVariantOptionId);
-
-                if (productVariantOption == null)
-                {
-                    serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
-                    return serviceResult;
-                }
-
-                if (productVariantOption.Stock < item.Quantity)
-                {
-                    serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
-                    return serviceResult;
-                }
-                else
-                {
-                    productVariantOption.Stock -= item.Quantity;
-                    _uow.ProductVariantOptions.Update(productVariantOption);
-
-                    orderItems.Add(new OrderItem
-                    {
-                        PublicId = Random.Shared.Next(100000, 1000000).ToString(),
-                        ProductVariantOptionId = productVariantOption.Id,
+                        ProductVariantOptionPublicId = productVariantOption.PublicId,
                         Order = order,
                         OrderId = order.Id,
                         Quantity = item.Quantity,
@@ -400,8 +281,6 @@ namespace TechStore.Service.Implementations
                 totalDiscount += item.Discount;
             }
 
-            await _uow.OrderItems.AddRangeAsync(orderItems);
-
             var finalAmount = totalPrice - totalDiscount;
 
             var invoice = new Invoice
@@ -410,44 +289,33 @@ namespace TechStore.Service.Implementations
                 OrderId = order.Id,
                 Order = order,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
+                CreatedBy = customer.Id,
                 TotalPrice = totalPrice,
                 DiscountAmount = 0,
                 FinalAmount = finalAmount,
                 InvoiceStatus = EInvoiceStatus.Unpaid,
                 EntityStatus = EEntityStatus.Active,
             };
-            await _uow.Invoices.AddAsync(invoice);
 
-            var payment = new Payment
-            {
-                PublicId = paymentId,
-                OrderId = order.Id,
-                Order = order,
-                PaymentMethod = orderCreateModel.PaymentMethod,
-                Amount = finalAmount,
-                TransactionCode = "",
-                PaymentStatus = EPaymentStatus.Pending,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active,
-            };
-            await _uow.Payments.AddAsync(payment);
 
-            string paymentQR = ServerAddress.WEBSITE_ADDRESS + payment.PublicId;
-            var addPaymentQRResult = await _qrCodeService.AddPaymentQRCodeAsync(payment, paymentQR, paymentId, EQRCodeType.Payment, null);
+            //string orderTrackingQR = ServerAddress.WEBSITE_ADDRESS;
+            //var addQRCodeResult = await _qrCodeService.AddTrackingOrderQRCodeAsync(order, orderTrackingQR, order.PublicId, EQRCodeType.OrderTracking, null);
 
-            if (addPaymentQRResult.IsSuccess == false)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
+            //if (addQRCodeResult.IsSuccess == false)
+            //{
+            //    serviceResult.Message = Messenger.SystemError;
+            //    return serviceResult;
+            //}
 
             order.Invoice = invoice;
-            order.Payment = payment;
+            order.Payments.Add(payment);
             order.TotalPrice = totalPrice;
             order.DiscountAmount = totalDiscount;
             order.FinalAmount = finalAmount;
 
-            _uow.Orders.Update(order);
+            //await _uow.OrderItems.AddRangeAsync(orderItems);
+            await _uow.Orders.AddAsync(order);
+            //await _uow.Invoices.AddAsync(invoice);
 
             var result = await _uow.CommitAsync();
 
@@ -456,9 +324,198 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
+            //var paymentQrUrl = await _vietQrService.GenerateQrAsync(payment.Amount, $"PAY {order.PublicId}");
+
+            //if (paymentQrUrl == null)
+            //{
+            //    serviceResult.Message = Messenger.SystemError;
+            //    return serviceResult;
+            //}
+
             serviceResult.Data = order.PublicId;
+
             serviceResult.IsSuccess = true;
             serviceResult.Message = Messenger.SuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<string>> CreateInStoreOrderAsync(string userId, string paymentId, InStoreOrderCreateModel orderCreateModel)
+        {
+            var serviceResult = new ServiceResult<string>
+            {
+                IsSuccess = false,
+                Data = null,
+                Message = Messenger.BadRequest,
+            };
+
+            //var cashier = await _uow.Users.GetByIdAsync(userId);
+            //if (cashier == null)
+            //{
+            //    serviceResult.Message = Messenger.NoExitData + " " + userId;
+            //    return serviceResult;
+            //}
+
+
+
+            //var newUserId = await _sequenceService.GetNextUserIdAsync();
+
+            //var newUser = new User
+            //{
+            //    PublicId = newUserId,
+            //    FirstName = orderCreateModel.FirstName,
+            //    LastName = orderCreateModel.LastName,
+            //    PhoneNumber = orderCreateModel.CustomerPhonenumber,
+            //    Email = orderCreateModel.CustomerEmail ?? "",
+            //    PasswordHash = orderCreateModel.CustomerPhonenumber,
+            //    Address = "",
+            //    RoleId = ERole.Customer,
+            //    CreatedAt = TimeZoneHelper.GetUtcNow(),
+            //    CreatedBy = cashier.Id,
+            //    UpdatedAt = TimeZoneHelper.GetUtcNow(),
+            //    EntityStatus = EEntityStatus.Active,
+            //    Status = EUserStatus.Active,
+            //};
+
+            //await _uow.Users.AddAsync(newUser);
+            //await _uow.CommitAsync();
+
+            //var orderId = await _sequenceService.GetNextOrderIdAsync();
+            //var invoiceId = await _sequenceService.GetNextInvoiceIdAsync();
+            ////var paymentId = await _sequenceService.GetNextPaymentIdAsync();
+
+            //// Tính toán tổng tiền
+            //decimal totalPrice = 0;
+            //decimal totalDiscount = 0;
+
+            //var order = new Order
+            //{
+            //    PublicId = orderId,
+            //    OrderType = EOrderType.InStore,
+            //    CustomerId = newUser.Id,
+            //    Customer = newUser,
+            //    CustomerName = orderCreateModel.LastName + " " + orderCreateModel.FirstName,
+            //    CustomerPhoneNumber = orderCreateModel.CustomerPhonenumber,
+            //    CustomerEmail = orderCreateModel.CustomerEmail ?? "",
+            //    ShippingAddress = "Nhận tại của hàng",
+            //    TotalPrice = 0,
+            //    ShippingCharge = 0,
+            //    DiscountAmount = totalDiscount,
+            //    FinalAmount = 0,
+            //    PaymentMethod = orderCreateModel.PaymentMethod,
+            //    OrderStatus = EOrderStatus.Pending,
+            //    OrderItems = new List<OrderItem>(),
+            //    Payments = new List<Payment>(),
+
+            //    CreatedAt = TimeZoneHelper.GetUtcNow(),
+            //    CreatedBy = cashier.Id,
+            //    UpdatedAt = TimeZoneHelper.GetUtcNow(),
+            //    EntityStatus = EEntityStatus.Active,
+            //};
+
+            //await _uow.Orders.AddAsync(order);
+            //await _uow.CommitAsync();
+
+            //List<OrderItem> orderItems = new List<OrderItem>();
+            //foreach (var item in orderCreateModel.Items)
+            //{
+            //    var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByPublicIdAsync(item.ProductVariantOptionId);
+
+            //    if (productVariantOption == null)
+            //    {
+            //        serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
+            //        return serviceResult;
+            //    }
+
+            //    if (productVariantOption.Stock < item.Quantity)
+            //    {
+            //        serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
+            //        return serviceResult;
+            //    }
+            //    else
+            //    {
+            //        productVariantOption.Stock -= item.Quantity;
+            //        _uow.ProductVariantOptions.Update(productVariantOption);
+
+            //        orderItems.Add(new OrderItem
+            //        {
+            //            PublicId = Random.Shared.Next(100000, 1000000).ToString(),
+            //            ProductVariantOptionId = productVariantOption.Id,
+            //            ProductVariantOptionPublicId = productVariantOption.PublicId,
+            //            Order = order,
+            //            OrderId = order.Id,
+            //            Quantity = item.Quantity,
+            //            PriceAtOrderTime = productVariantOption.ProductVariant.Price,
+            //            Discount = item.Discount,
+            //            TotalPrice = item.Quantity * productVariantOption.ProductVariant.Price,
+            //            CreatedAt = TimeZoneHelper.GetUtcNow(),
+            //            EntityStatus = EEntityStatus.Active,
+            //        });
+            //    }
+
+            //    decimal itemTotal = item.Quantity * productVariantOption.ProductVariant.Price;
+            //    totalPrice += itemTotal;
+            //    totalDiscount += item.Discount;
+            //}
+
+            //await _uow.OrderItems.AddRangeAsync(orderItems);
+
+            //var finalAmount = totalPrice - totalDiscount;
+
+            //var invoice = new Invoice
+            //{
+            //    PublicId = invoiceId,
+            //    OrderId = order.Id,
+            //    Order = order,
+            //    CreatedAt = TimeZoneHelper.GetUtcNow(),
+            //    TotalPrice = totalPrice,
+            //    DiscountAmount = 0,
+            //    FinalAmount = finalAmount,
+            //    InvoiceStatus = EInvoiceStatus.Unpaid,
+            //    EntityStatus = EEntityStatus.Active,
+            //};
+            //await _uow.Invoices.AddAsync(invoice);
+
+            //var payment = new Payment
+            //{
+            //    PublicId = paymentId,
+            //    OrderId = order.Id,
+            //    Order = order,
+            //    PaymentMethod = orderCreateModel.PaymentMethod,
+            //    Amount = finalAmount,
+            //    TransactionCode = "",
+            //    PaymentStatus = EPaymentStatus.Pending,
+            //    CreatedAt = TimeZoneHelper.GetUtcNow(),
+            //    EntityStatus = EEntityStatus.Active,
+            //};
+            //await _uow.Payments.AddAsync(payment);
+
+            //string paymentQR = ServerAddress.WEBSITE_ADDRESS + payment.PublicId;
+            //var addPaymentQRResult = await _qrCodeService.AddPaymentQRCodeAsync(payment, paymentQR, paymentId, EQRCodeType.Payment, null);
+
+            //if (addPaymentQRResult.IsSuccess == false)
+            //{
+            //    serviceResult.Message = Messenger.SystemError;
+            //    return serviceResult;
+            //}
+
+            //order.Invoice = invoice;
+            //order.Payments.Add(payment);
+            //order.TotalPrice = totalPrice;
+            //order.DiscountAmount = totalDiscount;
+            //order.FinalAmount = finalAmount;
+
+            //_uow.Orders.Update(order);
+
+            //var result = await _uow.CommitAsync();
+
+            //if (result < 1)
+            //{
+            //    return serviceResult;
+            //}
+
+            //serviceResult.Data = order.PublicId;
+            //serviceResult.IsSuccess = true;
+            //serviceResult.Message = Messenger.SuccessFull;
             return serviceResult;
         }
 
@@ -493,19 +550,19 @@ namespace TechStore.Service.Implementations
                 }
             }
 
-            if (order.Payment != null)
+            foreach (var payment in order.Payments)
             {
-                var payment = await _uow.Payments.FindOneAsync(p => p.Id == order.Payment.Id);
-                if (payment != null)
+                var existPayment = await _uow.Payments.FindOneAsync(p => p.Id == payment.Id);
+                if (existPayment != null)
                 {
-                    var qrPayments = await _uow.QRCodes.FindOneAsync(q => q.RelatedId == payment.Id);
+                    var qrPayments = await _uow.QRCodes.FindOneAsync(q => q.RelatedId == existPayment.Id);
 
                     if (qrPayments != null)
                     {
                         _uow.QRCodes.Remove(qrPayments);
                     }
 
-                    _uow.Payments.Remove(payment);
+                    _uow.Payments.Remove(existPayment);
                 }
             }
 
@@ -538,12 +595,7 @@ namespace TechStore.Service.Implementations
 
             foreach (var order in listOrders)
             {
-                User? customer = null;
-
-                if (order.CustomerId.HasValue)
-                {
-                    customer = await _uow.Users.GetByInternalIdAsync(order.CustomerId.Value);
-                }
+                var customer = await _uow.Users.GetByInternalIdAsync(order.CustomerId);
 
                 serviceResult.Data.Add(order.ToOrderDetailModel(customer));
             }
@@ -564,14 +616,12 @@ namespace TechStore.Service.Implementations
 
             foreach (var order in listOrders)
             {
-                User? customer = null; 
+                var customer = await _uow.Users.GetByInternalIdAsync(order.CustomerId);
 
-                if (order.CustomerId.HasValue)
+                if (customer != null)
                 {
-                    customer = await _uow.Users.GetByInternalIdAsync(order.CustomerId.Value);
+                    serviceResult.Data.Add(order.ToOrderResponseModel(customer));
                 }
-
-                serviceResult.Data.Add(order.ToOrderResponseModel(customer));
 
                 //serviceResult.Data.Add(await OrderToOrderModelAsync(order));
             }
@@ -617,7 +667,7 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<OrderDetailResponseModel>> GetOrderByIdAsync(string orderId)
+        public async Task<ServiceResult<OrderDetailResponseModel>> GetOrderByIdAsync(string userId, string orderId)
         {
             var serviceResult = new ServiceResult<OrderDetailResponseModel>
             {
@@ -633,16 +683,92 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            User? customer = null;
-
-            if (order.CustomerId.HasValue)
+            var customer = await _uow.Users.GetByIdAsync(userId);
+            if (customer == null)
             {
-                customer = await _uow.Users.GetByInternalIdAsync(order.CustomerId.Value);
+                serviceResult.Message = Messenger.NoExitData + " " + userId;
+                return serviceResult;
+            }
+
+            if (customer.Id != order.CustomerId)
+            {
+                return serviceResult;
             }
 
             order.QRCode = await _uow.QRCodes.FindOneAsync(q => q.RelatedId == order.Id && q.Type == EQRCodeType.OrderTracking);
             order.Invoice = await _uow.Invoices.FindOneAsync(i => i.OrderId == order.Id);
-            order.Payment = await _uow.Payments.FindOneAsync(p => p.OrderId == order.Id);
+            var payments = await _uow.Payments.FindManyAsync(p => p.OrderId == order.Id);
+            foreach ( var payment in payments)
+            {
+                order.Payments.Add(payment);
+            }
+
+            order.ShippingDetail = await _uow.ShippingDetails.FindOneAsync(s => s.OrderId == order.Id);
+            if (order.ShippingDetail != null)
+            {
+                var shipper = await _uow.Shippers.FindOneAsync(s => s.Id == order.ShippingDetail.ShipperId);
+                if (shipper != null)
+                {
+                    order.ShippingDetail.Shipper = shipper;
+                }
+            }
+
+            serviceResult.Data = order.ToOrderDetailModel(customer);
+            //serviceResult.Data = await OrderToOrderDetailModelAsync(order);
+            serviceResult.IsSuccess = true;
+            serviceResult.Message = Messenger.GetDataSuccessful;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<OrderDetailResponseModel>> AdminGetOrderByIdAsync(string userId, string orderId)
+        {
+            var serviceResult = new ServiceResult<OrderDetailResponseModel>
+            {
+                IsSuccess = true,
+                Data = null,
+                Message = Messenger.NoExitData,
+            };
+
+            var adminUser = await _uow.Users.GetByIdAsync(userId);
+            if (adminUser != null) {
+                if (adminUser.RoleId != ERole.Admin)
+                {
+                    serviceResult.Message = Messenger.NoPermission;
+                    return serviceResult;
+                }
+            }
+            else
+            {
+                serviceResult.Message = Messenger.NoExitData + " " + userId;
+                return serviceResult;
+            }
+
+            var order = await _uow.Orders.GetOrderIncludeItemsAsync(p => p.PublicId == orderId);
+
+            if (order == null)
+            {
+                return serviceResult;
+            }
+
+            var customer = await _uow.Users.GetByInternalIdAsync(order.CustomerId);
+            if (customer == null)
+            {
+                serviceResult.Message = Messenger.NoExitData + " " + userId;
+                return serviceResult;
+            }
+
+            if (customer.Id != order.CustomerId)
+            {
+                return serviceResult;
+            }
+
+            order.QRCode = await _uow.QRCodes.FindOneAsync(q => q.RelatedId == order.Id && q.Type == EQRCodeType.OrderTracking);
+            order.Invoice = await _uow.Invoices.FindOneAsync(i => i.OrderId == order.Id);
+            var payments = await _uow.Payments.FindManyAsync(p => p.OrderId == order.Id);
+            foreach (var payment in payments)
+            {
+                order.Payments.Add(payment);
+            }
 
             order.ShippingDetail = await _uow.ShippingDetails.FindOneAsync(s => s.OrderId == order.Id);
             if (order.ShippingDetail != null)
@@ -1415,12 +1541,12 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<List<OrderResponseModel>>> GetCustomerOrdersAsync(string customerId)
+        public async Task<ServiceResult<List<OrderListItemModel>>> GetCustomerOrdersAsync(string customerId)
         {
-            var serviceResult = new ServiceResult<List<OrderResponseModel>>
+            var serviceResult = new ServiceResult<List<OrderListItemModel>>
             {
                 IsSuccess = true,
-                Data = new List<OrderResponseModel>(),
+                Data = new List<OrderListItemModel>(),
                 Message = Messenger.GetDataSuccessful,
             };
 
@@ -1433,16 +1559,20 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var listOrders = await _uow.Orders.FindManyAsync(o => o.CustomerId == customer.Id);
+            var listOrders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CustomerId == customer.Id);
+
+            if (listOrders == null) {
+                return serviceResult;
+            }
 
             foreach (var order in listOrders)
             {
-                var orderResponseModel = order.ToOrderResponseModel(customer);
-                //var orderResponseModel = await OrderToOrderModelAsync(order);
+                var orderResponseModel = order.ToOrderListItemModel();
                 serviceResult.Data.Add(orderResponseModel);
             }
 
             return serviceResult;
         }
+
     }
 }

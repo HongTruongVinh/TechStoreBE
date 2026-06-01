@@ -30,6 +30,7 @@ namespace TechStore.Data.UnitOfWork
         public IShippingDetailRepository ShippingDetails { get; }
         public IUserRepository Users { get; }
         public IVoucherRepository Vouchers { get; }
+        public ISearchKeywordRepository SearchKeywords { get; }
         public IInvalidTokenRepository InvalidTokens { get; }
         public ISequenceRepository Sequences { get; }
 
@@ -53,6 +54,7 @@ namespace TechStore.Data.UnitOfWork
             ShippingDetails = new ShippingDetailRepository(_context);
             Users = new UserRepository(_context);
             Vouchers = new VoucherRepository(_context);
+            SearchKeywords = new SearchKeywordRepository(_context);
             InvalidTokens = new InvalidTokenRepository(_context);
             Sequences = new SequenceRepository(_context);
         }

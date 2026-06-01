@@ -12,6 +12,8 @@ namespace TechStore.Data.Context
 {
     // Add-Migration InitialCreate
     // Update-Database
+
+    // Drop-Database
     public class AppDbContext : DbContext
     {
         public DbSet<Sequence> Sequences => Set<Sequence>();
@@ -33,6 +35,7 @@ namespace TechStore.Data.Context
         public DbSet<ShippingDetail> ShippingDetails => Set<ShippingDetail>();
         public DbSet<User> Users => Set<User>();
         public DbSet<Voucher> Vouchers => Set<Voucher>();
+        public DbSet<SearchKeyword> SearchKeywords => Set<SearchKeyword>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -95,7 +98,7 @@ namespace TechStore.Data.Context
                     .IsRequired()
                     .HasMaxLength(300);
 
-                entity.HasIndex(c => c.Slug).IsUnique(); // nếu muốn slug là duy nhất
+                entity.HasIndex(c => c.Slug).IsUnique(); // slug là duy nhất
             });
 
             modelBuilder.Entity<Comment>(entity =>
@@ -129,9 +132,9 @@ namespace TechStore.Data.Context
                 .HasForeignKey<Invoice>(i => i.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(o => o.Payment)
+                entity.HasMany(o => o.Payments)
                 .WithOne(i => i.Order)
-                .HasForeignKey<Payment>(i => i.OrderId)
+                .HasForeignKey(i => i.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(o => o.OrderItems)
@@ -164,9 +167,9 @@ namespace TechStore.Data.Context
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
 
-                entity.HasOne(i => i.Order)
-                .WithOne(o => o.Payment)
-                .HasForeignKey<Payment>(i => i.OrderId)
+                entity.HasOne(p => p.Order)
+                .WithMany(o => o.Payments)
+                .HasForeignKey(p => p.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             });
@@ -204,7 +207,7 @@ namespace TechStore.Data.Context
                 .HasMaxLength(150);
 
                 entity.HasOne(v => v.Product)
-                .WithMany()
+                .WithMany(p => p.Variants)
                 .HasForeignKey(v => v.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -223,7 +226,7 @@ namespace TechStore.Data.Context
                 .HasMaxLength(150);
 
                 entity.HasOne(op => op.ProductVariant)
-                .WithMany()
+                .WithMany(pv => pv.Options)
                 .HasForeignKey(v => v.ProductVariantId)
                 .OnDelete(DeleteBehavior.Restrict);
             });
@@ -267,6 +270,12 @@ namespace TechStore.Data.Context
             });
 
             modelBuilder.Entity<Voucher>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+            });
+
+            modelBuilder.Entity<SearchKeyword>(entity =>
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
 

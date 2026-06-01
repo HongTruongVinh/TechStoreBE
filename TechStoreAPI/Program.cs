@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Techstore.API.Hubs;
 using TechStore.Common.Constants;
 using TechStore.Data.Context;
 using TechStore.Data.Repositories;
@@ -21,9 +22,10 @@ namespace TechStoreAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            #region add service congig
+            #region add service config
             builder.Services.Configure<JWTConfig>(builder.Configuration.GetSection("JWT"));
             builder.Services.Configure<CloudinaryConfig>(builder.Configuration.GetSection("CloudinarySettings"));
+            //builder.Services.Configure<VietQRConfig>(builder.Configuration.GetSection("VietQrSettings"));
 
             var jwtConfig = builder.Configuration.GetSection("JWT").Get<JWTConfig>() ?? new JWTConfig();
             #endregion
@@ -31,6 +33,11 @@ namespace TechStoreAPI
             #region Add environment variables when deploy
             builder.Configuration
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile(
+                        $"appsettings.{builder.Environment.EnvironmentName}.json",
+                        optional: true,
+                        reloadOnChange: true
+                    )
                     .AddEnvironmentVariables();
             #endregion
 
@@ -58,13 +65,18 @@ namespace TechStoreAPI
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IQRCodeService, QRCodeService>();
             builder.Services.AddScoped<SequenceGeneratorService, SequenceGeneratorService>();
             builder.Services.AddScoped<IShipperService, ShipperService>();
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
             builder.Services.AddScoped<IUploadDataToCloudService, UploadDataToCloudService>();
+            builder.Services.AddHttpClient<VietQrService>();
+            builder.Services.AddScoped<IVietQrService, VietQrService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IHomeService, HomeService>();
 
+            builder.Services.AddSignalR();
             #endregion
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -167,6 +179,18 @@ namespace TechStoreAPI
                 });
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("Angular", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
             builder.Services.AddControllers();
 
             var app = builder.Build();
@@ -178,15 +202,15 @@ namespace TechStoreAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
-            app.UseCors("AllowAnyOrigin");
+            //app.UseCors("AllowAnyOrigin");
+            app.UseCors("Angular");
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
+            app.MapHub<PaymentHub>("/payments/hub");
 
             app.Run();
         }

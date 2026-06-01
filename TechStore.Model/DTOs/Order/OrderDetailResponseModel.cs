@@ -29,7 +29,7 @@ namespace TechStore.Model.DTOs.Order
 
         public required List<OrderItemResponseModel> Items { get; set; }
         public InvoiceResponseModel? Invoice { get; set; }
-        public PaymentResponseModel? Payment { get; set; }
+        public required List<PaymentResponseModel> Payments { get; set; }
 
         public required DateTime CreatedAt { get; set; }
         public required DateTime UpdatedAt { get; set; }
@@ -42,6 +42,7 @@ namespace TechStore.Model.DTOs.Order
         public DateTime? ShippedDate { get; set; }
         public DateTime? EstimatedArrival { get; set; }
         public string? ShippingNote { get; set; }
+        public string? Notes { get; set; }
         public int? FailureCount { get; set; }
     }
 }

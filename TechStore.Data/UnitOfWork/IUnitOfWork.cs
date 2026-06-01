@@ -27,6 +27,7 @@ namespace TechStore.Data.UnitOfWork
         IShippingDetailRepository ShippingDetails { get; }
         IUserRepository Users { get; }
         IVoucherRepository Vouchers { get; }
+        ISearchKeywordRepository SearchKeywords { get; }
         ISequenceRepository Sequences { get; }
         IInvalidTokenRepository InvalidTokens { get; }
 

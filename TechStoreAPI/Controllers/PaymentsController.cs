@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
 using TechStore.Common.Models;
+using TechStore.Model.DTOs.Order;
 using TechStore.Model.DTOs.Payment;
+using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
 
 namespace TechStoreAPI.Controllers
@@ -78,32 +81,50 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ApiResponse<string>> AddPayment(PaymentCreateModel paymentCreateModel)
+        [HttpPost("create-payment-data")]
+        public async Task<ApiResponse<PaymentDataModel>> CreatePaymentData(OrderCreateModel createOrderRequest)
         {
-            var serviceResult = await _paymentService.AddPayment(paymentCreateModel);
+            var userId = User.FindFirstValue(AppClaims.UserId);
 
-            if (serviceResult.IsSuccess)
+            if (userId != null)
             {
-                return new()
+                var serviceResult = await _paymentService.CreatePaymentForPrepayOrder(userId, createOrderRequest);
+
+                if (serviceResult.IsSuccess)
                 {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
+                    return new()
+                    {
+                        PartnerCode = Messenger.SuccessFull,
+                        RetCode = ERetCode.Successfull,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.NoExitData,
+                        RetCode = ERetCode.NoExitData,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
             }
             else
             {
-                return new()
+                ApiResponse<PaymentDataModel> result = new()
                 {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = null,
+                    SystemMessage = Messenger.LoginError,
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed
                 };
+
+                return result;
             }
         }
 

@@ -9,5 +9,6 @@ namespace TechStore.Data.Repositories.Interfaces
 {
     public interface ICartItemRepository : IRepository<CartItem>
     {
+        
     }
 }

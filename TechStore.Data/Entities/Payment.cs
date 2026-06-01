@@ -9,8 +9,11 @@ namespace TechStore.Data.Entities
 {
     public class Payment : BaseEntity
     {
-        public required Guid OrderId { get; set; }
-        public required Order Order { get; set; }
+        public Guid? OrderId { get; set; }
+        public Order? Order { get; set; }
+
+        public required Guid UserId { get; set; }
+        public required User User { get; set; }
 
         public required decimal Amount { get; set; } = 0;
 
@@ -20,6 +23,10 @@ namespace TechStore.Data.Entities
 
         public required EPaymentStatus PaymentStatus { get; set; }
 
+        public DateTime ExpiredAt { get; set; }
+
+        // Snapshot checkout
+        public string? CheckoutSnapshotJson { get; set; }
 
     }
 }

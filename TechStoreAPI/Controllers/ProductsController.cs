@@ -94,7 +94,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ApiResponse<ProductDetailModel>> Get(string id)
+        public async Task<ApiResponse<ProductDetailModel>> GetProductDetail(string id)
         {
             var serviceResult = await _productService.GetProductById(id);
 
@@ -168,11 +168,71 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> SearchByName(string keyword, int pageNumber = 1, int pageSize = 20)
+        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> SearchByName(string keyword, int pageNumber = 1, int pageSize = 12)
         {
             var serviceResult = await _productService.SearchByNameAsync(keyword, pageNumber, pageSize);
 
-          if (serviceResult.IsSuccess)
+            if (serviceResult.IsSuccess)
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.NoExitData,
+                    RetCode = ERetCode.NoExitData,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+        }
+
+        [HttpGet("category")]
+        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProductsByCategory(string categorySlug, int pageNumber = 1, int pageSize = 12)
+        {
+
+            var serviceResult = await _productService.GetProductsByCategory(categorySlug, pageNumber, pageSize);
+
+            if (serviceResult.IsSuccess)
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            else
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.NoExitData,
+                    RetCode = ERetCode.NoExitData,
+                    Data = serviceResult.Data,
+                    SystemMessage = serviceResult.Message,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+        }
+
+        [HttpGet("category-brand")]
+        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProductsByCategoryAndBrand(string categorySlug, string brandSlug, int pageNumber = 1, int pageSize = 12)
+        {
+
+            var serviceResult = await _productService.GetProductsByCategoryAndBrand(categorySlug, brandSlug, pageNumber, pageSize);
+
+            if (serviceResult.IsSuccess)
             {
                 return new()
                 {

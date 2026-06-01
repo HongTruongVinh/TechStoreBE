@@ -31,5 +31,6 @@ namespace TechStore.Model.DTOs.Product
         public required decimal SalePrice { get; set; }
         public DateTime? SaleStart { get; set; }
         public DateTime? SaleEnd { get; set; }
+        public DateTime? PublishDate { get; set; }
     }
 }

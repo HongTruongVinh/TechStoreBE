@@ -9,6 +9,6 @@ namespace TechStore.Data.Repositories.Interfaces
 {
     public interface IBrandRepository : IRepository<Brand>
     {
-
+        Task<Brand?> GetBySlugAsync(string slug);
     }
 }

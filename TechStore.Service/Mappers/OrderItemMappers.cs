@@ -14,10 +14,12 @@ namespace TechStore.Service.Mappers
         {
             return new OrderItemResponseModel
             {
-                OrderItemId = orderItem.PublicId,
+                Id = orderItem.PublicId,
                 OrderId = orderItem.Order.PublicId,
                 ProductVariantOptionId = orderItem.ProductVariantOption.PublicId,
-                ProductName = orderItem.ProductVariantOption.ProductVariant.Name,
+                ProductName = orderItem.ProductVariantOption.ProductVariant.Product.Name,
+                VariantName = orderItem.ProductVariantOption.ProductVariant.Name,
+                OptionName = orderItem.ProductVariantOption.Name,
                 CategoryName = orderItem.ProductVariantOption.ProductVariant.Product.Category.Name,
                 MainImageUrl = orderItem.ProductVariantOption.ImageUrl,
                 PriceAtOrderTime = orderItem.PriceAtOrderTime,

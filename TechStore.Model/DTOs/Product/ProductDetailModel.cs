@@ -15,11 +15,12 @@ namespace TechStore.Model.DTOs.Product
 
         public required string Description { get; set; } = "";
         public required string MainImageUrl { get; set; }
-        public List<string>? GalleryImageUrls { get; set; } = new();
+        public required List<string> GalleryImageUrls { get; set; } = new();
 
         //public required int Stock { get; set; }
         //public required decimal Price { get; set; } = 0;
         public required int SoldCount { get; set; }
+        public required int Warranty { get; set; }
 
         public required decimal SalePrice { get; set; }
         public DateTime? SaleStart { get; set; }
@@ -39,6 +40,7 @@ namespace TechStore.Model.DTOs.Product
 
         public required bool IsOnSale { get; set; }
         public required bool IsFeatured { get; set; }
+        public DateTime? PublishDate { get; set; }
 
         public required List<ProductVariantDetailModel> Variants { get; set; }
     }

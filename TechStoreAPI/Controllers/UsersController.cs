@@ -7,6 +7,7 @@ using TechStore.Common.Enums;
 using TechStore.Common.Models;
 using TechStore.Model.DTOs.Authentication;
 using TechStore.Model.DTOs.User;
+using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
 
 namespace TechStoreAPI.Controllers
@@ -67,8 +68,53 @@ namespace TechStoreAPI.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<ApiResponse<bool>> UpdateProfile(UserUpdateModel model)
+        {
+            var userId = User.FindFirstValue(AppClaims.UserId);
+
+            if (userId != null)
+            {
+                var serviceResult = await _userService.UpdateUserInformation(userId, model);
+
+                if (serviceResult.IsSuccess)
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.SuccessFull,
+                        RetCode = ERetCode.Successfull,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.NoExitData,
+                        RetCode = ERetCode.NoExitData,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+            }
+            else
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = false,
+                    SystemMessage = Messenger.LoginError,
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed
+                };
+            }
+        }
+
         [HttpPut("update-information/{id}")]
-        public async Task<ApiResponse<bool>> UpdateUser(string id, UserUpdateModel model)
+        public async Task<ApiResponse<bool>> AdminUpdateUser(string id, UserUpdateModel model)
         {
             var serviceResult = await _userService.UpdateUserInformation(id, model);
 
