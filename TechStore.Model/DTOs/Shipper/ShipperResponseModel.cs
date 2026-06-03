@@ -8,7 +8,7 @@ namespace TechStore.Model.DTOs.Shipper
 {
     public class ShipperResponseModel
     {
-        public required string ShipperId { get; set; }
+        public required string Id { get; set; }
 
         public required string Name { get; set; }
 

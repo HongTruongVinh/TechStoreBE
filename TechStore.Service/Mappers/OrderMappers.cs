@@ -115,7 +115,7 @@ namespace TechStore.Service.Mappers
         {
             var model = new InStoreOrderResponseModel
             {
-                OrderId = order.PublicId,
+                Id = order.PublicId,
                 CustomerName = order.CustomerName,
                 CustomerPhonenumber = order.CustomerPhoneNumber,
                 CustomerEmail = order.CustomerEmail ?? "",
@@ -217,7 +217,7 @@ namespace TechStore.Service.Mappers
 
             var orderResponseModel = new OrderDetailResponseModel
             {
-                OrderId = order.PublicId,
+                Id = order.PublicId,
                 CustomerId = customerId,
                 CustomerName = order.CustomerName ?? "",
                 ShippingAddress = order.ShippingAddress ?? "",
@@ -240,7 +240,6 @@ namespace TechStore.Service.Mappers
             var shippingDetail = order.ShippingDetail;
             var orderTrackingQR = order.QRCode;
             var invoice = order.Invoice;
-            var payments = order.Payments;
 
             foreach (var orderItem in orderItems)
             {
@@ -249,6 +248,7 @@ namespace TechStore.Service.Mappers
 
                 var orderItemResponeModel = new OrderItemResponseModel
                 {
+                    Id = orderItem.PublicId,
                     ProductVariantOptionId = product.PublicId,
                     OrderId = order.PublicId,
                     Quantity = orderItem.Quantity,
@@ -296,12 +296,16 @@ namespace TechStore.Service.Mappers
             //    orderResponseModel.Payment = payment.ToPaymentResponseModel(order, orderTrackingQR);
             //}
 
-            foreach(var payment in payments)
+            if (order.Payments != null && order.Payments.Any())
             {
-                orderResponseModel.Payments.Add(payment.ToPaymentResponseModel(order, orderTrackingQR));
+                foreach (var payment in order.Payments)
+                {
+                    orderResponseModel.Payments.Add(payment.ToPaymentResponseModel(order, orderTrackingQR));
+                }
             }
 
             return orderResponseModel;
         }
+
     }
 }

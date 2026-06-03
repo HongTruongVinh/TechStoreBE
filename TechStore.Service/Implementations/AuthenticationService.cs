@@ -189,7 +189,7 @@ namespace TechStore.Service.Implementations
             };
 
             var existUser = await _uow.Users.
-                FindOneAsync(u => u.Email == registerModel.RegisterIdentifier);
+                FindOneAsync(u => u.Email == registerModel.Phonenumber);
 
             if (existUser != null)
             {
@@ -206,7 +206,7 @@ namespace TechStore.Service.Implementations
                 FirstName = registerModel.UserInformation.FirstName,
                 Address = registerModel.UserInformation.Address,
                 PhoneNumber = registerModel.UserInformation.PhoneNumber,
-                Email = registerModel.RegisterIdentifier,
+                Email = registerModel.Phonenumber,
                 PasswordHash = registerModel.Password,
                 Status = EUserStatus.Active,
                 RoleId = ERole.Admin,
@@ -244,7 +244,7 @@ namespace TechStore.Service.Implementations
             };
 
             var existUser = await _uow.Users.
-                FindOneAsync(u => u.Email == registerModel.RegisterIdentifier || u.PhoneNumber == registerModel.RegisterIdentifier);
+                FindOneAsync(u => u.Email == registerModel.Phonenumber || u.PhoneNumber == registerModel.Phonenumber);
 
             if (existUser != null)
             {
@@ -261,7 +261,7 @@ namespace TechStore.Service.Implementations
                 FirstName = registerModel.UserInformation.FirstName,
                 Address = registerModel.UserInformation.Address,
                 PhoneNumber = registerModel.UserInformation.PhoneNumber,
-                Email = registerModel.RegisterIdentifier,
+                Email = registerModel.Phonenumber,
                 PasswordHash = registerModel.Password,
                 Status = EUserStatus.Active,
                 RoleId = ERole.Customer,
@@ -300,11 +300,11 @@ namespace TechStore.Service.Implementations
             };
 
             var existUser = await _uow.Users.
-                FindOneAsync(u => u.Email == registerModel.RegisterIdentifier || u.PhoneNumber == registerModel.RegisterIdentifier);
+                FindOneAsync(u => u.PhoneNumber == registerModel.Phonenumber);
 
             if (existUser != null)
             {
-                serviceResult.Message = "Phone number or email already exist!";
+                serviceResult.Message = "Phone number already exists!";
                 return serviceResult;
             }
 
@@ -317,7 +317,7 @@ namespace TechStore.Service.Implementations
                 FirstName = registerModel.UserInformation.FirstName,
                 Address = registerModel.UserInformation.Address,
                 PhoneNumber = registerModel.UserInformation.PhoneNumber,
-                Email = registerModel.RegisterIdentifier,
+                Email = registerModel.Phonenumber,
                 PasswordHash = registerModel.Password,
                 Status = EUserStatus.Active,
                 RoleId = ERole.Customer,
@@ -466,13 +466,19 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            if (model.Email != null)
+            if (!String.IsNullOrEmpty(model.Email))
             {
                 if (!Validator.IsValidEmail(model.Email))
                 {
                     serviceResult.Message = Messenger.IncorrectDataFormat;
                     return serviceResult;
                 }
+            }
+
+            if (String.IsNullOrEmpty(model.Address))
+            {
+                serviceResult.Message = Messenger.IncorrectDataFormat;
+                return serviceResult;
             }
 
             var isExistEmail = await _uow.Users.FindOneAsync(u => u.Email == model.Email);

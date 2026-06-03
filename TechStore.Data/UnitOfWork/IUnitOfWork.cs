@@ -21,6 +21,8 @@ namespace TechStore.Data.UnitOfWork
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItems { get; }
         IPaymentRepository Payments { get; }
+        IPaymentSnapshotRepository PaymentSnapshots { get; }
+        IPaymentSnapshotItemRepository PaymentSnapshotItems { get; }
         IQRCodeRepository QRCodes { get; }
         IReportRepository Reports { get; }
         IShipperRepository Shippers { get; }

@@ -14,7 +14,7 @@ namespace TechStore.Service.Mappers
         {
             return new PaymentResponseModel
             {
-                PaymentId = payment.PublicId,
+                Id = payment.PublicId,
                 OrderId = order.PublicId,
                 CustomerId = order.Customer?.PublicId ?? "",
                 CustomerName = order.CustomerName,

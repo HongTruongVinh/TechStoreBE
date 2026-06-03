@@ -181,10 +181,13 @@ namespace TechStoreAPI
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("Angular", policy =>
+                options.AddPolicy("CorsPolicy", policy =>
                 {
                     policy
-                        .WithOrigins("http://localhost:4200")
+                        .WithOrigins(
+                            "http://localhost:4200",
+                            "http://localhost:4400"
+                        )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
@@ -205,7 +208,7 @@ namespace TechStoreAPI
             //app.UseHttpsRedirection();
 
             //app.UseCors("AllowAnyOrigin");
-            app.UseCors("Angular");
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();

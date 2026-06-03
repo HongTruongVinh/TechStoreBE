@@ -82,7 +82,7 @@ namespace TechStore.Service.Implementations
         {
             var data = new List<ChartData>();
 
-            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Year == year);
+            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Year == year, 1, int.MaxValue);
 
             var categoryStatistics = orders.SelectMany(order => order.OrderItems).
                 GroupBy(item => item.ProductVariantOption.ProductVariant.Product.Category.Name)
@@ -302,43 +302,47 @@ namespace TechStore.Service.Implementations
 
             int curentMonth = DateTime.Now.Date.Month;
 
-            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Month >= curentMonth - 1);
+            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Month >= curentMonth - 1, 1, 10000);
 
             var recentTopProducts = orders
-                .Where(o => o.CreatedAt >= DateTime.UtcNow.AddDays(-30)) // lọc đơn hàng gần đây
+                //.Where(o => o.CreatedAt >= DateTime.UtcNow.AddDays(-30)) // lọc đơn hàng gần đây
                 .SelectMany(o => o.OrderItems) // gom tất cả OrderItem lại
                 .GroupBy(item => new { item.ProductVariantOptionId })
                 .Select(g => new
                 {
                     PVOId = g.Key.ProductVariantOptionId,
-                    SoldCount = g.Sum(x => x.Quantity)
+                    SoldCount = g.Sum(x => x.Quantity),
                 })
                 .OrderByDescending(x => x.SoldCount)
                 .Take(6)
                 .ToList();
 
-            if (recentTopProducts.Count > 0)
-            {
-                foreach (var item in recentTopProducts)
-                {
-                    var pVO = await _uow.ProductVariantOptions.FindOneAsync(p => p.Id == item.PVOId);
+            var topPvoIds = recentTopProducts
+            .Select(x => x.PVOId)
+            .ToList();
 
-                    if (pVO != null)
+                    var topOrderItems = orders
+            .SelectMany(o => o.OrderItems)
+            .Where(oi => topPvoIds.Contains(oi.ProductVariantOptionId))
+            .ToList();
+
+            if (topPvoIds.Count > 0)
+            {
+                foreach (var item in topOrderItems)
+                {
+                    var productModel = new AdminProductListItemModel
                     {
-                        var productModel = new AdminProductListItemModel
-                        {
-                            ProductVariantOptionId = pVO.PublicId,
-                            CategoryName = pVO.ProductVariant.Product.Category.Name,
-                            Name = pVO.ProductVariant.Product.Name + " " + pVO.ProductVariant.Name + " " + pVO.Name,
-                            SoldCount = item.SoldCount,
-                            Price = pVO.ProductVariant.Price,
-                            MainImageUrl = pVO.ImageUrl,
-                            AverageRating = pVO.ProductVariant.Product.AverageRating,
-                            Stock = pVO.Stock,
-                            RatedCount = pVO.ProductVariant.Product.RatedCount,
-                        };
-                        productModels.Add(productModel);
-                    }
+                        ProductVariantOptionId = item.ProductVariantOptionPublicId,
+                        CategoryName = item.ProductVariantOption.ProductVariant.Product.Category.Name,
+                        Name = item.ProductVariantOption.ProductVariant.Product.Name + " " + item.ProductVariantOption.ProductVariant.Name + " " + item.ProductVariantOption.Name,
+                        SoldCount = item.ProductVariantOption.ProductVariant.SoldCount,
+                        Price = item.ProductVariantOption.ProductVariant.Price,
+                        MainImageUrl = item.ProductVariantOption.ImageUrl,
+                        AverageRating = item.ProductVariantOption.ProductVariant.Product.AverageRating,
+                        Stock = item.ProductVariantOption.Stock,
+                        RatedCount = item.ProductVariantOption.ProductVariant.Product.RatedCount,
+                    };
+                    productModels.Add(productModel);
                 }
             }
 
@@ -363,7 +367,7 @@ namespace TechStore.Service.Implementations
         {
             var productModels = new List<AdminProductListItemModel>();
 
-            var top10RatedProducts =  await _uow.Products.GetTopRatedProductsAsync(7);
+            var top10RatedProducts = await _uow.Products.GetTopRatedProductsAsync(7);
 
             foreach (var product in top10RatedProducts)
             {

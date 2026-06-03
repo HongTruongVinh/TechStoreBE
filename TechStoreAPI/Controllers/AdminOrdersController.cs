@@ -52,10 +52,14 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpGet("status/{statusId}")]
-        public async Task<ApiResponse<List<OrderDetailResponseModel>>> GetListOrderByStatusId(EOrderStatus statusId)
+        [HttpGet("status")]
+        public async Task<ApiResponse<PagedResult<OrderDetailResponseModel>>> GetListOrderByStatusId(
+            [FromQuery] EOrderStatus status,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10
+            )
         {
-            var serviceResult = await _orderService.GetListOrdersByStatusIdAsync(statusId);
+            var serviceResult = await _orderService.GetListOrdersByStatusIdAsync(status, page, pageSize);
 
             if (serviceResult.IsSuccess)
             {

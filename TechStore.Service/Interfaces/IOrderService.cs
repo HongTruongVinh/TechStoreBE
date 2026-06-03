@@ -9,7 +9,7 @@ namespace TechStore.Service.Interfaces
 {
     public interface IOrderService
     {
-        Task<ServiceResult<List<OrderDetailResponseModel>>> GetListOrdersByStatusIdAsync(EOrderStatus statusId);
+        Task<ServiceResult<PagedResult<OrderDetailResponseModel>>> GetListOrdersByStatusIdAsync(EOrderStatus statusId, int page, int pageSize);
         Task<ServiceResult<List<OrderResponseModel>>> GetAllOrdersAsync();
         Task<ServiceResult<List<OrderListItemModel>>> GetOnlineOrdersAsync();
         Task<ServiceResult<string>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel createOrderRequest);
@@ -22,7 +22,6 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> CheckoutInStoreOrderAsync(string id);
         Task<ServiceResult<bool>> UpdateInStoreOrderAsync(string updatedByCashierId, string orderId);
 
-        Task<ServiceResult<OrderDetailResponseModel>> SeedDataOrderAsync(string userId, OrderCreateModel createOrderRequest);
         Task<ServiceResult<OrderDetailResponseModel>> GetOrderByIdAsync(string userId, string orderId);
         Task<ServiceResult<OrderDetailResponseModel>> AdminGetOrderByIdAsync(string userId, string orderId);
         Task<ServiceResult<bool>> UpdateOrderStatusToProcessingAsync(string updateByUserId, string orderId);
@@ -33,6 +32,6 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> UpdateOrderStatusToFailedAsync(string updateByUserId, string orderId, OrderUpdateStatusModel orderUpdateStatusModel);
         Task<ServiceResult<bool>> DeleteOrderAsync(string orderId);
 
-        Task<ServiceResult<List<OrderListItemModel>>> GetCustomerOrdersAsync(string customerId);
+        Task<ServiceResult<List<OrderListItemModel>>> GetCustomerOrdersAsync(string customerId, int page, int pageSize);
     }
 }

@@ -9,7 +9,7 @@ namespace TechStore.Model.DTOs.Invoice
 {
     public class InvoiceListItemModel
     {
-        public required string InvoiceId { get; set; }
+        public required string Id { get; set; }
         public required string OrderId { get; set; }
 
         public required string CustomerName { get; set; }

@@ -9,7 +9,7 @@ namespace TechStore.Model.DTOs.Product
 {
     public class ProductDetailModel
     {
-        public required string ProductId { get; set; }
+        public required string Id { get; set; }
         public required string Name { get; set; }
         public required string ShortDescription { get; set; }
 

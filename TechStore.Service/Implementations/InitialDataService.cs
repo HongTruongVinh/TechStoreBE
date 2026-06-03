@@ -257,6 +257,8 @@ namespace TechStore.Service.Implementations
                 #endregion
 
                 #region register user
+                string password = "Abcd1234";
+
                 var admin1 = new UserCreateModel
                 {
                     LastName = "Hoàng Kim",
@@ -271,9 +273,8 @@ namespace TechStore.Service.Implementations
 
                 RegisterModel registerAdmin1 = new RegisterModel
                 {
-                    RegisterIdentifier = admin1.Email,
+                    Phonenumber = admin1.Email,
                     Password = admin1.PasswordHash,
-                    RegisterType = ERegisterType.Email,
                     UserInformation = admin1
                 };
 
@@ -286,9 +287,9 @@ namespace TechStore.Service.Implementations
 
                 var user1 = new UserCreateModel
                 {
-                    LastName = "User1",
-                    FirstName = "11",
-                    PasswordHash = "string",
+                    LastName = "Hồng Trường",
+                    FirstName = "Vinh",
+                    PasswordHash = password,
                     Email = "user1@gmail.com",
                     Address = "Hà Nội",
                     PhoneNumber = "0123456001",
@@ -298,9 +299,8 @@ namespace TechStore.Service.Implementations
 
                 RegisterModel register1 = new RegisterModel
                 {
-                    RegisterIdentifier = user1.Email,
+                    Phonenumber = user1.Email,
                     Password = user1.PasswordHash,
-                    RegisterType = ERegisterType.Email,
                     UserInformation = user1
                 };
 
@@ -313,9 +313,9 @@ namespace TechStore.Service.Implementations
 
                 var user2 = new UserCreateModel
                 {
-                    LastName = "User2",
-                    FirstName = "22",
-                    PasswordHash = "1",
+                    LastName = "Nguyễn Thị",
+                    FirstName = "Lan",
+                    PasswordHash = password,
                     Email = "user2@gmail.com",
                     Address = "Hà Nội",
                     PhoneNumber = "0123456002",
@@ -325,9 +325,8 @@ namespace TechStore.Service.Implementations
 
                 RegisterModel register2 = new RegisterModel
                 {
-                    RegisterIdentifier = user2.Email,
+                    Phonenumber = user2.Email,
                     Password = user2.PasswordHash,
-                    RegisterType = ERegisterType.Email,
                     UserInformation = user2
                 };
 
@@ -340,9 +339,9 @@ namespace TechStore.Service.Implementations
 
                 var user3 = new UserCreateModel
                 {
-                    LastName = "User3",
-                    FirstName = "33",
-                    PasswordHash = "1",
+                    LastName = "Nguyễn Văn",
+                    FirstName = "Hải",
+                    PasswordHash = password,
                     Email = "user3@gmail.com",
                     Address = "Hà Nội",
                     PhoneNumber = "0123456003",
@@ -352,9 +351,8 @@ namespace TechStore.Service.Implementations
 
                 RegisterModel register3 = new RegisterModel
                 {
-                    RegisterIdentifier = user3.Email,
+                    Phonenumber = user3.Email,
                     Password = user3.PasswordHash,
-                    RegisterType = ERegisterType.Email,
                     UserInformation = user3
                 };
 
@@ -371,7 +369,7 @@ namespace TechStore.Service.Implementations
                     {
                         LastName = $"User{i}",
                         FirstName = $"{i}",
-                        PasswordHash = "1",
+                        PasswordHash = password,
                         Email = $"user{i}@gmail.com",
                         Address = "Hà Nội",
                         PhoneNumber = $"0912345{i:D3}",
@@ -381,9 +379,8 @@ namespace TechStore.Service.Implementations
 
                     var register = new RegisterModel
                     {
-                        RegisterIdentifier = user.Email,
+                        Phonenumber = user.Email,
                         Password = user.PasswordHash,
-                        RegisterType = ERegisterType.Email,
                         UserInformation = user
                     };
 
@@ -396,7 +393,7 @@ namespace TechStore.Service.Implementations
                     {
                         LastName = $"Staff{i}",
                         FirstName = $"{i}",
-                        PasswordHash = "1",
+                        PasswordHash = password,
                         Email = $"satff{i}@gmail.com",
                         Address = "Hà Nội",
                         PhoneNumber = $"01234567{i:D3}",
@@ -406,9 +403,8 @@ namespace TechStore.Service.Implementations
 
                     var register = new RegisterModel
                     {
-                        RegisterIdentifier = user.Email,
+                        Phonenumber = user.Email,
                         Password = user.PasswordHash,
-                        RegisterType = ERegisterType.Email,
                         UserInformation = user
                     };
 

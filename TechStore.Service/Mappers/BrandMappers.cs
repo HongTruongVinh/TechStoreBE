@@ -14,7 +14,7 @@ namespace TechStore.Service.Mappers
         {
             return new BrandResponseModel
             {
-                BrandId = brand.PublicId,
+                Id = brand.PublicId,
                 Name = brand.Name,
                 Description = brand.Description,
                 Slug = brand.Slug,

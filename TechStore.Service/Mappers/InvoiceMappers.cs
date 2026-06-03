@@ -15,7 +15,7 @@ namespace TechStore.Service.Mappers
         {
             return new InvoiceListItemModel
             {
-                InvoiceId = invoice.PublicId,
+                Id = invoice.PublicId,
                 OrderId = order.PublicId,
 
                 CustomerName = order.CustomerName,
@@ -39,7 +39,7 @@ namespace TechStore.Service.Mappers
         {
             return new InvoiceResponseModel
             {
-                InvoiceId = invoice.PublicId,
+                Id = invoice.PublicId,
                 OrderId = order.PublicId,
 
                 CustomerName= order.CustomerName,

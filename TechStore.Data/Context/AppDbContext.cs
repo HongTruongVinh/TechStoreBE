@@ -29,6 +29,8 @@ namespace TechStore.Data.Context
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<PaymentSnapshot> PaymentSnapshots => Set<PaymentSnapshot>();
+        public DbSet<PaymentSnapshotItem> PaymentSnapshotItems => Set<PaymentSnapshotItem>();
         public DbSet<QRCode> QRCodes => Set<QRCode>();
         public DbSet<Report> Reports => Set<Report>();
         public DbSet<Shipper> Shippers => Set<Shipper>();
@@ -171,6 +173,28 @@ namespace TechStore.Data.Context
                 .WithMany(o => o.Payments)
                 .HasForeignKey(p => p.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            modelBuilder.Entity<PaymentSnapshot>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasMany(p => p.Items)
+                .WithOne(ps => ps.PaymentSnapshot)
+                .HasForeignKey(p => p.PaymentSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            });
+
+            modelBuilder.Entity<PaymentSnapshotItem>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(p => p.PaymentSnapshot)
+                .WithMany(ps => ps.Items)
+                .HasForeignKey(p => p.PaymentSnapshotId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             });
 

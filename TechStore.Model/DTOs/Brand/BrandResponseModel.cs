@@ -8,7 +8,7 @@ namespace TechStore.Model.DTOs.Brand
 {
     public class BrandResponseModel
     {
-        public required string BrandId { get; set; }
+        public required string Id { get; set; }
 
         public required string Name { get; set; }
 

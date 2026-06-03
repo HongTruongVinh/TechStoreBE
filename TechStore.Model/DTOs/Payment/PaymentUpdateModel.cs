@@ -9,7 +9,7 @@ namespace TechStore.Model.DTOs.Payment
 {
     public class PaymentUpdateModel
     {
-        public string? PaymentId { get; set; }
+        public string? Id { get; set; }
 
         public required string OrderId { get; set; }
 

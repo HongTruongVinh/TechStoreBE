@@ -24,6 +24,8 @@ namespace TechStore.Data.UnitOfWork
         public IOrderRepository Orders { get; }
         public IOrderItemRepository OrderItems { get; }
         public IPaymentRepository Payments { get; }
+        public IPaymentSnapshotRepository PaymentSnapshots { get; }
+        public IPaymentSnapshotItemRepository PaymentSnapshotItems { get; }
         public IQRCodeRepository QRCodes { get; }
         public IReportRepository Reports { get; }
         public IShipperRepository Shippers { get; }
@@ -48,6 +50,8 @@ namespace TechStore.Data.UnitOfWork
             Orders = new OrderRepository(_context);
             OrderItems = new OrderItemRepository(_context);
             Payments = new PaymentRepository(_context);
+            PaymentSnapshots = new PaymentSnapshotRepository(_context);
+            PaymentSnapshotItems = new PaymentSnapshotItemRepository(_context);
             QRCodes = new QRCodeRepository(_context);
             Reports = new ReportRepository(_context);
             Shippers = new ShipperRepository(_context);

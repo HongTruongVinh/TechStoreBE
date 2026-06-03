@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -582,22 +583,39 @@ namespace TechStore.Service.Implementations
         }
 
 
-        public async Task<ServiceResult<List<OrderDetailResponseModel>>> GetListOrdersByStatusIdAsync(EOrderStatus statusId)
+        public async Task<ServiceResult<PagedResult<OrderDetailResponseModel>>> GetListOrdersByStatusIdAsync(EOrderStatus statusId, int page, int pageSize)
         {
-            var serviceResult = new ServiceResult<List<OrderDetailResponseModel>>
+            var serviceResult = new ServiceResult<PagedResult<OrderDetailResponseModel>>
             {
                 IsSuccess = true,
-                Data = new List<OrderDetailResponseModel>(),
+                Data = new PagedResult<OrderDetailResponseModel>
+                {
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalItems = await _uow.Orders.TableNoTracking.CountAsync(o => o.OrderStatus == statusId),
+                },
                 Message = Messenger.GetDataSuccessful,
             };
 
-            var listOrders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.OrderStatus == statusId);
+            var listOrders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.OrderStatus == statusId, page, pageSize);
 
+            //var listOrders = await _uow.Orders.TableNoTracking.Where(o => o.OrderStatus == statusId)
+            //    .Include(o => o.Customer)
+            //    .Include(o => o.OrderItems)
+            //        .ThenInclude(oi => oi.ProductVariantOption)
+            //            .ThenInclude(pvo => pvo.ProductVariant)
+            //                .ThenInclude(pv => pv.Product)
+            //    .Include(o => o.Invoice)
+            //    .Include(o => o.Payments)
+            //    .Include(o => o.ShippingDetail)
+            //    .Skip((page - 1) * pageSize)
+            //    .Take(pageSize)
+            //    .ToListAsync();
+
+            var models = new List<OrderDetailResponseModel>();
             foreach (var order in listOrders)
             {
-                var customer = await _uow.Users.GetByInternalIdAsync(order.CustomerId);
-
-                serviceResult.Data.Add(order.ToOrderDetailModel(customer));
+                serviceResult.Data.Items.Add(order.ToOrderDetailModel(order.Customer));
             }
 
             return serviceResult;
@@ -698,7 +716,7 @@ namespace TechStore.Service.Implementations
             order.QRCode = await _uow.QRCodes.FindOneAsync(q => q.RelatedId == order.Id && q.Type == EQRCodeType.OrderTracking);
             order.Invoice = await _uow.Invoices.FindOneAsync(i => i.OrderId == order.Id);
             var payments = await _uow.Payments.FindManyAsync(p => p.OrderId == order.Id);
-            foreach ( var payment in payments)
+            foreach (var payment in payments)
             {
                 order.Payments.Add(payment);
             }
@@ -730,7 +748,8 @@ namespace TechStore.Service.Implementations
             };
 
             var adminUser = await _uow.Users.GetByIdAsync(userId);
-            if (adminUser != null) {
+            if (adminUser != null)
+            {
                 if (adminUser.RoleId != ERole.Admin)
                 {
                     serviceResult.Message = Messenger.NoPermission;
@@ -1074,319 +1093,6 @@ namespace TechStore.Service.Implementations
         }
         #endregion
 
-        //private async Task<OrderResponseModel> OrderToOrderModelAsync(Order order)
-        //{
-        //    var orderResponseModel = new OrderResponseModel
-        //    {
-        //        OrderId = order.PublicId,
-        //        CustomerId = order.CustomerId,
-        //        CustomerName = order.CustomerName ?? "",
-        //        ShippingAddress = order.ShippingAddress ?? "",
-        //        CustomerPhonenumber = order.CustomerPhoneNumber ?? "",
-        //        CustomerEmail = order.CustomerEmail ?? "",
-        //        TotalPrice = order.TotalPrice,
-        //        DiscountAmount = order.DiscountAmount,
-        //        ShippingCharge = order.ShippingCharge,
-        //        FinalAmount = order.FinalAmount,
-        //        PaymentMethod = order.PaymentMethod,
-        //        OrderType = order.OrderType,
-        //        OrderStatus = order.OrderStatus,
-        //        CreatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.CreatedAt ?? TimeZoneHelper.GetGmt7Now()),
-        //        UpdatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.UpdatedAt ?? TimeZoneHelper.GetGmt7Now()),
-        //        Items = new List<OrderItemResponseModel>()
-        //    };
-
-        //    var orderItems = await _orderItemRepository.GetOrderItemsByOrderIdAsync(order.OrderId);
-
-        //    foreach (var orderItem in orderItems)
-        //    {
-        //        var product = await _productRepository.GetByIdAsync(orderItem.ProductId);
-        //        var category = await _categoryRepository.GetByIdAsync(product.CategoryId);
-
-        //        var orderItemResponeModel = new OrderItemResponseModel
-        //        {
-        //            ProductId = orderItem.ProductId,
-        //            OrderId = orderItem.OrderId,
-        //            Quantity = orderItem.Quantity,
-        //            PriceAtOrderTime = orderItem.PriceAtOrderTime,
-        //            Discount = orderItem.Discount,
-        //            TotalPrice = orderItem.TotalPrice,
-        //            ProductName = product.Name,
-        //            CategoryName = category.Name,
-        //            MainImageUrl = product.MainImageUrl,
-        //        };
-
-        //        orderResponseModel.Items.Add(orderItemResponeModel);
-        //    }
-
-        //    if (order.ShippingDetailId != null)
-        //    {
-        //        var shippingDetail = await _shippingDetailRepository.GetByIdAsync(order.ShippingDetailId);
-        //        if (shippingDetail != null)
-        //        {
-        //            var shipper = await _shipperRepository.GetByIdAsync(shippingDetail.ShipperId);
-
-        //            orderResponseModel.ShippingDetailId = shipper.ShipperId;
-        //            orderResponseModel.ShipperName = shipper.Name;
-        //            orderResponseModel.TrackingNumber = shippingDetail.TrackingNumber;
-        //            orderResponseModel.ShippedDate = shippingDetail.ShippedDate;
-        //            orderResponseModel.EstimatedArrival = shippingDetail.EstimatedArrival;
-        //            orderResponseModel.ShippingNote = shippingDetail.ShippingNote;
-        //            orderResponseModel.FailureCount = shippingDetail.FailureCount;
-        //        }
-        //    }
-
-        //    return orderResponseModel;
-        //}
-
-        //private async Task<OrderDetailResponseModel> OrderToOrderDetailModelAsync(Order order)
-        //{
-        //    OrderDetailResponseModel orderDetailResponseModel = new OrderDetailResponseModel
-        //    {
-        //        OrderId = order.OrderId,
-        //        CustomerId = order.CustomerId ?? "",
-        //        CustomerName = order.CustomerName,
-        //        ShippingAddress = order.ShippingAddress ?? "",
-        //        CustomerPhonenumber = order.CustomerPhoneNumber,
-        //        CustomerEmail = order.CustomerEmail ?? "",
-        //        TotalPrice = order.TotalPrice,
-        //        ShippingCharge = order.ShippingCharge,
-        //        DiscountAmount = order.DiscountAmount,
-        //        FinalAmount = order.FinalAmount,
-        //        PaymentMethod = order.PaymentMethod,
-        //        OrderStatus = order.OrderStatus,
-        //        CreatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.CreatedAt ?? TimeZoneHelper.GetGmt7Now()),
-        //        UpdatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.UpdatedAt ?? TimeZoneHelper.GetGmt7Now()),
-        //        Items = new List<OrderItemResponseModel>(),
-
-        //    };
-
-        //    var orderItems = await _orderItemRepository.GetOrderItemsByOrderIdAsync(order.OrderId);
-
-        //    foreach (var item in orderItems)
-        //    {
-
-        //        var product = await _productRepository.GetByIdAsync(item.ProductId);
-        //        var category = await _categoryRepository.GetByIdAsync(product.CategoryId);
-
-        //        orderDetailResponseModel.Items.Add(new OrderItemResponseModel
-        //        {
-        //            OrderId = item.OrderId,
-        //            ProductId = item.ProductId,
-        //            ProductName = product.Name,
-        //            CategoryName = category.Name,
-        //            Quantity = item.Quantity,
-        //            PriceAtOrderTime = item.PriceAtOrderTime,
-        //            Discount = item.Discount,
-        //            TotalPrice = item.TotalPrice,
-        //            MainImageUrl = product.MainImageUrl
-        //        });
-        //    }
-
-
-        //    if (order.QRCodeId != null)
-        //    {
-        //        var qrCode = await _qrCodeService.GetQRCodeAsync(order.OrderId, EQRCodeType.OrderTracking);
-        //        if (qrCode.Data != null)
-        //        {
-
-        //            orderDetailResponseModel.QRCode = Convert.ToBase64String(qrCode.Data.ImageData);
-        //        }
-        //    }
-
-        //    if (order.InvoiceId != null)
-        //    {
-        //        var invoice = await _invoiceRepository.GetInvoiceByOrderIdAsync(order.OrderId);
-        //        if (invoice != null)
-        //        {
-        //            orderDetailResponseModel.Invoice = invoice.ToInvoiceModel(order);
-        //        }
-
-        //        if (order.PaymentId != null)
-        //        {
-        //            var payment = await _paymentRepository.GetPaymentByOrderIdAsync(order.OrderId);
-
-        //            if (payment != null)
-        //            {
-        //                orderDetailResponseModel.Payment = new PaymentResponseModel
-        //                {
-        //                    OrderId = payment.OrderId,
-        //                    PaymentId = payment.PaymentId,
-        //                    CustomerId = order.CustomerId ?? "",
-        //                    CustomerName = order.CustomerName,
-        //                    CustomerPhonenumber = order.CustomerPhoneNumber,
-        //                    PaymentMethod = payment.PaymentMethod,
-        //                    Amount = payment.Amount,
-        //                    TransactionCode = payment.TransactionCode,
-        //                    PaymentStatus = payment.PaymentStatus,
-        //                    CreatedAt = payment.CreatedAt,
-        //                };
-        //            }
-        //        }
-
-        //        if (order.ShippingDetailId != null)
-        //        {
-        //            var shippingDetail = await _shippingDetailRepository.GetByIdAsync(order.ShippingDetailId);
-        //            if (shippingDetail != null)
-        //            {
-        //                var shipper = await _shipperRepository.GetByIdAsync(shippingDetail.ShipperId);
-
-        //                orderDetailResponseModel.ShippingDetailId = shipper.ShipperId;
-        //                orderDetailResponseModel.ShipperName = shipper.Name;
-        //                orderDetailResponseModel.TrackingNumber = shippingDetail.TrackingNumber;
-        //                orderDetailResponseModel.ShippedDate = shippingDetail.ShippedDate;
-        //                orderDetailResponseModel.EstimatedArrival = shippingDetail.EstimatedArrival;
-        //                orderDetailResponseModel.ShippingNote = shippingDetail.ShippingNote;
-        //                orderDetailResponseModel.FailureCount = shippingDetail.FailureCount;
-        //            }
-        //        }
-        //    }
-        //    return orderDetailResponseModel;
-        //}
-
-        public async Task<ServiceResult<OrderDetailResponseModel>> SeedDataOrderAsync(string userId, OrderCreateModel orderCreateModel)
-        {
-            var serviceResult = new ServiceResult<OrderDetailResponseModel>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.BadRequest,
-            };
-
-            //var orderId = await _sequenceService.GetNextOrderIdAsync();
-
-            //// Tính toán tổng tiền
-            //decimal totalPrice = 0;
-            //decimal totalDiscount = 0;
-
-            //foreach (var item in orderCreateModel.Items)
-            //{
-            //    item.OrderId = orderId;
-
-            //    decimal itemTotal = item.PriceAtOrderTime * item.Quantity;
-            //    totalPrice += itemTotal;
-            //    totalDiscount += item.Discount;
-            //    item.TotalPrice = itemTotal - item.Discount;
-            //}
-
-            //var finalAmount = totalPrice - totalDiscount;
-
-            //string qrCodeContent = "orderId:" + orderId + ",userId:" + userId;
-            ////var resultAddQRCode = await _qrCodeService.ServiceAddQRCodeAsync(qrCodeContent, orderId, EQRCodeType.OrderTracking, null);
-
-            //var user = await _uow.Users.GetByIdAsync(orderCreateModel.CustomerId);
-            //if (user == null)
-            //{
-            //    serviceResult.Message = Messenger.NoExitData + " UserId: " + orderCreateModel.CustomerId;
-            //    return serviceResult;
-            //}
-
-            //var order = new Order
-            //{
-            //    PublicId = orderId,
-            //    CustomerId = user.Id,
-            //    OrderType = EOrderType.Online,
-            //    CustomerName = orderCreateModel.CustomerName,
-            //    ShippingAddress = orderCreateModel.ShippingAddress,
-            //    CustomerPhoneNumber = orderCreateModel.CustomerPhonenumber,
-            //    CustomerEmail = orderCreateModel.CustomerEmail,
-            //    TotalPrice = totalPrice,
-            //    ShippingCharge = 0, // Assuming no shipping charge for now
-            //    DiscountAmount = totalDiscount,
-            //    FinalAmount = finalAmount,
-            //    PaymentMethod = orderCreateModel.PaymentMethod,
-            //    //QRCodeId = resultAddQRCode.Id,
-            //    OrderStatus = EOrderStatus.Pending,
-            //    CreatedAt = new DateTime(2025, Random.Shared.Next(1, 6), Random.Shared.Next(1, 29)),
-            //    UpdatedAt = TimeZoneHelper.GetUtcNow(),
-            //    OrderItems = new List<OrderItem>(),
-            //    CreatedBy = user.Id,
-            //    EntityStatus = EEntityStatus.Active,
-            //};
-
-            //await _uow.Orders.AddAsync(order);
-
-            //serviceResult.Data = new OrderDetailResponseModel
-            //{
-            //    OrderId = orderId,
-            //    CustomerId = orderCreateModel.CustomerId,
-            //    CustomerName = orderCreateModel.CustomerName,
-            //    ShippingAddress = orderCreateModel.ShippingAddress,
-            //    CustomerPhonenumber = orderCreateModel.CustomerPhonenumber,
-            //    CustomerEmail = orderCreateModel.CustomerEmail,
-            //    TotalPrice = totalPrice,
-            //    ShippingCharge = order.ShippingCharge, // Assuming no shipping charge for now
-            //    DiscountAmount = totalDiscount,
-            //    FinalAmount = finalAmount,
-            //    PaymentMethod = orderCreateModel.PaymentMethod,
-            //    //QRCode = Convert.ToBase64String(resultAddQRCode.ImageData),
-            //    OrderStatus = EOrderStatus.Pending,
-            //    CreatedAt = TimeZoneHelper.GetUtcNow(),
-            //    UpdatedAt = TimeZoneHelper.GetUtcNow(),
-            //    Items = new List<OrderItemResponseModel>()
-            //};
-
-            //// Lưu các OrderItem
-            //List<OrderItem> orderItems = new List<OrderItem>();
-            //foreach (var item in orderCreateModel.Items)
-            //{
-            //    var product = await _uow.Products.GetByIdAsync(item.ProductVariantOptionId);
-            //    if (product == null)
-            //    {
-            //        serviceResult.Message = Messenger.NoExitData + " ProductId: " + item.ProductVariantOptionId;
-            //        return serviceResult;
-            //    }
-
-            //    orderItems.Add(new OrderItem
-            //    {
-            //        PublicId = Random.Shared.Next(100000, 1000000).ToString(),
-            //        ProductId = product.Id,
-            //        Product = product,
-            //        Order = order,
-            //        OrderId = order.Id,
-            //        Quantity = item.Quantity,
-            //        PriceAtOrderTime = item.PriceAtOrderTime,
-            //        Discount = item.Discount,
-            //        TotalPrice = item.TotalPrice,
-            //        CreatedAt = TimeZoneHelper.GetUtcNow(),
-            //        EntityStatus = EEntityStatus.Active,
-            //    });
-            //}
-
-            //await _uow.OrderItems.AddRangeAsync(orderItems);
-
-            //var addOrderItemsResult = await _uow.OrderItems.FindManyAsync(oi => oi.OrderId == order.Id);
-
-            //foreach (var item in addOrderItemsResult)
-            //{
-            //    var orderItemResponseModel = new OrderItemResponseModel
-            //    {
-            //        OrderId = orderId,
-            //        ProductVariantOptionId = item.Product.PublicId,
-            //        ProductName = item.Product.Name,
-            //        CategoryName = item.Product.Category.Name,
-            //        MainImageUrl = item.Product.MainImageUrl,
-            //        Quantity = item.Quantity,
-            //        PriceAtOrderTime = item.PriceAtOrderTime,
-            //        Discount = item.Discount,
-            //        TotalPrice = item.TotalPrice
-            //    };
-
-            //    serviceResult.Data.Items.Add(orderItemResponseModel);
-            //}
-
-            //var result = await _uow.CommitAsync();
-            //if (result < 1)
-            //{
-            //    serviceResult.Message = Messenger.SystemError;
-            //    return serviceResult;
-            //}
-
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.SuccessFull;
-            return serviceResult;
-        }
-
         public Task<ServiceResult<bool>> UpdateInStoreOrderAsync(string updatedByCashierId, string orderId)
         {
             throw new NotImplementedException();
@@ -1421,7 +1127,7 @@ namespace TechStore.Service.Implementations
             }
             else
             {
-                var paymentQRCode = await _uow.QRCodes.FindOneAsync(q => q.RelatedId ==payment.Id && q.Type == EQRCodeType.Payment);
+                var paymentQRCode = await _uow.QRCodes.FindOneAsync(q => q.RelatedId == payment.Id && q.Type == EQRCodeType.Payment);
 
                 if (order.OrderItems.ToList().Count < 1 || paymentQRCode == null)
                 {
@@ -1521,7 +1227,7 @@ namespace TechStore.Service.Implementations
                 _uow.Invoices.Update(invoice);
             }
 
-            if(payment != null)
+            if (payment != null)
             {
                 payment.PaymentStatus = EPaymentStatus.Paid;
                 payment.UpdatedAt = TimeZoneHelper.GetUtcNow();
@@ -1541,7 +1247,7 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<List<OrderListItemModel>>> GetCustomerOrdersAsync(string customerId)
+        public async Task<ServiceResult<List<OrderListItemModel>>> GetCustomerOrdersAsync(string customerId, int page, int pageSize)
         {
             var serviceResult = new ServiceResult<List<OrderListItemModel>>
             {
@@ -1559,9 +1265,10 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var listOrders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CustomerId == customer.Id);
+            var listOrders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CustomerId == customer.Id, page, pageSize);
 
-            if (listOrders == null) {
+            if (listOrders == null)
+            {
                 return serviceResult;
             }
 

@@ -100,7 +100,7 @@ namespace TechStore.Service.Implementations
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Order);
             //var Id = $"ORD-{sequenceNumber:D4}";
 
-            var Id = $"ORD-{today:yyyyMMdd}-{(sequenceNumber + 1):D6}";
+            var Id = $"ORD-{today:yyyyMMdd}{(sequenceNumber + 1):D3}";
             return Id;
         }
 
@@ -114,7 +114,7 @@ namespace TechStore.Service.Implementations
         public async Task<string> GetNextPaymentIdAsync()
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Payment);
-            var Id = $"PAYM-{sequenceNumber:D4}";
+            var Id = $"PAYM{sequenceNumber:D4}";
             return Id;
         }
 
@@ -128,7 +128,7 @@ namespace TechStore.Service.Implementations
         public async Task<string> GetNextUserIdAsync()
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.User);
-            var Id = $"USER-{sequenceNumber:D4}";
+            var Id = $"USER{sequenceNumber:D4}";
             return Id;
         }
 
@@ -142,14 +142,14 @@ namespace TechStore.Service.Implementations
         public async Task<string> GetNextInvoiceIdAsync()
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Invoice);
-            var Id = $"INV-{sequenceNumber:D4}";
+            var Id = $"INV{sequenceNumber:D4}";
             return Id;
         }
 
         public async Task<string> GetNextBrandIdAsync()
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Brand);
-            var Id = $"BRAND-{sequenceNumber:D4}";
+            var Id = $"BRAND{sequenceNumber:D4}";
             return Id;
         }
 
@@ -163,7 +163,7 @@ namespace TechStore.Service.Implementations
         public async Task<string> GetNextShipperIdAsync()
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Shipper);
-            var Id = $"SHIP-{sequenceNumber:D4}";
+            var Id = $"SHIP{sequenceNumber:D4}";
             return Id;
         }
     }

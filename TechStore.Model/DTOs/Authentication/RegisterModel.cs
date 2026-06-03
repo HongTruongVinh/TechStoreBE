@@ -10,9 +10,8 @@ namespace TechStore.Model.DTOs.Authentication
 {
     public class RegisterModel
     {
-        public required string RegisterIdentifier { get; set; }
+        public required string Phonenumber { get; set; }
         public required string Password { get; set; }
-        public required ERegisterType RegisterType { get; set; }
 
         public required UserCreateModel UserInformation { get; set; }
     }

@@ -14,7 +14,7 @@ namespace TechStore.Service.Mappers
         {
             return new ShipperResponseModel
             {
-                ShipperId = shipper.PublicId,
+                Id = shipper.PublicId,
                 Name = shipper.Name,
                 Website = shipper.Website,
                 Description = shipper.Description,

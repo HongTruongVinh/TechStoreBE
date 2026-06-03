@@ -24,13 +24,13 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<ApiResponse<List<OrderListItemModel>>> GetListOrder(string userId)
+        public async Task<ApiResponse<List<OrderListItemModel>>> GetListOrder(string userId, int page, int pageSize)
         {
             //var userId = User.FindFirstValue(AppClaims.UserId);
 
             if (userId != null)
             {
-                var serviceResult = await _orderService.GetCustomerOrdersAsync(userId);
+                var serviceResult = await _orderService.GetCustomerOrdersAsync(userId, page, pageSize);
 
                 if (serviceResult.IsSuccess)
                 {
@@ -69,13 +69,13 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse<List<OrderListItemModel>>> GetUserOrders()
+        public async Task<ApiResponse<List<OrderListItemModel>>> GetUserOrders(int page, int pageSize)
         {
             var userId = User.FindFirstValue(AppClaims.UserId);
 
             if (userId != null)
             {
-                var serviceResult = await _orderService.GetCustomerOrdersAsync(userId);
+                var serviceResult = await _orderService.GetCustomerOrdersAsync(userId, page, pageSize);
 
                 if (serviceResult.IsSuccess)
                 {

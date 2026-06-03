@@ -60,7 +60,7 @@ namespace TechStore.Service.Implementations
                 CartItem cartItem = new CartItem
                 {
                     UserId = user.Id,
-                    PublicId = await _sequenceService.GetNextCartItemIdAsync(),
+                    PublicId = userId + "-" + productVariantOption.PublicId,
                     ProductVariantOptionId = productVariantOption.Id,
                     Quantity = model.Quantity,
                     TotalPrice = model.Quantity * productVariantOption.Price,

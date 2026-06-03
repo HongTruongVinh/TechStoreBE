@@ -8,7 +8,7 @@ namespace TechStore.Model.DTOs.Product
 {
     public class ProductListItemModel
     {
-        public required string ProductId { get; set; }
+        public required string id { get; set; }
         public required string ProductVariantId { get; set; }
         public required string ProductName { get; set; }
         public required string ProductVariantName { get; set; }

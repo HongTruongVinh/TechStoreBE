@@ -18,9 +18,9 @@ namespace TechStore.Data.Repositories.Implementations
         public async Task<List<Order>> GetOrdersIncludeItemsAsync(Expression<Func<Order, bool>> predicate)
             => await _dbSet.Where(predicate).Include(o => o.OrderItems).ToListAsync();
 
-        public async Task<List<Order>> GetOrdersIncludeItemsDetailAsync(Expression<Func<Order, bool>> predicate)
+        public async Task<List<Order>> GetOrdersIncludeItemsDetailAsync(Expression<Func<Order, bool>> predicate, int page, int pageSize)
         {
-            var orders = await _dbSet
+            var orders = await _dbSet.AsNoTracking()
                                 .Where(predicate)
                                 .Include(o => o.OrderItems)
                                     .ThenInclude(oi => oi.ProductVariantOption)
@@ -33,6 +33,8 @@ namespace TechStore.Data.Repositories.Implementations
                                             .ThenInclude(pv => pv.Product)
                                                 .ThenInclude(p => p.Brand)
                                 .OrderByDescending(o => o.CreatedAt)
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
                                 .ToListAsync();
 
             return orders;

@@ -9,7 +9,7 @@ namespace TechStore.Model.DTOs.User
 {
     public class UserResponseModel
     {
-        public required string UserId { get; set; }
+        public required string Id { get; set; }
 
         public required string FirstName { get; set; }
 

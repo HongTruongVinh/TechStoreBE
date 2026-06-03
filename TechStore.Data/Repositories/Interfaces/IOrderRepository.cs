@@ -11,7 +11,7 @@ namespace TechStore.Data.Repositories.Interfaces
     public interface IOrderRepository : IRepository<Order>
     {
         Task<List<Order>> GetOrdersIncludeItemsAsync(Expression<Func<Order, bool>> predicate);
-        Task<List<Order>> GetOrdersIncludeItemsDetailAsync(Expression<Func<Order, bool>> predicate);
+        Task<List<Order>> GetOrdersIncludeItemsDetailAsync(Expression<Func<Order, bool>> predicate, int page, int pageSize);
         Task<Order?> GetOrderIncludeItemsAsync(Expression<Func<Order, bool>> predicate);
     }
 }

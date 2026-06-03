@@ -35,7 +35,7 @@ namespace TechStore.Service.Mappers
         {
             return new ProductListItemModel
             {
-                ProductId = product.PublicId,
+                id = product.PublicId,
                 ProductVariantId = product.PublicId,
                 ProductName = product.Name,
                 ProductVariantName = product.Name,
@@ -71,7 +71,7 @@ namespace TechStore.Service.Mappers
         {
             return new ProductListItemModel
             {
-                ProductId = productVariant.Product.PublicId,
+                id = productVariant.Product.PublicId,
                 ProductVariantId = productVariant.PublicId,
                 ProductName = productVariant.Product.Name,
                 ProductVariantName = productVariant.Name,
@@ -108,7 +108,7 @@ namespace TechStore.Service.Mappers
         {
             return new ProductDetailModel
             {
-                ProductId = product.PublicId,
+                Id = product.PublicId,
                 Name = product.Name,
                 ShortDescription = product.ShortDescription,
 
@@ -147,7 +147,7 @@ namespace TechStore.Service.Mappers
         {
             return new AdminProductDetailModel
             {
-                ProductId = product.PublicId,
+                Id = product.PublicId,
                 Name = product.Name,
                 ShortDescription = product.ShortDescription,
 

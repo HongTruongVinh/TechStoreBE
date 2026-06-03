@@ -9,7 +9,7 @@ namespace TechStoreModel.Model.Invoice
 {
     public class InvoiceResponseModel
     {
-        public required string InvoiceId { get; set; }
+        public required string Id { get; set; }
         public required string OrderId { get; set; }
 
         public required string CustomerName { get; set; }

@@ -48,7 +48,7 @@ namespace TechStore.Service.Mappers
         {
             return new UserResponseModel
             {
-                UserId = user.PublicId,
+                Id = user.PublicId,
                 LastName = user.LastName,
                 FirstName = user.FirstName,
 
