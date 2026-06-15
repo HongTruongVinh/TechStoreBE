@@ -9,8 +9,10 @@ namespace TechStore.Data.Entities
     public class Product : BaseEntity
     {
         public required Guid CategoryId { get; set; }
+        public required string CategoryPublicId { get; set; }
         public Category Category { get; set; } = null!;
         public required Guid BrandId { get; set; }
+        public required string BrandPublicId { get; set; }
         public Brand Brand { get; set; } = null!;
 
         public required string Name { get; set; }
@@ -41,6 +43,10 @@ namespace TechStore.Data.Entities
         public DateTime? PublishDate { get; set; }
 
         public bool IsOnSale => SaleStart <= DateTime.Now && SaleEnd >= DateTime.Now;
+
+        public required decimal MinPrice { get; set; }
+
+        public required decimal MaxPrice { get; set; }
 
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
     }

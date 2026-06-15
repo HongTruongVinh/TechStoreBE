@@ -12,9 +12,12 @@ namespace TechStore.Data.Entities
         public ProductVariant ProductVariant { get; set; } = null!;
 
         //Black, Silver, Blue
-        public string Name { get; set; } = ""; //option name
+        public required string Name { get; set; }
         public required string ImageUrl { get; set; }
-        public int Stock { get; set; } = 0;
-        public decimal Price { get; set; } = 0;  // Could override Variant
+        public int Stock { get; set; }
+
+        public required decimal Price { get; set; }
+        public required decimal ImportPrice { get; set; }
+        public int SoldCount { get; set; }
     }
 }

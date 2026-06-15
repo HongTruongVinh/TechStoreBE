@@ -32,19 +32,7 @@ namespace TechStore.Data.Repositories
         public async Task<T?> FindOneAsync(Expression<Func<T, bool>> predicate)
             => await _dbSet.FirstOrDefaultAsync(predicate);
 
-        /// <summary>
-        /// Finds an entity in the local change tracker that matches the specified predicate.
-        /// </summary>
-        /// <remarks>This method searches only the local change tracker for entities that have already
-        /// been loaded into memory. It does not query the database.</remarks>
-        /// <param name="predicate">A function to test each entity for a condition. The function should return <see langword="true"/> for the
-        /// entity to be selected.</param>
-        /// <returns>The first entity that matches the specified predicate, or <see langword="null"/> if no such entity is found.</returns>
-        public T? FindTracked(Func<T, bool> predicate)
-        {
-            return _dbSet.Local.FirstOrDefault(predicate);
-        }
-
+        
         public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
 
         public async Task AddRangeAsync(IEnumerable<T> entities)

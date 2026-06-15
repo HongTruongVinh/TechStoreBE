@@ -25,11 +25,11 @@ namespace TechStore.Service.Implementations
             _sequenceService = sequenceService;
         }
 
-        public async Task<ServiceResult<List<InvoiceListItemModel>>> GetAllItems()
+        public async Task<ServiceResult<List<ListItemInvoiceModel>>> GetAllItems()
         {
-            var serviceResult = new ServiceResult<List<InvoiceListItemModel>>
+            var serviceResult = new ServiceResult<List<ListItemInvoiceModel>>
             {
-                Data = new List<InvoiceListItemModel>(),
+                Data = new List<ListItemInvoiceModel>(),
                 IsSuccess = true,
                 Message = Messenger.GetDataSuccessful
             };
@@ -50,7 +50,7 @@ namespace TechStore.Service.Implementations
 
                     if (order != null)
                     {
-                        serviceResult.Data.Add(invoice.ToInvoiceListItemModel(order));
+                        serviceResult.Data.Add(invoice.ToListItemInvoiceModel(order));
                     }
                 }
             }
@@ -58,9 +58,9 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<InvoiceListItemModel>> GetItemById(string id)
+        public async Task<ServiceResult<ListItemInvoiceModel>> GetItemById(string id)
         {
-            var serviceResult = new ServiceResult<InvoiceListItemModel>
+            var serviceResult = new ServiceResult<ListItemInvoiceModel>
             {
                 Data = null,
                 IsSuccess = true,
@@ -81,7 +81,7 @@ namespace TechStore.Service.Implementations
 
                 if (order != null)
                 {
-                    serviceResult.Data = invoice.ToInvoiceListItemModel(order);
+                    serviceResult.Data = invoice.ToListItemInvoiceModel(order);
                 }
                 else
                 {

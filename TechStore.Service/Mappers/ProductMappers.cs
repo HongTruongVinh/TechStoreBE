@@ -13,9 +13,9 @@ namespace TechStore.Service.Mappers
 {
     public static class ProductMappers
     {
-        public static AdminProductListItemModel ToAdminProductListItem(this Product product)
+        public static AdminListItemProductModel ToAdminListItemProduct(this Product product)
         {
-            return new AdminProductListItemModel
+            return new AdminListItemProductModel
             {
                 ProductVariantOptionId = product.PublicId,
                 Name = product.Name,
@@ -31,9 +31,9 @@ namespace TechStore.Service.Mappers
             };
         }
 
-        public static ProductListItemModel ToProductListItem(this Product product)
+        public static ListItemProductModel ToProductListItem(this Product product)
         {
-            return new ProductListItemModel
+            return new ListItemProductModel
             {
                 id = product.PublicId,
                 ProductVariantId = product.PublicId,
@@ -45,7 +45,7 @@ namespace TechStore.Service.Mappers
                 CategoryName = product.Category?.Name,
                 MainImageUrl = product.MainImageUrl,
 
-                Price = product.Variants.Min(v => v.Price),
+                Price = product.MinPrice,
                 SalePrice = product.SalePrice,
 
                 AverageRating = product.AverageRating,
@@ -55,9 +55,9 @@ namespace TechStore.Service.Mappers
             };
         }
 
-        public static List<ProductListItemModel> ToListProductListItem(this List<Product> products)
+        public static List<ListItemProductModel> ToListProductListItem(this List<Product> products)
         {
-            var list = new List<ProductListItemModel>();
+            var list = new List<ListItemProductModel>();
 
             foreach (var item in products)
             {
@@ -67,9 +67,9 @@ namespace TechStore.Service.Mappers
             return list;
         }
 
-        public static ProductListItemModel VariantToProductListItem(this ProductVariant productVariant)
+        public static ListItemProductModel VariantToProductListItem(this ProductVariant productVariant)
         {
-            return new ProductListItemModel
+            return new ListItemProductModel
             {
                 id = productVariant.Product.PublicId,
                 ProductVariantId = productVariant.PublicId,
@@ -92,9 +92,9 @@ namespace TechStore.Service.Mappers
             };
         }
 
-        public static List<ProductListItemModel> VariantsToListProductListItem(this List<ProductVariant> productVariants)
+        public static List<ListItemProductModel> VariantsToListProductListItem(this List<ProductVariant> productVariants)
         {
-            var list = new List<ProductListItemModel>();
+            var list = new List<ListItemProductModel>();
 
             foreach (var item in productVariants)
             {

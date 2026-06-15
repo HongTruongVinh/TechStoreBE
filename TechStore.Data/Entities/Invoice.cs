@@ -9,20 +9,17 @@ namespace TechStore.Data.Entities
 {
     public class Invoice: BaseEntity
     {
-        public required Guid OrderId { get; set; }
-        public required Order Order { get; set; }
+        public Guid OrderId { get; set; }
+        public Order Order { get; set; } = null!;
 
-        public required decimal TotalPrice { get; set; } = 0;
-
-        public required decimal DiscountAmount { get; set; }
-
-        public required decimal FinalAmount { get; set; }
-
+        public required decimal TotalAmount { get; set; }
+        public required decimal PaidAmount { get; set; }
+        public decimal RemainingAmount => TotalAmount - PaidAmount;
         public DateTime? PaidAt { get; set; }
-
-        public string? CashierName { get; set; }
-
         public required EInvoiceStatus InvoiceStatus { get; set; } = EInvoiceStatus.Unpaid;
+        public required ICollection<Payment> Payments { get; set; }
+
+        public Guid? CashierId { get; set; }
 
     }
 }

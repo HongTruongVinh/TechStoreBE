@@ -24,11 +24,11 @@ namespace TechStore.Model.DTOs.Statistic
 
         public required List<ChartData> TotalOrdersChartData { get; set; }
 
-        public required List<AdminProductListItemModel> HotProducts { get; set; }
+        public required List<AdminListItemProductModel> HotProducts { get; set; }
 
-        public required List<AdminProductListItemModel> TopSoldProducts { get; set; }
+        public required List<AdminListItemProductModel> TopSoldProducts { get; set; }
 
-        public required List<AdminProductListItemModel> TopRatedProducts { get; set; }
+        public required List<AdminListItemProductModel> TopRatedProducts { get; set; }
 
         public required List<UserListItemResponseModel> LoyalCustomer { get; set; }
         public required List<ActionModel> RecentlyActions { get; set; }

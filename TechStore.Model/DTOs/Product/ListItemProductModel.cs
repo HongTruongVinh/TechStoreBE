@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TechStore.Model.DTOs.Product
 {
-    public class ProductListItemModel
+    public class ListItemProductModel
     {
         public required string id { get; set; }
         public required string ProductVariantId { get; set; }

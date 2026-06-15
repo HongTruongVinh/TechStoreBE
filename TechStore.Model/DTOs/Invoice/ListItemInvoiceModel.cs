@@ -7,7 +7,7 @@ using TechStore.Common.Enums;
 
 namespace TechStore.Model.DTOs.Invoice
 {
-    public class InvoiceListItemModel
+    public class ListItemInvoiceModel
     {
         public required string Id { get; set; }
         public required string OrderId { get; set; }
@@ -19,7 +19,6 @@ namespace TechStore.Model.DTOs.Invoice
         public required decimal DiscountAmount { get; set; }
         public required decimal FinalAmount { get; set; }
 
-        public required EOrderType OrderType { get; set; }
         public required EInvoiceStatus InvoiceStatus { get; set; }
 
         public string? CashierName { get; set; }

@@ -50,9 +50,9 @@ namespace TechStore.Service.Implementations
                 TotalRevenueChartData = new List<ChartDecimalData>(),
                 TotalProfitChartData = new List<ChartDecimalData>(),
                 TotalOrdersChartData = new List<ChartData>(),
-                HotProducts = new List<AdminProductListItemModel>(),
-                TopSoldProducts = new List<AdminProductListItemModel>(),
-                TopRatedProducts = new List<AdminProductListItemModel>(),
+                HotProducts = new List<AdminListItemProductModel>(),
+                TopSoldProducts = new List<AdminListItemProductModel>(),
+                TopRatedProducts = new List<AdminListItemProductModel>(),
                 LoyalCustomer = new List<UserListItemResponseModel>(),
                 RecentlyActions = new List<ActionModel>()
             };
@@ -62,10 +62,10 @@ namespace TechStore.Service.Implementations
             overviewData.ProcessingOfPendingOrders = await GetProcessingOfPendingOrders();
             overviewData.DeliveringOfProcessingOrders = await GetDeliveringOfProcessingOrders();
             overviewData.ComplatedOfDeliveringOrders = await GetComplatedOfDeliveringOrders();
-            overviewData.CategoryChartData = await GetCategoryChartData(currentDatetime.Year);
-            overviewData.TotalRevenueChartData = await GetMonthlyRevenueSeries(currentDatetime);//doanh thu
-            overviewData.TotalProfitChartData = await GetMonthlyProfitSeriesAsync();//loi nhuan
-            overviewData.TotalOrdersChartData = await GetMonthlyTotalOrdersSeries();
+            overviewData.CategoryChartData = await GetHotCategoryChartData(currentDatetime.Year);
+            overviewData.TotalRevenueChartData = await GetMonthlyRevenueSeries(currentDatetime.Year);//doanh thu
+            overviewData.TotalProfitChartData = await GetMonthlyProfitSeriesAsync(currentDatetime.Year);//loi nhuan
+            overviewData.TotalOrdersChartData = await GetMonthlyTotalOrdersSeries(currentDatetime.Year);
             overviewData.HotProducts = await GetHotProducts();
             overviewData.TopSoldProducts = await GetTopSoldProducts();
             overviewData.TopRatedProducts = await GetTopRatedProductsAsync();
@@ -78,14 +78,17 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        private async Task<List<ChartData>> GetCategoryChartData(int year)
+        private async Task<List<ChartData>> GetHotCategoryChartData(int year)
         {
             var data = new List<ChartData>();
 
-            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Year == year, 1, int.MaxValue);
+            var orders = await _uow.Orders.TableNoTracking
+                                    .Where(o => o.CreatedAt.Year == year)
+                                    .Include(o => o.OrderItems)
+                                    .ToListAsync();
 
             var categoryStatistics = orders.SelectMany(order => order.OrderItems).
-                GroupBy(item => item.ProductVariantOption.ProductVariant.Product.Category.Name)
+                GroupBy(item => item.CategoryName)
                 .Select(group => new ChartData
                 {
                     Name = group.Key,
@@ -99,114 +102,116 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public async Task<List<ChartDecimalData>> GetMonthlyRevenueSeries(DateTime fromDate)
+        public async Task<List<ChartDecimalData>> GetMonthlyRevenueSeries(int year)
         {
-            //var orderModels = allOrderModels.Where(x => x.OrderStatus == EOrderStatus.Completed).ToList();
-            var orders = await _uow.Orders.FindManyAsync(o => o.CreatedAt.Year == fromDate.Year);
-
             var data = new List<ChartDecimalData>();
 
-            var now = DateTime.UtcNow;
-            var currentYear = now.Year;
+            var orders = await _uow.Orders.TableNoTracking
+                                    .Where(o => o.OrderStatus == EOrderStatus.Completed && o.CreatedAt.Year == year)
+                                    .ToListAsync();
 
-            for (int i = 1; i <= now.Month; i++)
+            var now = DateTime.UtcNow;
+            if (now.Year == year)
             {
-                data.Add(new ChartDecimalData
+                for (int i = 1; i <= now.Month; i++)
                 {
-                    //Name = new DateTime(currentYear, i, 1).ToString("MMMM"), // "January", "February", ...
-                    Name = i.ToString(),
-                    Value = 0
-                });
+                    data.Add(new ChartDecimalData
+                    {
+                        //Name = new DateTime(currentYear, i, 1).ToString("MMMM"), // "January", "February", ...
+                        Name = i.ToString(),
+                        Value = 0
+                    });
+                }
+            }
+            else
+            {
+                for (int i = 1; i <= 12; i++)
+                {
+                    data.Add(new ChartDecimalData
+                    {
+                        Name = i.ToString(),
+                        Value = 0
+                    });
+                }
             }
 
             foreach (var order in orders)
             {
-                if (order.CreatedAt.Year == currentYear)
-                {
-                    int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
-                    data[monthIndex].Value += order.TotalPrice;
-                }
+                int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
+                data[monthIndex].Value += order.FinalAmount;
             }
 
             return data;
         }
 
-        public async Task<List<ChartDecimalData>> GetMonthlyProfitSeriesAsync()
+        public async Task<List<ChartDecimalData>> GetMonthlyProfitSeriesAsync(int year)
         {
-            //var orderModels = allOrderModels.Where(x => x.OrderStatus == EOrderStatus.Completed).ToList();
-            //var orders = await _uow.Orders.FindManyAsync(o => o.OrderStatus == EOrderStatus.Completed);
-            var orders = await _uow.Orders.TableNoTracking.Where(o => o.OrderStatus == EOrderStatus.Completed).Include(o => o.OrderItems).ToListAsync();
-
-
             var data = new List<ChartDecimalData>();
-            //var orders = await _orderService.GetAllOrdersAsync();
 
-            var now = DateTime.UtcNow;
-            var currentYear = now.Year;
+            var orders = await _uow.Orders.TableNoTracking
+                .Where(o => o.OrderStatus == EOrderStatus.Completed && o.CreatedAt.Year == year)
+                .Include(o => o.OrderItems)
+                .ToListAsync();
 
-            // Khởi tạo mảng 12 tháng từ January đến December với giá trị mặc định = 0
-            for (int i = 1; i <= now.Month; i++)
-            {
-                data.Add(new ChartDecimalData
-                {
-                    //Name = new DateTime(currentYear, i, 1).ToString("MMMM"), // "January", "February", ...
-                    Name = i.ToString(),
-                    Value = 0
-                });
-            }
+            data = await GetMonthlyRevenueSeries(year);
 
             foreach (var order in orders)
             {
-                if (order.CreatedAt.Year == currentYear)
+                if (order.CreatedAt.Year == year)
                 {
                     int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
 
-                    decimal incomeOfOrderItem = 0m;
+                    decimal importCosts = 0m;
 
                     foreach (var item in order.OrderItems)
                     {
-                        var pVO = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByInternalIdAsync(item.ProductVariantOptionId);
+                        var pVO = await _uow.ProductVariantOptions.TableNoTracking
+                            .Where(pvo => pvo.Id == item.ProductVariantOptionId)
+                            .FirstOrDefaultAsync();
 
                         if (pVO != null)
                         {
-                            incomeOfOrderItem += item.TotalPrice - pVO.ProductVariant.ImportPrice * item.Quantity;
+                            importCosts += pVO.ImportPrice * item.Quantity;
                         }
                     }
 
-
-                    data[monthIndex].Value += incomeOfOrderItem;
+                    data[monthIndex].Value -= importCosts;
                 }
             }
 
             return data;
         }
 
-        public async Task<List<ChartData>> GetMonthlyTotalOrdersSeries()
+        public async Task<List<ChartData>> GetMonthlyTotalOrdersSeries(int year)
         {
             var data = new List<ChartData>();
-            var orders = await _uow.Orders.FindManyAsync(o => o.CreatedAt.Year == DateTime.Now.Date.Year);
+            var orders = await _uow.Orders.TableNoTracking
+                                    .Where(o => o.OrderStatus == EOrderStatus.Completed && o.CreatedAt.Year == year)
+                                    .ToListAsync();
+
 
             var now = DateTime.UtcNow;
-            var currentYear = now.Year;
-
-            // Khởi tạo mảng 12 tháng từ January đến December với giá trị mặc định = 0
-            for (int i = 1; i <= now.Month; i++)
+            if (now.Year == year)
             {
-                data.Add(new ChartData
+                for (int i = 1; i <= now.Month; i++)
                 {
-                    //Name = new DateTime(currentYear, i, 1).ToString("MMMM"), // "January", "February", ...
-                    Name = i.ToString(),
-                    Value = 0
-                });
+                    data.Add(new ChartData
+                    {
+                        //Name = new DateTime(currentYear, i, 1).ToString("MMMM"), // "January", "February", ...
+                        Name = i.ToString(),
+                        Value = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Completed && o.CreatedAt.Month == i)
+                    });
+                }
             }
-
-            foreach (var order in orders)
+            else
             {
-                if (order.CreatedAt.Year == currentYear)
+                for (int i = 1; i <= 12; i++)
                 {
-                    int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
-
-                    data[monthIndex].Value += 1;
+                    data.Add(new ChartData
+                    {
+                        Name = i.ToString(),
+                        Value = await _uow.Orders.CountAsync(o => o.OrderStatus == EOrderStatus.Completed && o.CreatedAt.Year == year)
+                    });
                 }
             }
 
@@ -233,9 +238,9 @@ namespace TechStore.Service.Implementations
             }
             else
             {
-                data.Goal = pendingOrderCount;
+                data.Goal = pendingOrderCount + processingOrderCount;
                 data.Progress = processingOrderCount;
-                data.ProgressPercent = (processingOrderCount / pendingOrderCount) * 100;
+                data.ProgressPercent = Math.Round(data.Progress * 100.0 / data.Goal, 1);
             }
 
             return data;
@@ -260,9 +265,9 @@ namespace TechStore.Service.Implementations
             }
             else
             {
-                data.Goal = processingOrderCount;
+                data.Goal = processingOrderCount + deliveringOrderCount;
                 data.Progress = deliveringOrderCount;
-                data.ProgressPercent = (deliveringOrderCount / processingOrderCount) * 100;
+                data.ProgressPercent = Math.Round(data.Progress * 100.0 / data.Goal, 1);
             }
 
             return data;
@@ -288,24 +293,26 @@ namespace TechStore.Service.Implementations
             }
             else
             {
-                data.Goal = deliveringOrderCount;
+                data.Goal = deliveringOrderCount + complatedOrderCount;
                 data.Progress = complatedOrderCount;
-                data.ProgressPercent = (complatedOrderCount / deliveringOrderCount) * 100;
+                data.ProgressPercent = Math.Round(data.Progress * 100.0 / data.Goal, 1);
             }
 
             return data;
         }
 
-        public async Task<List<AdminProductListItemModel>> GetHotProducts()
+        public async Task<List<AdminListItemProductModel>> GetHotProducts()
         {
-            var productModels = new List<AdminProductListItemModel>();
+            var productModels = new List<AdminListItemProductModel>();
 
             int curentMonth = DateTime.Now.Date.Month;
 
-            var orders = await _uow.Orders.GetOrdersIncludeItemsDetailAsync(o => o.CreatedAt.Month >= curentMonth - 1, 1, 10000);
+            var orders = await _uow.Orders.TableNoTracking
+                                    .Where(o => o.CreatedAt.Month == curentMonth)
+                                    .Include(o => o.OrderItems)
+                                    .ToListAsync();
 
             var recentTopProducts = orders
-                //.Where(o => o.CreatedAt >= DateTime.UtcNow.AddDays(-30)) // lọc đơn hàng gần đây
                 .SelectMany(o => o.OrderItems) // gom tất cả OrderItem lại
                 .GroupBy(item => new { item.ProductVariantOptionId })
                 .Select(g => new
@@ -321,57 +328,74 @@ namespace TechStore.Service.Implementations
             .Select(x => x.PVOId)
             .ToList();
 
-                    var topOrderItems = orders
-            .SelectMany(o => o.OrderItems)
-            .Where(oi => topPvoIds.Contains(oi.ProductVariantOptionId))
-            .ToList();
+            //        var topOrderItems = orders
+            //.SelectMany(o => o.OrderItems)
+            //.Where(oi => topPvoIds.Contains(oi.ProductVariantOptionId))
+            //.ToList();
 
-            if (topPvoIds.Count > 0)
+            //if (topPvoIds.Count > 0)
+            //{
+            //    foreach (var item in topOrderItems)
+            //    {
+            //        var productModel = new AdminListItemProductModel
+            //        {
+            //            ProductVariantOptionId = item.ProductVariantOptionPublicId,
+            //            CategoryName = item.ProductVariantOption.ProductVariant.Product.Category.Name,
+            //            Name = item.ProductName,
+            //            SoldCount = item.ProductVariantOption.ProductVariant.SoldCount,
+            //            Price = item.ProductVariantOption.ProductVariant.Price,
+            //            MainImageUrl = item.ProductVariantOption.ImageUrl,
+            //            AverageRating = item.ProductVariantOption.ProductVariant.Product.AverageRating,
+            //            Stock = item.ProductVariantOption.Stock,
+            //            RatedCount = item.ProductVariantOption.ProductVariant.Product.RatedCount,
+            //        };
+            //        productModels.Add(productModel);
+            //    }
+            //}
+
+            if (topPvoIds == null) return productModels;
+
+            foreach ( var id in topPvoIds)
             {
-                foreach (var item in topOrderItems)
+                var pvo = await _uow.ProductVariantOptions.TableNoTracking
+                                        .Where(pvo => pvo.Id == id)
+                                        .Include(pvo => pvo.ProductVariant)
+                                            .ThenInclude(pv => pv.Product)
+                                                .ThenInclude(p=>p.Category)
+                                        .FirstOrDefaultAsync();
+
+                if (pvo != null)
                 {
-                    var productModel = new AdminProductListItemModel
-                    {
-                        ProductVariantOptionId = item.ProductVariantOptionPublicId,
-                        CategoryName = item.ProductVariantOption.ProductVariant.Product.Category.Name,
-                        Name = item.ProductVariantOption.ProductVariant.Product.Name + " " + item.ProductVariantOption.ProductVariant.Name + " " + item.ProductVariantOption.Name,
-                        SoldCount = item.ProductVariantOption.ProductVariant.SoldCount,
-                        Price = item.ProductVariantOption.ProductVariant.Price,
-                        MainImageUrl = item.ProductVariantOption.ImageUrl,
-                        AverageRating = item.ProductVariantOption.ProductVariant.Product.AverageRating,
-                        Stock = item.ProductVariantOption.Stock,
-                        RatedCount = item.ProductVariantOption.ProductVariant.Product.RatedCount,
-                    };
-                    productModels.Add(productModel);
+                    productModels.Add(pvo.ToAdminListItemModel());
                 }
             }
 
             return productModels;
         }
 
-        public async Task<List<AdminProductListItemModel>> GetTopSoldProducts()
+        public async Task<List<AdminListItemProductModel>> GetTopSoldProducts()
         {
-            var productModels = new List<AdminProductListItemModel>();
+            var productModels = new List<AdminListItemProductModel>();
 
             var topSoldProducts = await _uow.Products.GetTopSoldProductsAsync(7);
 
             foreach (var product in topSoldProducts)
             {
-                productModels.Add(product.ToAdminProductListItem());
+                productModels.Add(product.ToAdminListItemProduct());
             }
 
             return productModels;
         }
 
-        public async Task<List<AdminProductListItemModel>> GetTopRatedProductsAsync()
+        public async Task<List<AdminListItemProductModel>> GetTopRatedProductsAsync()
         {
-            var productModels = new List<AdminProductListItemModel>();
+            var productModels = new List<AdminListItemProductModel>();
 
             var top10RatedProducts = await _uow.Products.GetTopRatedProductsAsync(7);
 
             foreach (var product in top10RatedProducts)
             {
-                productModels.Add(product.ToAdminProductListItem());
+                productModels.Add(product.ToAdminListItemProduct());
             }
 
             return productModels;

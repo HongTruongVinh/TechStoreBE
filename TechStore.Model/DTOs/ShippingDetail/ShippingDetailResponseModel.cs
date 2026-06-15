@@ -9,20 +9,19 @@ namespace TechStore.Model.DTOs.ShippingDetail
 {
     public class ShippingDetailResponseModel
     {
-        public required string ShippingDetailId { get; set; }
+        public required string Id { get; set; }
+        public required string OrderId { get; set; }        
+        public required string ShipperId { get; set; }
 
-        public required string OrderId { get; set; }         // Liên kết với Order
-
-        public required string ShipperId { get; set; }       // Đơn vị vận chuyển
+        public required string ShipperName { get; set; }
+        public string? DeliveryStaffName { get; set; }
+        public string? DeliveryStaffPhoneNumber { get; set; }
 
         public required string TrackingNumber { get; set; }    // Mã vận đơn
-
-        public required EShippingDetailStatus Status { get; set; }    // Trạng thái: Preparing, Shipping, Delivered, Failed...
+        public required EShippingStatus Status { get; set; }   
 
         public DateTime? ShippedDate { get; set; }
-
         public DateTime? EstimatedArrival { get; set; }
-
         public string? ShippingNote { get; set; }
     }
 }

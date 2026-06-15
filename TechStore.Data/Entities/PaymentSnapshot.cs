@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace TechStore.Data.Entities
 {
     public class PaymentSnapshot : BaseEntity
     {
-        public required string CustomerId { get; set; } // public id
+        public required Guid CustomerId { get; set; } // public id
         public required string CustomerName { get; set; }
         public required string ShippingAddress { get; set; }
         public required string CustomerPhoneNumber { get; set; }
@@ -21,6 +22,6 @@ namespace TechStore.Data.Entities
 
         public string? Note { get; set; }
 
-        public required List<PaymentSnapshotItem> Items { get; set; }
+        public required ICollection<PaymentSnapshotItem> Items { get; set; }
     }
 }

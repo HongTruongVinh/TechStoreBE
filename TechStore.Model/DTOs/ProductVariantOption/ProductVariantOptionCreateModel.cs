@@ -12,6 +12,8 @@ namespace TechStore.Model.DTOs.ProductVariantOption
         public required string Name { get; set; }
         public required string ImageUrl { get; set; }
         public int Stock { get; set; } = 0;
-        public decimal? Price { get; set; } = 0;  // Could override Variant
+
+        public decimal? Price { get; set; }
+        public decimal? ImportPrice { get; set; }
     }
 }

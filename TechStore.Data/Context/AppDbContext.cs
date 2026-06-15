@@ -114,17 +114,6 @@ namespace TechStore.Data.Context
 
             });
 
-            modelBuilder.Entity<Invoice>(entity =>
-            {
-                entity.HasIndex(p => p.PublicId).IsUnique();
-
-                entity.HasOne(i => i.Order)
-                .WithOne(o => o.Invoice)
-                .HasForeignKey<Invoice>(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            });
-
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
@@ -132,11 +121,6 @@ namespace TechStore.Data.Context
                 entity.HasOne(o => o.Invoice)
                 .WithOne(i => i.Order)
                 .HasForeignKey<Invoice>(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasMany(o => o.Payments)
-                .WithOne(i => i.Order)
-                .HasForeignKey(i => i.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(o => o.OrderItems)
@@ -165,13 +149,28 @@ namespace TechStore.Data.Context
                 .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasOne(i => i.Order)
+                .WithOne(o => o.Invoice)
+                .HasForeignKey<Invoice>(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(o => o.Payments)
+                .WithOne(i => i.Invoice)
+                .HasForeignKey(i => i.InvoiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
             modelBuilder.Entity<Payment>(entity =>
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
 
-                entity.HasOne(p => p.Order)
-                .WithMany(o => o.Payments)
-                .HasForeignKey(p => p.OrderId)
+                entity.HasOne(p => p.Invoice)
+                .WithMany(i => i.Payments)
+                .HasForeignKey(p => p.InvoiceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             });

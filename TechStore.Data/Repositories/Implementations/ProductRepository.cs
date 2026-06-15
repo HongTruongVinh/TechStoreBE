@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using TechStore.Common.Models;
 using TechStore.Data.Context;
 using TechStore.Data.Entities;
 using TechStore.Data.Repositories.Interfaces;
@@ -28,49 +29,77 @@ namespace TechStore.Data.Repositories.Implementations
             return products;
         }
 
-        public async Task<List<Product>?> GetProductsFilteredAsync(
-    int pageNumber,
-    int pageSize,
-    string? categoryId = null,
-    decimal? minPrice = null,
-    decimal? maxPrice = null,
-    string? brandId = null)
+        public async Task<PagedResult<Product>> SearchAsync(ProductSearchQuery query)
         {
-            var query = _dbSet.AsQueryable();
+            IQueryable<Product> products = _dbSet;
 
-            if (!string.IsNullOrEmpty(categoryId))
+            // Keyword
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
             {
-                var category = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.PublicId == categoryId);
-
-                if (category != null)
-                {
-                    query = query.Where(p => p.CategoryId == category.Id);
-                }
+                products = products.Where(p =>
+                    p.Name.Contains(query.Keyword));
             }
 
-            //if (minPrice.HasValue)
-            //    query = query.Where(p => p.Price >= minPrice.Value);
-
-            //if (maxPrice.HasValue)
-            //    query = query.Where(p => p.Price <= maxPrice.Value);
-
-            if (!string.IsNullOrEmpty(brandId))
+            // Category
+            if (!string.IsNullOrWhiteSpace(query.CategoryId))
             {
-                var brand = await _context.Brands
-                    .FirstOrDefaultAsync(c => c.PublicId == brandId);
-
-                if (brand != null)
-                {
-                    query = query.Where(p => p.BrandId == brand.Id);
-                }
+                products = products.Where(p =>
+                    p.CategoryPublicId == query.CategoryId);
             }
 
-            return await query
-                .OrderByDescending(p => p.StartSellingDate)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+            // Brand
+            if (!string.IsNullOrWhiteSpace(query.BrandId))
+            {
+                products = products.Where(p =>
+                    p.BrandPublicId == query.BrandId);
+            }
+
+            // Min Price
+            if (query.MinPrice.HasValue)
+            {
+                products = products.Where(p =>
+                    p.MinPrice >= query.MinPrice.Value);
+            }
+
+            // Max Price
+            if (query.MaxPrice.HasValue)
+            {
+                products = products.Where(p =>
+                    p.MaxPrice <= query.MaxPrice.Value);
+            }
+
+            // Sorting
+            products = query.SortBy?.ToLower() switch
+            {
+                "name" => query.Descending
+                    ? products.OrderByDescending(p => p.Name)
+                    : products.OrderBy(p => p.Name),
+
+                "price" => query.Descending
+                    ? products.OrderByDescending(p => p.MinPrice)
+                    : products.OrderBy(p => p.MinPrice),
+
+                "popular" => query.Descending
+                    ? products.OrderByDescending(p => p.SoldCount)
+                    : products.OrderBy(p => p.SoldCount),
+
+                _ => products.OrderByDescending(p => p.SoldCount)
+            };
+
+            var totalItems = await products.CountAsync();
+
+            var items = await products
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
                 .ToListAsync();
+
+            return new PagedResult<Product>
+            {
+                CurrentPage = query.Page,
+                PageSize = query.PageSize,
+                TotalItems = totalItems,
+                Items = items
+            };
         }
 
         public async Task<List<Product>?> GetTopNewestProductsAsync(int count)

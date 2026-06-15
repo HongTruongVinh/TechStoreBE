@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechStore.Model.DTOs.ProductVariant;
 
 namespace TechStore.Model.DTOs.Product
 {
@@ -12,25 +13,23 @@ namespace TechStore.Model.DTOs.Product
         public required string CategoryId { get; set; }
         public required string BrandId { get; set; }
 
-        public required string ShortDescription { get; set; }
-        public required string Description { get; set; } = "";
+        public string? ShortDescription { get; set; }
+        public string? Description { get; set; }
         public string? Slug { get; set; }
 
-        public required List<string> Tag { get; set; }
-        public string? MainImageUrl { get; set; }
-        public List<string>? GalleryImageUrls { get; set; } = new();
-
-        //public required int Stock { get; set; }
-        //public required decimal Price { get; set; } = 0;
-        //public required decimal ImportPrice { get; set; } = 0;
+        public List<string> Tags { get; set; } = [];
+        public required string MainImageUrl { get; set; }
+        public List<string> GalleryImageUrls { get; set; } = [];
 
         public DateTime? StartSellingDate { get; set; }
         public DateTime? EndSellingDate { get; set; }
-        public required bool IsFeatured { get; set; }
+        public bool? IsFeatured { get; set; }
 
-        public required decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
         public DateTime? SaleStart { get; set; }
         public DateTime? SaleEnd { get; set; }
         public DateTime? PublishDate { get; set; }
+
+        public List<ProductVariantUpdateModel>? Variants { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<List<string>>> GetHotProdctsImage();
 
 
-        Task<ServiceResult<List<ProductListItemModel>>> GetFeaturedProducts();
-        Task<ServiceResult<List<ProductListItemModel>>> GetProductsByBrandName(string brandName, int page, int pageSize);
+        Task<ServiceResult<List<ListItemProductModel>>> GetFeaturedProducts();
+        Task<ServiceResult<List<ListItemProductModel>>> GetProductsByBrandName(string brandName, int page, int pageSize);
     }
 }

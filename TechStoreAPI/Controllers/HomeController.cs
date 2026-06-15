@@ -51,7 +51,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("feature")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetFeaturedProducts()
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetFeaturedProducts()
         {
             var serviceResult = await _homeService.GetFeaturedProducts();
 
@@ -80,7 +80,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("products")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProductsByBrandName(string brandName, int page = 1, int pageSize = 16)
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProductsByBrandName(string brandName, int page = 1, int pageSize = 16)
         {
             var serviceResult = await _homeService.GetProductsByBrandName(brandName, page, pageSize);
 

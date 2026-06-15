@@ -10,20 +10,15 @@ namespace TechStore.Service.Mappers
 {
     public static class PaymentMappers
     {
-        public static PaymentResponseModel ToPaymentResponseModel(this Payment payment, Order order, QRCode? qrCode)
+        public static PaymentResponseModel ToPaymentResponseModel(this Payment payment)
         {
             return new PaymentResponseModel
             {
                 Id = payment.PublicId,
-                OrderId = order.PublicId,
-                CustomerId = order.Customer?.PublicId ?? "",
-                CustomerName = order.CustomerName,
-                CustomerPhonenumber = order.CustomerPhoneNumber,
                 Amount = payment.Amount,
                 PaymentMethod = payment.PaymentMethod,
                 TransactionCode = payment.TransactionCode,
                 PaymentStatus = payment.PaymentStatus,
-                QRCode = qrCode?.ToQRCodeResponseModel(),
                 CreatedAt = payment.CreatedAt
             };
         }

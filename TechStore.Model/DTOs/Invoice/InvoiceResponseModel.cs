@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Enums;
+using TechStore.Model.DTOs.Payment;
 
 namespace TechStoreModel.Model.Invoice
 {
@@ -15,12 +16,12 @@ namespace TechStoreModel.Model.Invoice
         public required string CustomerName { get; set; }
         public required string CustomerPhoneNumber { get; set; }
 
-        public required decimal TotalPrice { get; set; } = 0;
-        public required decimal DiscountAmount { get; set; }
-        public required decimal FinalAmount { get; set; }
+        public required decimal TotalPrice { get; set; }
+        public required decimal PaidAmount { get; set; }
+        public required decimal RemainingAmount { get; set; }
 
-        public required EOrderType OrderType { get; set; }
         public required EInvoiceStatus InvoiceStatus { get; set; }
+        public required List<PaymentResponseModel> Payments { get; set; }
 
         public string? CashierName { get; set; }
         public DateTime? PaidAt { get; set; }

@@ -53,23 +53,9 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProductsFiltered(
-            int page = 1,
-            int pageSize = 20,
-            string? categoryId = null,
-            decimal? minPrice = null,
-            decimal? maxPrice = null,
-            string? brandId = null
-            )
+        public async Task<ApiResponse<PagedResult<ListItemProductModel>>> GetProductsFiltered(ProductSearchQuery query)
         {
-            var serviceResult = await _productService.GetProductsFilteredAsync(
-                page = 1,
-                pageSize = 20,
-                categoryId,
-                minPrice,
-                maxPrice,
-                brandId
-                );
+            var serviceResult = await _productService.GetProductsFilteredAsync(query);
 
             if (serviceResult.IsSuccess)
             {
@@ -159,7 +145,7 @@ namespace TechStoreAPI.Controllers
         [HttpPut("{id}")]
         public async Task<ApiResponse<bool>> Put(string id, ProductUpdateModel model)
         {
-            var result = await _productService.UpdateProductInformation(id, model);
+            var result = await _productService.UpdateProduct(id, model);
 
             if (result.IsSuccess == true)
             {

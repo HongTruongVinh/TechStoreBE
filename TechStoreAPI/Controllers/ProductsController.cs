@@ -22,23 +22,9 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProductsFiltered(
-            int page = 1, 
-            int pageSize = 20, 
-            string? categoryId = null,
-            decimal? minPrice = null,
-            decimal? maxPrice = null,
-            string? brandId = null
-            )
+        public async Task<ApiResponse<PagedResult<ListItemProductModel>>> GetProductsFiltered([FromQuery]ProductSearchQuery query)
         {
-            var serviceResult = await _productService.GetProductsFilteredAsync(
-                page = 1, 
-                pageSize = 20, 
-                categoryId,
-                minPrice,
-                maxPrice,
-                brandId
-                );
+            var serviceResult = await _productService.GetProductsFilteredAsync(query);
 
             if (serviceResult.IsSuccess)
             {
@@ -64,34 +50,34 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProducts(int page = 1, int pageSize = 20)
-        {
-            var serviceResult = await _productService.GetProductsAsync(page, pageSize);
+        //[HttpGet]
+        //public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProducts(int page = 1, int pageSize = 20)
+        //{
+        //    var serviceResult = await _productService.GetProductsAsync(page, pageSize);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-        }
+        //    if (serviceResult.IsSuccess)
+        //    {
+        //        return new()
+        //        {
+        //            PartnerCode = Messenger.SuccessFull,
+        //            RetCode = ERetCode.Successfull,
+        //            Data = serviceResult.Data,
+        //            SystemMessage = serviceResult.Message,
+        //            StatusCode = (int)HttpStatusCode.OK
+        //        };
+        //    }
+        //    else
+        //    {
+        //        return new()
+        //        {
+        //            PartnerCode = Messenger.NoExitData,
+        //            RetCode = ERetCode.NoExitData,
+        //            Data = serviceResult.Data,
+        //            SystemMessage = serviceResult.Message,
+        //            StatusCode = (int)HttpStatusCode.OK
+        //        };
+        //    }
+        //}
 
         [HttpGet("{id}")]
         public async Task<ApiResponse<ProductDetailModel>> GetProductDetail(string id)
@@ -123,7 +109,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("recommended/{userId}")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetRecommendedProducts(string userId)
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetRecommendedProducts(string userId)
         {
             //var userId = User.FindFirstValue(AppClaims.UserId);
 
@@ -168,7 +154,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> SearchByName(string keyword, int pageNumber = 1, int pageSize = 12)
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> SearchByName(string keyword, int pageNumber = 1, int pageSize = 12)
         {
             var serviceResult = await _productService.SearchByNameAsync(keyword, pageNumber, pageSize);
 
@@ -197,7 +183,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("category")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProductsByCategory(string categorySlug, int pageNumber = 1, int pageSize = 12)
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProductsByCategory(string categorySlug, int pageNumber = 1, int pageSize = 12)
         {
 
             var serviceResult = await _productService.GetProductsByCategory(categorySlug, pageNumber, pageSize);
@@ -227,7 +213,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("category-brand")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetProductsByCategoryAndBrand(string categorySlug, string brandSlug, int pageNumber = 1, int pageSize = 12)
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProductsByCategoryAndBrand(string categorySlug, string brandSlug, int pageNumber = 1, int pageSize = 12)
         {
 
             var serviceResult = await _productService.GetProductsByCategoryAndBrand(categorySlug, brandSlug, pageNumber, pageSize);
@@ -257,7 +243,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("featured")]
-        public async Task<ApiResponse<IEnumerable<ProductListItemModel>>> GetFeaturedProducts()
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetFeaturedProducts()
         {
             var serviceResult = await _productService.GetFeaturedProducts();
 

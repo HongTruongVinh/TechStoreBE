@@ -12,17 +12,13 @@ namespace TechStore.Data.Entities
         public Product Product { get; set; } = null!;
 
         // Ví dụ: 128GB, 256GB, 512GB
-        public string Name { get; set; } = "";
-        public required string Description { get; set; } = "";
+        public required string Name { get; set; }
+        public required string Description { get; set; }
 
-        public decimal Price { get; set; } = 0;
-        public decimal ImportPrice { get; set; } = 0;
+        public required decimal Price { get; set; }
+        public required decimal ImportPrice { get; set; }
+        public int SoldCount { get; set; }
 
-        public int SoldCount { get; set; } = 0;
-
-        public decimal? SalePrice { get; set; }
-        public DateTime? SaleStart { get; set; }
-        public DateTime? SaleEnd { get; set; }
 
         public ICollection<ProductVariantOption> Options { get; set; } = new List<ProductVariantOption>();
     }

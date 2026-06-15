@@ -22,10 +22,43 @@ namespace TechStoreAPI.Controllers
             _paymentService = paymentService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PaymentWebhook(PaymentWebhookRequest request)
+        [HttpPost("verify-payment-of-snapshot")]
+        public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(PaymentForSnapshotWebhookRequest request)
         {
-            var result = await _paymentService.VerifyPayment(request);
+            var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
+
+            if (result.IsSuccess)
+            {
+                await _hubContext
+                    .Clients
+                    .Group(request.SnapshotId)
+                    .SendAsync("PaymentSuccess", new
+                    {
+                        paymentId = request.SnapshotId,
+                        amount = request.Amount,
+                        message = "Thanh toán thành công"
+                    });
+            }
+            else
+            {
+                await _hubContext
+                    .Clients
+                    .Group(request.SnapshotId)
+                    .SendAsync("PaymentFailed", new
+                    {
+                        paymentId = request.SnapshotId,
+                        amount = request.Amount,
+                        message = result.Message ?? "Thanh toán thất bại"
+                    });
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("verify-payment")]
+        public async Task<IActionResult> VerifyPaymenForInvoicetWebhook(PaymentForInvocieWebhookRequest request)
+        {
+            var result = await _paymentService.VerifyPaymentForInvoiceAsync(request);
 
             if (result.IsSuccess)
             {

@@ -9,5 +9,6 @@ namespace TechStore.Data.Repositories.Interfaces
 {
     public interface IPaymentSnapshotRepository : IRepository<PaymentSnapshot>
     {
+        Task<PaymentSnapshot?> GetWithItemsAsync(string publicId);
     }
 }

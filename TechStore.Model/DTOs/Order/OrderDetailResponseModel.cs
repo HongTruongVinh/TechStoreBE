@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Enums;
 using TechStore.Model.DTOs.Payment;
+using TechStore.Model.DTOs.ShippingDetail;
 using TechStoreModel.Model.Invoice;
 
 namespace TechStore.Model.DTOs.Order
@@ -17,32 +18,21 @@ namespace TechStore.Model.DTOs.Order
 
         public required string CustomerPhonenumber { get; set; }
         public required string CustomerEmail { get; set; }
+        public required string ShippingAddress { get; set; }
+        public required string Notes { get; set; }
+
         public required EOrderStatus OrderStatus { get; set; } = EOrderStatus.Pending;
 
-        public required string ShippingAddress { get; set; }
         public required decimal TotalPrice { get; set; }
         public required decimal DiscountAmount { get; set; }
-
         public required decimal ShippingCharge { get; set; }
         public required decimal FinalAmount { get; set; }
-        public required EPaymentMethod PaymentMethod { get; set; }
 
         public required List<OrderItemResponseModel> Items { get; set; }
         public InvoiceResponseModel? Invoice { get; set; }
-        public required List<PaymentResponseModel> Payments { get; set; }
+        public ShippingDetailResponseModel? ShippingDetail { get; set; }
 
         public required DateTime CreatedAt { get; set; }
         public required DateTime UpdatedAt { get; set; }
-        public string? QRCode { get; set; }
-
-        public string? ShippingDetailId { get; set; }
-        public string? ShipperName { get; set; }
-        public string? TrackingNumber { get; set; }
-        public EShippingDetailStatus? Status { get; set; }
-        public DateTime? ShippedDate { get; set; }
-        public DateTime? EstimatedArrival { get; set; }
-        public string? ShippingNote { get; set; }
-        public string? Notes { get; set; }
-        public int? FailureCount { get; set; }
     }
 }

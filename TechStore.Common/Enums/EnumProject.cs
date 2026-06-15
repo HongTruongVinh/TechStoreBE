@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace TechStore.Common.Enums
 {
-    public enum EOrderType
-    {
-        Online,
-        InStore // mua tại quầy
-    }
 
     public enum EOrderStatus
     {
@@ -25,10 +20,11 @@ namespace TechStore.Common.Enums
 
     public enum EInvoiceStatus
     {
-        Paid,    // Đã thanh toán
-        Unpaid,  // Chưa thanh toán 
-        Canceled,
-        Refunded
+        Unpaid,
+        PartiallyPaid,
+        Paid,
+        Refunded,
+        Cancelled
     }
 
     public enum EPaymentStatus
@@ -47,7 +43,7 @@ namespace TechStore.Common.Enums
         Cash
     }
 
-    public enum EShippingDetailStatus
+    public enum EShippingStatus
     {
         Preparing,   // Đang chuẩn bị
         Shipping,    // Đang giao hàng

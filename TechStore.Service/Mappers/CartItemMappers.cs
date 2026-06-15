@@ -24,7 +24,6 @@ namespace TechStore.Service.Mappers
                 MainImageUrl = productVariantOption.ImageUrl,
                 Quantity = cartItem.Quantity,
                 Price = productVariantOption.ProductVariant.Price,
-                SalePrice = productVariantOption.ProductVariant.SalePrice,
                 Discount = cartItem.Discount,
                 TotalPrice = productVariantOption.ProductVariant.Price * cartItem.Quantity,
                 Stock = productVariantOption.Stock

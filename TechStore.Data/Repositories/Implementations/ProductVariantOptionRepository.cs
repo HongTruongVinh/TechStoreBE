@@ -29,5 +29,14 @@ namespace TechStore.Data.Repositories.Implementations
                 .ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
+
+        public async Task<ProductVariantOption?> GetOrderItemDetailAsync(string publicId)
+        {
+            return await _dbSet
+                .Include(p => p.ProductVariant)
+                .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.Category)
+                .FirstOrDefaultAsync(p => p.PublicId == publicId);
+        }
     }
 }

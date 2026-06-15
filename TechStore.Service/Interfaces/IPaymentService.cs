@@ -11,13 +11,14 @@ namespace TechStore.Service.Interfaces
 {
     public interface IPaymentService
     {
-        Task<ServiceResult<string>> CreatePaymentByCustomer(string userId, PaymentCreateModel paymentModel);
+        Task<ServiceResult<string>> AddCashPaymentByAdminAsync(string cashierId, CashPaymentCreateModel cashPayment);
         Task<ServiceResult<bool>> DeletePayment(string paymentId);
         Task<ServiceResult<List<PaymentResponseModel>>> GetPayments();
         Task<ServiceResult<PaymentResponseModel>> GetPayment(string paymentId);
-        Task<ServiceResult<PaymentDataModel>> CreatePaymentForPrepayOrder(string userId, OrderCreateModel orderCreateModel);
-        Task<ServiceResult<bool>> CheckoutPayment(string paymentId);
+        Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel);
+        Task<ServiceResult<PaymentDataModel>> CreatePaymentForInvoiceByAdminAsync(string cashierId, PaymentCreateModel model);
 
-        Task<ServiceResult<string>> VerifyPayment(PaymentWebhookRequest request);
+        Task<ServiceResult<string>> VerifyPaymentForSnapshotAsync(PaymentForSnapshotWebhookRequest request);
+        Task<ServiceResult<string>> VerifyPaymentForInvoiceAsync(PaymentForInvocieWebhookRequest request);
     }
 }

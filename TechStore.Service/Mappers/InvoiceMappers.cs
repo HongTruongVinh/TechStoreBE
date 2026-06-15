@@ -11,9 +11,9 @@ namespace TechStore.Service.Mappers
 {
     public static class InvoiceMappers
     {
-        public static InvoiceListItemModel ToInvoiceListItemModel(this Invoice invoice, Order order)
+        public static ListItemInvoiceModel ToListItemInvoiceModel(this Invoice invoice, Order order)
         {
-            return new InvoiceListItemModel
+            return new ListItemInvoiceModel
             {
                 Id = invoice.PublicId,
                 OrderId = order.PublicId,
@@ -21,15 +21,13 @@ namespace TechStore.Service.Mappers
                 CustomerName = order.CustomerName,
                 CustomerPhoneNumber = order.CustomerPhoneNumber,
 
-                TotalPrice = invoice.TotalPrice,
-                DiscountAmount = invoice.DiscountAmount,
-                FinalAmount = invoice.FinalAmount,
+                TotalPrice = invoice.TotalAmount,
+                DiscountAmount = invoice.PaidAmount,
+                FinalAmount = invoice.RemainingAmount,
 
                 InvoiceStatus = invoice.InvoiceStatus,
-                OrderType = order.OrderType,
 
                 PaidAt = invoice.PaidAt,
-                CashierName = invoice.CashierName,
 
                 CreatedAt = invoice.CreatedAt
             };
@@ -45,16 +43,13 @@ namespace TechStore.Service.Mappers
                 CustomerName= order.CustomerName,
                 CustomerPhoneNumber = order.CustomerPhoneNumber,
 
-                TotalPrice = invoice.TotalPrice,
-                DiscountAmount = invoice.DiscountAmount,
-                FinalAmount = invoice.FinalAmount,
-
+                TotalPrice = invoice.TotalAmount,
+                PaidAmount = invoice.PaidAmount,
+                RemainingAmount = invoice.RemainingAmount,
                 InvoiceStatus = invoice.InvoiceStatus,
-                OrderType = order.OrderType,
 
+                Payments = invoice.Payments.Select(p => p.ToPaymentResponseModel()).ToList(),
                 PaidAt = invoice.PaidAt,
-                CashierName = invoice.CashierName,
-
                 CreatedAt = invoice.CreatedAt
             };
         }

@@ -10,6 +10,7 @@ namespace TechStore.Data.Repositories.Interfaces
     public interface IProductVariantOptionRepository : IRepository<ProductVariantOption>
     {
         Task<ProductVariantOption?> GetProductVariantOptionDetailByPublicIdAsync(string publicId);
+        Task<ProductVariantOption?> GetOrderItemDetailAsync(string publicId);
         Task<ProductVariantOption?> GetProductVariantOptionDetailByInternalIdAsync(Guid publicId);
     }
 }

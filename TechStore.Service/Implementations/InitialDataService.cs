@@ -265,7 +265,9 @@ namespace TechStore.Service.Implementations
                     FirstName = "Ngân",
                     PasswordHash = "Hoangkimngan@1",
                     Email = "hoangkimngan@gmail.com",
-                    Address = "HCM",
+                    City = "HCM",
+                    District = "",
+                    Address = "",
                     PhoneNumber = "0122334455",
                     Gender = EGender.Male,
                     Birthday = new DateTime(1989, 2, 28)
@@ -287,11 +289,13 @@ namespace TechStore.Service.Implementations
 
                 var user1 = new UserCreateModel
                 {
-                    LastName = "Hồng Trường",
-                    FirstName = "Vinh",
+                    LastName = "Nguyễn Huy",
+                    FirstName = "Hoàng",
                     PasswordHash = password,
-                    Email = "user1@gmail.com",
-                    Address = "Hà Nội",
+                    Email = "nguyenhuyhoang@gmail.com",
+                    City = "Hà Nội",
+                    District = "",
+                    Address = "",
                     PhoneNumber = "0123456001",
                     Gender = EGender.Male,
                     Birthday = new DateTime(2002, 2, 28)
@@ -317,7 +321,9 @@ namespace TechStore.Service.Implementations
                     FirstName = "Lan",
                     PasswordHash = password,
                     Email = "user2@gmail.com",
-                    Address = "Hà Nội",
+                    City = "Hà Nội",
+                    District = "",
+                    Address = "",
                     PhoneNumber = "0123456002",
                     Gender = EGender.Female,
                     Birthday = new DateTime(2002, 2, 28),
@@ -343,7 +349,9 @@ namespace TechStore.Service.Implementations
                     FirstName = "Hải",
                     PasswordHash = password,
                     Email = "user3@gmail.com",
-                    Address = "Hà Nội",
+                    City = "Hà Nội",
+                    District = "",
+                    Address = "",
                     PhoneNumber = "0123456003",
                     Gender = EGender.Male,
                     Birthday = new DateTime(2002, 2, 28)
@@ -371,7 +379,9 @@ namespace TechStore.Service.Implementations
                         FirstName = $"{i}",
                         PasswordHash = password,
                         Email = $"user{i}@gmail.com",
-                        Address = "Hà Nội",
+                        City = "Hà Nội",
+                        District = "",
+                        Address = "",
                         PhoneNumber = $"0912345{i:D3}",
                         Gender = EGender.Male,
                         Birthday = new DateTime(2002, 2, 28)
@@ -395,7 +405,9 @@ namespace TechStore.Service.Implementations
                         FirstName = $"{i}",
                         PasswordHash = password,
                         Email = $"satff{i}@gmail.com",
-                        Address = "Hà Nội",
+                        City = "Hà Nội",
+                        District = "",
+                        Address = "",
                         PhoneNumber = $"01234567{i:D3}",
                         Gender = EGender.Male,
                         Birthday = new DateTime(2002, 2, 28)
@@ -930,8 +942,8 @@ namespace TechStore.Service.Implementations
                         {
                             Name = "8GB 256GB",
                             Description= "Desciption",
-                            ImportPrice = 15000000,
-                            Price = 180000000,
+                            ImportPrice = 6500000,
+                            Price = 8500000,
                             Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
                             {
                                 new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
@@ -1202,8 +1214,8 @@ namespace TechStore.Service.Implementations
                         {
                             Name = "Charge 4",
                             Description= "Desciption",
-                            ImportPrice = 100000,
-                            Price = 2000000,
+                            ImportPrice = 200000,
+                            Price = 3000000,
                             Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
                             {
                                 new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
@@ -2106,7 +2118,7 @@ namespace TechStore.Service.Implementations
 
                     #region add orders
                     var productVariantOptions = await _uow.ProductVariantOptions.GetAllAsync();
-                var users = await _uow.Users.FindManyAsync(u => u.LastName.Contains("User"));
+                    var users = await _uow.Users.FindManyAsync(u => u.LastName.Contains("User"));
 
                 if (productVariantOptions != null && users != null)
                 {
@@ -2123,14 +2135,12 @@ namespace TechStore.Service.Implementations
                             ShippingAddress = user.Address,
                             CustomerEmail = user.Email,
                             CustomerPhoneNumber = user.PhoneNumber,
-                            PaymentMethod = EPaymentMethod.COD,
                             Items = new List<OrderItemCreateModel>
                             {
                                 new OrderItemCreateModel
                                 {
                                     ProductVariantOptionId = product.PublicId,
                                     Quantity = quantity,
-                                    Discount = 0,
                                 }
                             }
                         };
@@ -2139,118 +2149,7 @@ namespace TechStore.Service.Implementations
                     }
                 }
 
-                //OrderCreateModel createOrderRequest1 = new OrderCreateModel
-                //{
-                //    CustomerId = resultRegister1.Data,
-                //    CustomerName = user1.LastName,
-                //    CustomerEmail = user1.Email,
-                //    ShippingAddress = user1.Address,
-                //    PaymentMethod = EPaymentMethod.COD,
-                //    CustomerPhonenumber = user1.PhoneNumber,
-                //    Items = new List<OrderItemCreateModel>
-                //{
-                //    new OrderItemCreateModel
-                //    {
-                //        ProductVariantOptionId = resultProduct1,
-                //        Quantity = 1,
-                //        PriceAtOrderTime = productModel1.Price,
-                //        Discount = 0,
-                //        TotalPrice = productModel1.Price
-                //    },
-                //    new OrderItemCreateModel
-                //    {
-                //        ProductVariantOptionId = resultProduct2,
-                //        Quantity = 1,
-                //        PriceAtOrderTime = productModel2.Price,
-                //        Discount = 0,
-                //        TotalPrice = productModel2.Price
-                //    }
-                //}
-                //};
-
-                //OrderCreateModel createOrderRequest2 = new OrderCreateModel
-                //{
-                //    CustomerId = resultRegister2.Data,
-                //    CustomerName = user2.LastName,
-                //    ShippingAddress = user2.Address,
-                //    CustomerEmail = user2.Email,
-                //    CustomerPhonenumber = user2.PhoneNumber,
-                //    PaymentMethod = EPaymentMethod.COD,
-                //    Items = new List<OrderItemCreateModel>
-                //{
-                //    new OrderItemCreateModel
-                //    {
-                //        ProductId = resultProduct3,
-                //        Quantity = 1,
-                //        PriceAtOrderTime = productModel3.Price,
-                //        Discount = 0,
-                //        TotalPrice = productModel3.Price
-                //    }
-                //}
-                //};
-
-                //OrderCreateModel createOrderRequest3 = new OrderCreateModel
-                //{
-                //    CustomerId = resultRegister3.Data,
-                //    CustomerName = user3.LastName,
-                //    ShippingAddress = user3.Address,
-                //    CustomerEmail = user3.Email,
-                //    CustomerPhonenumber = user3.PhoneNumber,
-                //    PaymentMethod = EPaymentMethod.COD,
-                //    Items = new List<OrderItemCreateModel>
-                //{
-                //    new OrderItemCreateModel
-                //    {
-                //        ProductId = resultProduct4,
-                //        Quantity = 1,
-                //        PriceAtOrderTime = productModel4.Price,
-                //        Discount = 0,
-                //        TotalPrice = productModel4.Price
-                //    }
-                //}
-                //};
-
-                //var resultOrder1 = await _orderService.CreateCODOnlineOrderAsync(resultRegister1.Data, createOrderRequest1);
-                //var resultOrder2 = await _orderService.CreateCODOnlineOrderAsync(resultRegister2.Data, createOrderRequest2);
-                //var resultOrder3 = await _orderService.CreateCODOnlineOrderAsync(resultRegister3.Data, createOrderRequest3);
-
-
-                //var users = await _uow.Users.GetAllAsync();
-                //var products = await _uow.Products.GetAllAsync();
-                //var usersList = users.ToList();
-                //var productsList = products.ToList();
-
-                //for (int i = 0; i < 20; i++)
-                //{
-                //    var user = usersList[i % usersList.Count];
-                //    var product = productsList[i % productsList.Count];
-
-                //    int quantity = 1 + (i % 3); // số lượng từ 1 đến 3
-
-                //    var order = new OrderCreateModel
-                //    {
-                //        CustomerId = user.PublicId,
-                //        CustomerName = user.LastName,
-                //        ShippingAddress = user.Address,
-                //        CustomerEmail = user.Email,
-                //        CustomerPhonenumber = user.PhoneNumber,
-                //        PaymentMethod = EPaymentMethod.COD,
-                //        Items = new List<OrderItemCreateModel>
-                //        {
-                //            new OrderItemCreateModel
-                //            {
-                //                ProductId = product.PublicId,
-                //                Quantity = quantity,
-                //                PriceAtOrderTime = product.Price,
-                //                Discount = 0,
-                //                TotalPrice = product.Price * quantity
-                //            }
-                //        }
-                //    };
-
-                //    var resultOrder = await _orderService.SeedDataOrderAsync(user.PublicId, order);
-                //}
-
+               
 
 
                 #endregion

@@ -10,8 +10,8 @@ namespace TechStore.Model.DTOs.Home
     public class HomeResponseModel
     {
         public required List<string> Banner { get; set; }
-        public required List<ProductListItemModel> HotProducts { get; set; }
-        public required List<ProductListItemModel> NewProducts { get; set; }
-        public required List<ProductListItemModel> FeatureProducts { get; set; }
+        public required List<ListItemProductModel> HotProducts { get; set; }
+        public required List<ListItemProductModel> NewProducts { get; set; }
+        public required List<ListItemProductModel> FeatureProducts { get; set; }
     }
 }

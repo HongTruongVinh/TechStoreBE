@@ -7,7 +7,7 @@ namespace TechStore.Service.Interfaces
 {
     public interface IInvoiceService
     {
-        Task<ServiceResult<InvoiceListItemModel>> GetItemById(string id);
-        Task<ServiceResult<List<InvoiceListItemModel>>> GetAllItems();
+        Task<ServiceResult<ListItemInvoiceModel>> GetItemById(string id);
+        Task<ServiceResult<List<ListItemInvoiceModel>>> GetAllItems();
     }
 }

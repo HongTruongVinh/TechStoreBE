@@ -23,53 +23,8 @@ namespace TechStoreAPI.Controllers
             _orderService = orderService;
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<ApiResponse<List<OrderListItemModel>>> GetListOrder(string userId, int page, int pageSize)
-        {
-            //var userId = User.FindFirstValue(AppClaims.UserId);
-
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.GetCustomerOrdersAsync(userId, page, pageSize);
-
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = null,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
-        }
-
         [HttpGet]
-        public async Task<ApiResponse<List<OrderListItemModel>>> GetUserOrders(int page, int pageSize)
+        public async Task<ApiResponse<List<ListItemOrderModel>>> GetUserOrders(int page = 1, int pageSize = 1000)
         {
             var userId = User.FindFirstValue(AppClaims.UserId);
 
@@ -158,14 +113,14 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpPost("{id}/cancel/{userId}")]
-        public async Task<ApiResponse<bool>> CancelOrder(string userId, string id, CancelOrderModel model)
+        [HttpPut("{id}/cancel")]
+        public async Task<ApiResponse<bool>> CancelOrder(string id, CancelOrderModel model)
         {
-            //var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.FindFirstValue(AppClaims.UserId);
 
             if (userId != null)
             {
-                var serviceResult = await _orderService.UpdateOrderStatusToCanceledAsync(userId, id, model);
+                var serviceResult = await _orderService.CancelOrderByCustomerAsync(userId, id, model);
 
                 if (serviceResult.IsSuccess)
                 {
@@ -244,6 +199,53 @@ namespace TechStoreAPI.Controllers
                     PartnerCode = Messenger.SuccessFull,
                     RetCode = ERetCode.Successfull,
                     Data = null,
+                    SystemMessage = Messenger.LoginError,
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed
+                };
+
+                return result;
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ApiResponse<bool>> UpdateOrder(string id, UpdateOrderModel model)
+        {
+            var userId = User.FindFirstValue(AppClaims.UserId);
+
+            if (userId != null)
+            {
+                var serviceResult = await _orderService.UpdateOrderByCustomerAsync(userId, id, model);
+
+                if (serviceResult.IsSuccess)
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.SuccessFull,
+                        RetCode = ERetCode.Successfull,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.NoExitData,
+                        RetCode = ERetCode.NoExitData,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+            }
+            else
+            {
+                ApiResponse<bool> result = new()
+                {
+                    PartnerCode = Messenger.SuccessFull,
+                    RetCode = ERetCode.Successfull,
+                    Data = false,
                     SystemMessage = Messenger.LoginError,
                     StatusCode = (int)HttpStatusCode.ExpectationFailed
                 };

@@ -22,6 +22,6 @@ namespace TechStore.Model.DTOs.Statistic
     {
         public int Goal { get; set; }
         public int Progress { get; set; }
-        public long ProgressPercent { get; set; }
+        public double ProgressPercent { get; set; }
     }
 }

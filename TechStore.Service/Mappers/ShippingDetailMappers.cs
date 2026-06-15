@@ -10,13 +10,14 @@ namespace TechStore.Service.Mappers
 {
     public static class ShippingDetailMappers
     {
-        public static ShippingDetailResponseModel ToResponseModel(this ShippingDetail shippingDetail, Order order, Shipper shipper)
+        public static ShippingDetailResponseModel ToResponseModel(this ShippingDetail shippingDetail)
         {
             return new ShippingDetailResponseModel
             {
-                ShippingDetailId = shippingDetail.PublicId,
-                OrderId = order.PublicId,
-                ShipperId = shipper.PublicId,
+                Id = shippingDetail.PublicId,
+                OrderId = shippingDetail.OrderPublicId,
+                ShipperId = shippingDetail.ShipperPublicId,
+                ShipperName = shippingDetail.ShipperName,
                 TrackingNumber = shippingDetail.TrackingNumber,
                 Status = shippingDetail.Status,
                 ShippedDate = shippingDetail.ShippedDate,

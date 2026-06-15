@@ -13,7 +13,7 @@ namespace TechStore.Data.Entities
         public required string PublicId { get; set; } // Public ID (display hoặc dùng cho API, không là khóa chính)
 
 
-        public required EEntityStatus EntityStatus { get; set; }
+        public EEntityStatus EntityStatus { get; set; } = EEntityStatus.Active;
 
         public required DateTime CreatedAt { get; set; }
 

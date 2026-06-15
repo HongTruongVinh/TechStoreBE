@@ -19,7 +19,6 @@ namespace TechStore.Model.DTOs.Cart
         public required string MainImageUrl { get; set; }
         public required int Quantity { get; set; }
         public required decimal Price { get; set; }
-        public decimal? SalePrice { get; set; }
 
         public required decimal Discount { get; set; }
         public required decimal TotalPrice { get; set; } = 0; // TotalPrice = PriceAtOrderTime * Quantity - Discoun

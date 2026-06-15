@@ -114,12 +114,12 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<List<ProductListItemModel>>> GetFeaturedProducts()
+        public async Task<ServiceResult<List<ListItemProductModel>>> GetFeaturedProducts()
         {
-            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            var serviceResult = new ServiceResult<List<ListItemProductModel>>
             {
                 IsSuccess = true,
-                Data = new List<ProductListItemModel>(),
+                Data = new List<ListItemProductModel>(),
                 Message = Messenger.GetDataSuccessful
             };
 
@@ -135,12 +135,12 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<List<ProductListItemModel>>> GetProductsByBrandName(string brandName, int page, int pageSize)
+        public async Task<ServiceResult<List<ListItemProductModel>>> GetProductsByBrandName(string brandName, int page, int pageSize)
         {
-            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            var serviceResult = new ServiceResult<List<ListItemProductModel>>
             {
                 IsSuccess = true,
-                Data = new List<ProductListItemModel>(),
+                Data = new List<ListItemProductModel>(),
                 Message = Messenger.NoExitData
             };
 
@@ -164,12 +164,12 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<List<ProductListItemModel>>> GetSamsungProducts()
+        public async Task<ServiceResult<List<ListItemProductModel>>> GetSamsungProducts()
         {
-            var serviceResult = new ServiceResult<List<ProductListItemModel>>
+            var serviceResult = new ServiceResult<List<ListItemProductModel>>
             {
                 IsSuccess = true,
-                Data = new List<ProductListItemModel>(),
+                Data = new List<ListItemProductModel>(),
                 Message = Messenger.NoExitData
             };
 

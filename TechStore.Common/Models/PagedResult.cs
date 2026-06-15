@@ -8,9 +8,9 @@ namespace TechStore.Common.Models
 {
     public class PagedResult<T>
     {
-        public int CurrentPage { get; init; }
-        public int PageSize { get; init; }
-        public int TotalItems { get; init; }
+        public required int CurrentPage { get; init; }
+        public required int PageSize { get; init; }
+        public required int TotalItems { get; set; }
 
         public int TotalPages =>
             (int)Math.Ceiling((double)TotalItems / PageSize);

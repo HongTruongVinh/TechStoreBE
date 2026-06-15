@@ -6,7 +6,16 @@ using System.Threading.Tasks;
 
 namespace TechStore.Model.DTOs.Payment
 {
-    public class PaymentWebhookRequest
+    public class PaymentForSnapshotWebhookRequest
+    {
+        public required string SnapshotId { get; set; }
+
+        public required decimal Amount { get; set; }
+
+        public required string TransactionId { get; set; }
+    }
+
+    public class PaymentForInvocieWebhookRequest
     {
         public required string PaymentId { get; set; }
 

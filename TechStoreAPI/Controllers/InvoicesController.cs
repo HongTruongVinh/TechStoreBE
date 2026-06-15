@@ -22,7 +22,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse<IEnumerable<InvoiceListItemModel>>> GetItems()
+        public async Task<ApiResponse<IEnumerable<ListItemInvoiceModel>>> GetItems()
         {
             var serviceResult = await _invoiceService.GetAllItems();
 
@@ -51,7 +51,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ApiResponse<InvoiceListItemModel>> GetItem(string id)
+        public async Task<ApiResponse<ListItemInvoiceModel>> GetItem(string id)
         {
             var serviceResult = await _invoiceService.GetItemById(id);
 

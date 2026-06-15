@@ -24,9 +24,9 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse<List<OrderListItemModel>>> GetListOrder()
+        public async Task<ApiResponse<PagedResult<ListItemOrderModel>>> GetOrders([FromQuery] OrderSearchQuery query)
         {
-            var serviceResult = await _orderService.GetOnlineOrdersAsync();
+            var serviceResult = await _orderService.GetOrdersAsync(query);
 
             if (serviceResult.IsSuccess)
             {
@@ -141,7 +141,7 @@ namespace TechStoreAPI.Controllers
 
             if (userId != null)
             {
-                var serviceResult = await _orderService.UpdateOrderStatusToCanceledAsync(userId, id, model);
+                var serviceResult = await _orderService.CancelOrderByAdminAsync(userId, id, model);
 
                 if (serviceResult.IsSuccess)
                 {
@@ -448,7 +448,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("instore-orders")]
-        public async Task<ApiResponse<List<OrderListItemModel>>> GetStoreOrder()
+        public async Task<ApiResponse<List<ListItemOrderModel>>> GetStoreOrder()
         {
 
             var serviceResult = await _orderService.GetInStoreOrdersAsync();

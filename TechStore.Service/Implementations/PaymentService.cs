@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
 using System.Collections.Generic;
@@ -38,44 +39,60 @@ namespace TechStore.Service.Implementations
             _orderService = orderService;
         }
 
-        public async Task<ServiceResult<string>> CreatePaymentByCustomer(string userId, PaymentCreateModel paymentCreateModel)
+        public async Task<ServiceResult<string>> AddCashPaymentByAdminAsync(string cashierId, CashPaymentCreateModel cashPayment)
         {
             var serviceResult = new ServiceResult<string>
             {
                 IsSuccess = false,
-                Data = string.Empty,
-                Message = Messenger.BadRequest,
+                Data = null,
+                Message = Messenger.NoExitData,
             };
-            //if (order == null) 
-            //{
-            //    serviceResult.Message = Messenger.NoExitData;
-            //    return serviceResult;
-            //}
 
-            var customer = await _uow.Users.GetByIdAsync(userId);
-            if (customer == null)
+            var invoice = await _uow.Invoices.Table
+                                    .Where(i => i.PublicId == cashPayment.InvoiceId)
+                                    .Include(i => i.Payments)
+                                    .FirstOrDefaultAsync();
+            if(invoice == null) return serviceResult;
+
+            var customer = await _uow.Users.GetByIdAsync(cashPayment.CustomerId);
+            if(customer == null) return serviceResult;
+
+            var cashier = await _uow.Users.GetByIdAsync(cashierId);
+            if (cashier == null) return serviceResult;
+
+            var payment = new Payment()
             {
-                serviceResult.Message = Messenger.NoExitData + " " + userId;
-                return serviceResult;
+                PublicId = await _sequenceService.GetNextPaymentIdAsync(),
+                Invoice = invoice,
+                InvoiceId = invoice.Id,
+                User = customer,
+                UserId = customer.Id,
+                Amount = cashPayment.Amount,
+                PaymentMethod = EPaymentMethod.Cash,
+                TransactionCode = "",
+                PaymentStatus = EPaymentStatus.Paid,
+               
+
+                EntityStatus = EEntityStatus.Active,
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                CreatedBy = cashier.Id
+            };
+
+            
+            await _uow.Payments.AddAsync(payment);
+            
+            invoice.PaidAmount += payment.Amount;
+
+            if (invoice.PaidAmount == invoice.TotalAmount)
+            {
+                invoice.InvoiceStatus = EInvoiceStatus.Paid;
+            }
+            else if (invoice.PaidAmount < invoice.TotalAmount)
+            {
+                invoice.InvoiceStatus = EInvoiceStatus.PartiallyPaid;
             }
 
-            var paymentId = await _sequenceService.GetNextPaymentIdAsync();
-
-            Payment payment = new Payment
-            {
-                PublicId = paymentId,
-                UserId = customer.Id,
-                User = customer,
-                Amount = paymentCreateModel.Amount,
-                PaymentMethod = paymentCreateModel.PaymentMethod,
-                TransactionCode = paymentCreateModel.TransactionCode,
-                PaymentStatus = EPaymentStatus.Paid,
-
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            await _uow.Payments.AddAsync(payment);
+            _uow.Invoices.Update(invoice);
             var result = await _uow.CommitAsync();
 
             if (result < 1)
@@ -83,9 +100,9 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            serviceResult.Data = paymentId;
             serviceResult.IsSuccess = true;
             serviceResult.Message = Messenger.SuccessFull;
+            serviceResult.Data = payment.PublicId;
             return serviceResult;
         }
 
@@ -137,7 +154,11 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            _uow.Payments.Remove(payment);
+            //_uow.Payments.Remove(payment);
+
+            payment.EntityStatus = EEntityStatus.Deleted;
+            _uow.Payments.Update(payment);
+
             var result = await _uow.CommitAsync();
             if (result < 1)
             {
@@ -161,19 +182,10 @@ namespace TechStore.Service.Implementations
 
             var payments = await _uow.Payments.GetAllAsync();
 
-            List<PaymentResponseModel> paymentResponseModels = new List<PaymentResponseModel>();
-
-            foreach (var payment in payments)
+            foreach (var payment in payments) 
             {
-                var order = await _uow.Orders.FindOneAsync(o => o.Id == payment.OrderId);
-
-                if (order != null)
-                {
-                    serviceResult.Data.Add(payment.ToPaymentResponseModel(order, null));
-                }
+                serviceResult.Data.Add(payment.ToPaymentResponseModel());
             }
-
-            serviceResult.Data = paymentResponseModels;
 
             return serviceResult;
         }
@@ -194,85 +206,15 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var order = await _uow.Orders.FindOneAsync(o => o.Id == payment.OrderId);
-
-            if (order == null)
-            {
-                return serviceResult;
-            }
-
-            serviceResult.Data = payment.ToPaymentResponseModel(order, null);
+            serviceResult.Data = payment.ToPaymentResponseModel();
             serviceResult.IsSuccess = true;
             serviceResult.Message = Messenger.GetDataSuccessful;
 
             return serviceResult;
         }
 
-        public async Task<ServiceResult<bool>> CheckoutPayment(string paymentId)
-        {
-            var serviceResult = new ServiceResult<bool>
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.SystemError,
-            };
 
-            var payment = await _uow.Payments.GetByIdAsync(paymentId);
-
-            if (payment == null)
-            {
-                serviceResult.Message = Messenger.NoExitData;
-                return serviceResult;
-            }
-
-            var order = await _uow.Orders.FindOneAsync(o => o.Id == payment.OrderId);
-
-            if (order == null)
-            {
-                serviceResult.Message = Messenger.NoExitData;
-                return serviceResult;
-            }
-
-            if (order.Invoice == null)
-            {
-                serviceResult.Message = Messenger.NoExitData;
-                return serviceResult;
-            }
-
-            var invoice = await _uow.Invoices.FindOneAsync(i => i.Id == order.Invoice.Id);
-            if (invoice == null)
-            {
-                serviceResult.Message = Messenger.NoExitData;
-                return serviceResult;
-            }
-
-            order.OrderStatus = EOrderStatus.Completed;
-            invoice.InvoiceStatus = EInvoiceStatus.Paid;
-            payment.PaymentStatus = EPaymentStatus.Paid;
-
-            order.UpdatedAt = TimeZoneHelper.GetUtcNow();
-            invoice.UpdatedAt = TimeZoneHelper.GetUtcNow();
-            payment.UpdatedAt = TimeZoneHelper.GetUtcNow();
-
-            payment.TransactionCode = $"PAY-{DateTime.UtcNow:yyyyMMddHHmmss}"; // Example transaction code format
-
-            _uow.Orders.Update(order);
-            _uow.Invoices.Update(invoice);
-            _uow.Payments.Update(payment);
-
-            var updateResult = await _uow.CommitAsync();
-            if (updateResult < 1)
-            {
-                return serviceResult;
-            }
-
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = true;
-            serviceResult.Message = Messenger.SuccessFull;
-            return serviceResult;
-        }
-
-        public async Task<ServiceResult<string>> VerifyPayment(PaymentWebhookRequest request)
+        public async Task<ServiceResult<string>> VerifyPaymentForSnapshotAsync(PaymentForSnapshotWebhookRequest request)
         {
             var serviceResult = new ServiceResult<string>
             {
@@ -281,97 +223,40 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.SystemError,
             };
 
-            var payment = await _uow.Payments.GetByIdAsync(request.PaymentId);
-
-            if (payment == null)
-            {
-                serviceResult.Message = Messenger.NoExitData;
-                return serviceResult;
-            }
-
-            if(payment.CheckoutSnapshotJson == null)
-            {
-                serviceResult.Message = Messenger.NoExitData;
-                return serviceResult;
-            }
-
-            var snapshot = JsonSerializer.Deserialize<CheckoutSnapshot>(payment.CheckoutSnapshotJson);
-
+            var snapshot = await _uow.PaymentSnapshots.GetWithItemsAsync(request.SnapshotId);
             if (snapshot == null)
             {
-                serviceResult.Message = Messenger.NoExitData;
                 return serviceResult;
             }
 
-            var orderCreateModel = new OrderCreateModel
+            var user = await _uow.Users.GetByInternalIdAsync(snapshot.CustomerId);
+            if (user == null)
             {
-                CustomerName = snapshot.CustomerName,
-                CustomerEmail = snapshot.CustomerEmail,
-                CustomerPhoneNumber = snapshot.CustomerPhoneNumber,
-                ShippingAddress = snapshot.ShippingAddress,
-                Note = snapshot.Note,
-                PaymentMethod = payment.PaymentMethod,
-                Items = snapshot.Items.Select(i => new OrderItemCreateModel
+                return serviceResult;
+            }
+
+            if (snapshot.FinalAmount < request.Amount)
+            {
+                user.WalletBalance += request.Amount;
+                _uow.Users.Update(user);
+                var updateUserResult = await _uow.CommitAsync();
+                if(updateUserResult < 1)
                 {
-                    ProductVariantOptionId = i.ProductVariantOptionId,
-                    Quantity = i.Quantity,
-                    Discount = i.Discount
-                }).ToList()
-            };
+                    return serviceResult;
+                }
 
-            // VERIFY SIGNATURE HERE
-
-            // VERIFY AMOUNT
-            if (request.Amount != payment.Amount)
-            {
-                serviceResult.Message = Messenger.IncorrectAmount;
+                serviceResult.Message = PaymentMessenger.IncorrectAmount;
                 return serviceResult;
             }
+            
+            var orderServiceResultOrder = await _orderService.CreatePrePayOnlineOrderAsync(user.PublicId, snapshot, request);
 
-            // VERIFY TRANSACTION HERE
-
-            // FIND PAYMENT
-
-            // UPDATE PAYMENT STATUS
-            payment.PaymentStatus = EPaymentStatus.Paid;
-            //payment.TransactionCode = request.TransactionId;
-            payment.TransactionCode = request.TransactionId + Random.Shared.Next(10000, 99999);
-
-            // UPDATE ORDER STATUS
-            var createOrderesult = await _orderService.CreatePrePayOnlineOrderAsync(snapshot.CustomerId, request.PaymentId, orderCreateModel);
-
-            if (createOrderesult.IsSuccess == false)
-            {
-                serviceResult.ErrorCode = createOrderesult.ErrorCode;
-                serviceResult.Message = createOrderesult.Message;
-                return serviceResult;
-            }
-
-            _uow.Payments.Update(payment);
-            var updateResult = await _uow.CommitAsync();
-            if (updateResult < 1)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
-
-            if (payment.PaymentStatus == EPaymentStatus.Paid)
-            {
-                serviceResult.IsSuccess = true;
-                serviceResult.Data = payment.TransactionCode;
-                serviceResult.Message = Messenger.PaymentVerified;
-                return serviceResult;
-            }
-            else
-            {
-                serviceResult.Message = Messenger.PaymentNotVerified;
-                return serviceResult;
-            }
+            return orderServiceResultOrder;
         }
 
-        public async Task<ServiceResult<PaymentDataModel>> CreatePaymentForPrepayOrder(string userId, OrderCreateModel orderCreateModel)
+        public async Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel)
         {
-            var serviceResult = new ServiceResult<PaymentDataModel>
+            var serviceResult = new ServiceResult<PaymentDataForSnapshotModel>
             {
                 IsSuccess = false,
                 Data = null,
@@ -385,84 +270,169 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            if (orderCreateModel.PaymentMethod != EPaymentMethod.DomesticBank)
-            {
-                serviceResult.Message = Messenger.NoExitData + " Invalid Payment Method";
-                return serviceResult;
-            }
-
             var paymentId = await _sequenceService.GetNextPaymentIdAsync();
 
             // Tính toán tổng tiền
             decimal totalPrice = 0;
-            decimal totalDiscount = 0;
+            decimal discountedAmount = 0;
+            decimal shippingCharge = 0;
 
-            var snapshot = new CheckoutSnapshot
+            var snapshot = new PaymentSnapshot
             {
-                CustomerId = customer.PublicId,
+                Id = Guid.NewGuid(),
+                PublicId = $"{DateTime.UtcNow:yyyyMMdd}{(Random.Shared.Next(10000, 100000).ToString() + 1):D6}",
+                CustomerId = customer.Id,
                 CustomerName = orderCreateModel.CustomerName,
-                CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
                 CustomerEmail = orderCreateModel.CustomerEmail,
+                ShippingAddress = orderCreateModel.ShippingAddress,
+                CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
+                Note = orderCreateModel.Note,
+
                 TotalPrice = 0,
                 ShippingCharge = 0,
-                DiscountAmount = totalDiscount,
                 FinalAmount = 0,
-                ShippingAddress = orderCreateModel.ShippingAddress,
-                Note = orderCreateModel.Note,
-                Items = new List<CheckoutSnapshotItem>()
+                DiscountAmount = 0,
+
+                Items = new List<PaymentSnapshotItem>(),
+
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                UpdatedAt = TimeZoneHelper.GetUtcNow(),
+                CreatedBy = customer.Id,
+                EntityStatus = EEntityStatus.Active,
             };
 
             foreach (var item in orderCreateModel.Items)
             {
-                var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByPublicIdAsync(item.ProductVariantOptionId);
+                var pVO = await _uow.ProductVariantOptions.GetOrderItemDetailAsync(item.ProductVariantOptionId);
 
-                if (productVariantOption == null)
+                if (pVO == null)
                 {
                     serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
                     return serviceResult;
                 }
 
-                if (productVariantOption.Stock < item.Quantity)
+                if (pVO.Stock < item.Quantity)
                 {
                     serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
                     return serviceResult;
                 }
                 else
                 {
-                    snapshot.Items.Add(new CheckoutSnapshotItem
+                    snapshot.Items.Add(new PaymentSnapshotItem
                     {
-                        ProductVariantOptionId = productVariantOption.PublicId,
+                        Id = Guid.NewGuid(),
+                        PublicId = $"{DateTime.UtcNow:yyyyMMdd}{(Random.Shared.Next(10000, 100000).ToString() + 1):D6}",
+                        PaymentSnapshotId = snapshot.Id,
+                        PaymentSnapshot = snapshot,
+                        ProductVariantOptionId = pVO.Id,
+                        ProductVariantOptionPublicId = pVO.PublicId,
+
+                        CategoryName = pVO.ProductVariant.Product.Category.Name,
+                        ProductName = pVO.ProductVariant.Product.Name + " " + pVO.ProductVariant.Name + " " + pVO.Name,
+                        UrlImage = pVO.ImageUrl,
+
                         Quantity = item.Quantity,
-                        PriceAtOrderTime = productVariantOption.ProductVariant.Price,
-                        Discount = item.Discount,
-                        TotalPrice = item.Quantity * productVariantOption.ProductVariant.Price
+                        PriceAtOrderTime = pVO.Price,
+                        TotalPrice = item.Quantity * pVO.Price,
+
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        UpdatedAt = TimeZoneHelper.GetUtcNow(),
+                        CreatedBy = customer.Id,
+                        EntityStatus = EEntityStatus.Active,
                     });
                 }
 
-                decimal itemTotal = item.Quantity * productVariantOption.ProductVariant.Price;
+                decimal itemTotal = item.Quantity * pVO.ProductVariant.Price;
                 totalPrice += itemTotal;
-                totalDiscount += item.Discount;
             }
 
-            var finalAmount = totalPrice - totalDiscount;
             snapshot.TotalPrice = totalPrice;
-            snapshot.DiscountAmount = totalDiscount;
-            snapshot.FinalAmount = finalAmount;
+            snapshot.DiscountAmount = discountedAmount;
+            snapshot.ShippingCharge = shippingCharge;
+            snapshot.FinalAmount = totalPrice - discountedAmount + shippingCharge;
+
+            await _uow.PaymentSnapshots.AddAsync(snapshot);
+
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return serviceResult;
+            }
+
+            var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.FinalAmount, $"TECHSTORE {snapshot.PublicId}");
+
+            if (paymentQrUrl == null)
+            {
+                serviceResult.Message = Messenger.SystemError;
+                return serviceResult;
+            }
+
+            serviceResult.Data = new PaymentDataForSnapshotModel()
+            {
+                SnapshotId = snapshot.PublicId,
+                QrDataURL = paymentQrUrl,
+                Amount = snapshot.FinalAmount,
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                ExpiredAt = TimeZoneHelper.GetUtcNow().AddMinutes(15),
+            };
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Message = Messenger.SuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<PaymentDataModel>> CreatePaymentForInvoiceByAdminAsync(string userId, PaymentCreateModel model)
+        {
+            var serviceResult = new ServiceResult<PaymentDataModel>
+            {
+                IsSuccess = false,
+                Data = null,
+                Message = Messenger.NoExitData,
+            };
+
+            var cashier = await _uow.Users.GetByIdAsync(userId);
+            if (cashier == null)
+            {
+                return serviceResult;
+            }
+            if (cashier.RoleId != ERole.Admin)
+            {
+                serviceResult.Message = Messenger.NoPermission;
+                return serviceResult;
+            }
+
+
+            var invoice = await _uow.Invoices.TableNoTracking
+                .Where(i => i.PublicId == model.InvoiceId)
+                .Include(i => i.Order)
+                .FirstOrDefaultAsync();
+
+            if (invoice == null) return serviceResult;
+
+            if(invoice.RemainingAmount <= 0)
+            {
+                serviceResult.Message = PaymentMessenger.PaymentIsPaid;
+                return serviceResult;
+            }
+
+            var paymentId = await _sequenceService.GetNextPaymentIdAsync();
 
             var payment = new Payment
             {
+                Id = Guid.NewGuid(),
                 PublicId = paymentId,
-                UserId = customer.Id,
-                User = customer,
-                PaymentMethod = orderCreateModel.PaymentMethod,
-                Amount = finalAmount,
-                TransactionCode = "",
-                ExpiredAt = TimeZoneHelper.GetUtcNow().AddMinutes(20),
+                InvoiceId = invoice.Id,
+                UserId = invoice.Order.CustomerId,
+                PaymentMethod = EPaymentMethod.DomesticBank,
                 PaymentStatus = EPaymentStatus.Pending,
+                TransactionCode = "",
+                Amount = model.Amount,
+                CreatedBy = cashier.Id,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active,
-                CheckoutSnapshotJson = JsonSerializer.Serialize(snapshot)
+                EntityStatus = EEntityStatus.Active
             };
+            
 
             await _uow.Payments.AddAsync(payment);
 
@@ -473,7 +443,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var paymentQrUrl = await _vietQrService.GenerateQrAsync(payment.Amount, $"TECHSTORE {payment.PublicId}");
+            var paymentQrUrl = await _vietQrService.GenerateQrAsync(payment.Amount, $"TECHSTORE PAY {payment.PublicId}");
 
             if (paymentQrUrl == null)
             {
@@ -486,9 +456,66 @@ namespace TechStore.Service.Implementations
                 PaymentId = payment.PublicId,
                 QrDataURL = paymentQrUrl,
                 Amount = payment.Amount,
-                CreatedAt = payment.CreatedAt,
-                ExpiredAt = payment.ExpiredAt,
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                ExpiredAt = TimeZoneHelper.GetUtcNow().AddMinutes(15),
             };
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Message = Messenger.SuccessFull;
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<string>> VerifyPaymentForInvoiceAsync(PaymentForInvocieWebhookRequest request)
+        {
+            var serviceResult = new ServiceResult<string>
+            {
+                IsSuccess = false,
+                Data = string.Empty,
+                Message = Messenger.NoExitData,
+            };
+
+            var payment = await _uow.Payments.Table
+                .Where(p => p.PublicId == request.PaymentId)
+                .Include(p => p.Invoice)
+                .FirstOrDefaultAsync();
+
+            if (payment == null)
+            {
+                return serviceResult;
+            }
+
+            payment.PaymentStatus = EPaymentStatus.Paid;
+
+            var invoice = payment.Invoice;
+
+            if (payment == null)
+            {
+                return serviceResult;
+            }
+
+            //if (invoice.RemainingAmount <= 0)
+            //{
+            //    serviceResult.Message = PaymentMessenger.PaymentIsPaid;
+            //    return serviceResult;
+            //}
+
+            invoice.PaidAmount += payment.Amount;
+
+            if (invoice.RemainingAmount == 0)
+            {
+                invoice.InvoiceStatus = EInvoiceStatus.Paid;
+                invoice.PaidAt = TimeZoneHelper.GetUtcNow();
+            }
+
+            _uow.Payments.Update(payment);
+            _uow.Invoices.Update(invoice);
+            var result = await _uow.CommitAsync();
+
+            if(result < 1)
+            {
+                serviceResult.Message = Messenger.SystemError;
+                return serviceResult;
+            }
 
             serviceResult.IsSuccess = true;
             serviceResult.Message = Messenger.SuccessFull;
