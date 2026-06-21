@@ -13,62 +13,32 @@ namespace TechStore.Service.Interfaces
     public interface IProductService
     {
 
-        // 2. Lọc sản phẩm (theo category, price, brand, sort, v.v.)
-        Task<ServiceResult<PagedResult<ListItemProductModel>>> GetProductsFilteredAsync(ProductSearchQuery query);
-
-        Task<ServiceResult<List<ListItemProductModel>>> GetProductsAsync(int page, int pageSize);
-        Task<ServiceResult<List<ListItemProductModel>>> SearchByNameAsync(string keyword, int page, int pageSize);
-        Task<ServiceResult<List<ListItemProductModel>>> GetProductsByCategory(string categorySlug, int page, int pageSize);
-        Task<ServiceResult<List<ListItemProductModel>>> GetProductsByCategoryAndBrand(string categorySlug, string brandSlug, int page, int pageSize);
+        #region Client Services
+        Task<ServiceResult<PagedResult<ListItemProductModel>>> GetProductsAsync(ProductSearchQuery query);
         Task<ServiceResult<ProductDetailModel>> GetProductById(string publicId);
-
-        Task<ServiceResult<bool>> UpdateProduct(string publicId, ProductUpdateModel model);
-        Task<ServiceResult<bool>> UpdateProductCount(string publicId, ProductCountUpdateModel model);
-        Task<ServiceResult<bool>> DeleteProduct(string publicId);
-        Task<ServiceResult<string>> AddProduct(ProductCreateModel model);
-        Task<ServiceResult<AdminProductDetailModel>> GetAdminProductById(string publicId);
-        Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts(int pageNumber, int pageSize);
 
         Task<ServiceResult<List<ListItemProductModel>>> GetUserRecommendedProducts(string userId);
         Task<ServiceResult<List<ListItemProductModel>>> GetHotProducts();
         Task<ServiceResult<List<ListItemProductModel>>> GetFeaturedProducts();
+        #endregion
+
+        #region Admin Services
+        Task<ServiceResult<AdminProductDetailModel>> GetAdminProductByIdAsync(string publicId);
+        Task<ServiceResult<PagedResult<AdminListItemProduct>>> GetAdminProductsAsync(ProductSearchQuery query);
+
+        Task<ServiceResult<string>> AddProduct(ProductCreateModel model);
+        Task<ServiceResult<bool>> UpdateProduct(string publicId, ProductUpdateModel model);
+        Task<ServiceResult<bool>> DeleteProduct(string publicId);
 
         Task<ServiceResult<string>> AddProductVariantAsync(string productId, ProductVariantCreateModel model);
         Task<ServiceResult<bool>> UpdateProductVariantAsync(string productId, string variantId, ProductVariantUpdateModel model);
         Task<ServiceResult<bool>> DeleteProductVariantAsync(string productId, string variantId);
+
         Task<ServiceResult<string>> AddProductVariantOptionAsync(string productId, string variantId, ProductVariantOptionCreateModel model);
         Task<ServiceResult<bool>> UpdateProductVariantOptionAsync(string productId, string variantId, string optionId, ProductVariantOptionUpdateModel model);
         Task<ServiceResult<bool>> DeleteProductVariantOptionAsync(string productId, string variantId, string optionId);
 
+        Task<ServiceResult<bool>> UpdateProductCount(string publicId, ProductCountUpdateModel model);
+        #endregion
     }
-
-    //public interface IProductService
-    //{
-
-    //    // 2. Lọc sản phẩm (theo category, price, brand, sort, v.v.)
-    //    Task<ServiceResult<List<ProductListItemModel>>> GetProductsFilteredAsync(
-    //        int pageNumber,
-    //        int pageSize,
-    //        string? categoryId = null,
-    //        decimal? minPrice = null,
-    //        decimal? maxPrice = null,
-    //        string? brandId = null
-    //    );
-
-    //    Task<ServiceResult<List<ProductListItemModel>>> GetProductsAsync(int page, int pageSize);
-    //    Task<ServiceResult<List<ProductListItemModel>>> SearchByNameAsync(string keyword, int page, int pageSize);
-    //    Task<ServiceResult<ProductDetailModel>> GetProductById(string id);
-
-    //    Task<ServiceResult<bool>> UpdateProductInformation(string id, ProductUpdateModel model);
-    //    Task<ServiceResult<bool>> UpdateProductCount(string id, ProductCountUpdateModel model);
-    //    Task<ServiceResult<bool>> DeleteProduct(string id);
-    //    Task<ServiceResult<string>> AddProduct(ProductCreateModel model);
-    //    Task<string> SeedDataProduct(ProductCreateModel model);
-    //    Task<ServiceResult<AdminProductDetailModel>> GetAdminProductById(string id);
-    //    Task<ServiceResult<List<AdminProductDetailModel>>> GetAdminProducts(int pageNumber, int pageSize);
-
-    //    Task<ServiceResult<List<ProductListItemModel>>> GetUserRecommendedProducts(string userId);
-    //    Task<ServiceResult<List<ProductListItemModel>>> GetHotProducts();
-    //    Task<ServiceResult<List<ProductListItemModel>>> GetFeaturedProducts();
-    //}
 }

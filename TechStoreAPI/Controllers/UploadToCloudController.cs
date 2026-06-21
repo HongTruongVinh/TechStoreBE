@@ -22,21 +22,21 @@ namespace TechStoreAPI.Controllers
             _uploadDataToCloudService = uploadDataToCloudService;
         }
 
-        [HttpPost("cloudinary")]
-        public async Task<ApiResponse<UploadWithCloudinaryResponseModel>> AddPhotoToCloudinaryAsync(PhotoUploadModel model)
-        {
-            ApiResponse<UploadWithCloudinaryResponseModel> result = new()
-            {
-                PartnerCode = Messenger.SuccessFull,
-                RetCode = ERetCode.Successfull,
-                Data = new UploadWithCloudinaryResponseModel(),
-                SystemMessage = string.Empty,
-                StatusCode = (int)HttpStatusCode.Created
-            };
+        //[HttpPost("cloudinary")]
+        //public async Task<ApiResponse<UploadWithCloudinaryResponseModel>> AddPhotoToCloudinaryAsync(PhotoUploadModel model)
+        //{
+        //    ApiResponse<UploadWithCloudinaryResponseModel> result = new()
+        //    {
+        //        PartnerCode = Messenger.SuccessFull,
+        //        RetCode = ERetCode.Successfull,
+        //        Data = new UploadWithCloudinaryResponseModel(),
+        //        SystemMessage = string.Empty,
+        //        StatusCode = (int)HttpStatusCode.Created
+        //    };
 
-            result.Data = await _uploadDataToCloudService.AddPhotoToCloudAsync(model);
-            return result;
-        }
+        //    result.Data = await _uploadDataToCloudService.AddPhotoToCloudAsync(model);
+        //    return result;
+        //}
 
         [HttpPost("cloudinary-request")]
         public async Task<ApiResponse<UploadWithCloudinaryResponseModel>> AddPhotoToCloudinaryRequestAsync()

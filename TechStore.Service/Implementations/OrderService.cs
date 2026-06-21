@@ -790,7 +790,7 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.UpdateDataError
             };
 
-            var order = await _uow.Orders.GetByIdAsync(orderId);
+            var order = await _uow.Orders.Table.Where(o => o.PublicId == orderId).Include(o => o.OrderItems).FirstOrDefaultAsync();
             var userUpdating = await _uow.Users.GetByIdAsync(updateByUserId);
 
             if (order == null || userUpdating == null)
@@ -805,6 +805,21 @@ namespace TechStore.Service.Implementations
                 {
                     serviceResult.Message = Messenger.InvoiceUnpaid;
                     return serviceResult;
+                }
+            }
+
+            foreach(var item in order.OrderItems)
+            {
+                //var pvo = await _uow.ProductVariantOptions.GetByInternalIdAsync(item.ProductVariantOptionId);
+                var pvo = await _uow.ProductVariantOptions.Table.Where(p => p.Id == item.ProductVariantOptionId)
+                                                                .Include(p => p.ProductVariant).ThenInclude(p => p.Product).FirstAsync();
+                if(pvo != null)
+                {
+                    pvo.SoldCount += 1;
+                    _uow.ProductVariantOptions.Update(pvo);
+
+                    pvo.ProductVariant.Product.SoldCount += 1;
+                    _uow.Products.Update(pvo.ProductVariant.Product);
                 }
             }
 

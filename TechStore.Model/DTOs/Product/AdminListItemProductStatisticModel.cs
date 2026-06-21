@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TechStore.Model.DTOs.Product
 {
-    public class AdminListItemProductModel
+    public class AdminListItemProductStatisticModel
     {
         public required string ProductVariantOptionId { get; set; }
         public required string Name { get; set; }

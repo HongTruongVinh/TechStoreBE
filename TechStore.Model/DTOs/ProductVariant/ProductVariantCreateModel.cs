@@ -12,13 +12,8 @@ namespace TechStore.Model.DTOs.ProductVariant
         public required string Name { get; set; }
         public required string Description { get; set; }
 
-        public int? Stock { get; set; }
         public required decimal Price { get; set; }
         public required decimal ImportPrice { get; set; }
-
-        public decimal? SalePrice { get; set; }
-        public DateTime? SaleStart { get; set; }
-        public DateTime? SaleEnd { get; set; }
 
         public required List<ProductVariantOptionCreateModel> Options { get; set; }
 

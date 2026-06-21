@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
@@ -21,10 +22,10 @@ namespace TechStoreAPI.Controllers
             _productService = productService;
         }
 
-        [HttpGet("filter")]
-        public async Task<ApiResponse<PagedResult<ListItemProductModel>>> GetProductsFiltered([FromQuery]ProductSearchQuery query)
+        [HttpGet]
+        public async Task<ApiResponse<PagedResult<ListItemProductModel>>> GetProducts([FromQuery]ProductSearchQuery query)
         {
-            var serviceResult = await _productService.GetProductsFilteredAsync(query);
+            var serviceResult = await _productService.GetProductsAsync(query);
 
             if (serviceResult.IsSuccess)
             {
@@ -49,35 +50,6 @@ namespace TechStoreAPI.Controllers
                 };
             }
         }
-
-        //[HttpGet]
-        //public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProducts(int page = 1, int pageSize = 20)
-        //{
-        //    var serviceResult = await _productService.GetProductsAsync(page, pageSize);
-
-        //    if (serviceResult.IsSuccess)
-        //    {
-        //        return new()
-        //        {
-        //            PartnerCode = Messenger.SuccessFull,
-        //            RetCode = ERetCode.Successfull,
-        //            Data = serviceResult.Data,
-        //            SystemMessage = serviceResult.Message,
-        //            StatusCode = (int)HttpStatusCode.OK
-        //        };
-        //    }
-        //    else
-        //    {
-        //        return new()
-        //        {
-        //            PartnerCode = Messenger.NoExitData,
-        //            RetCode = ERetCode.NoExitData,
-        //            Data = serviceResult.Data,
-        //            SystemMessage = serviceResult.Message,
-        //            StatusCode = (int)HttpStatusCode.OK
-        //        };
-        //    }
-        //}
 
         [HttpGet("{id}")]
         public async Task<ApiResponse<ProductDetailModel>> GetProductDetail(string id)
@@ -108,10 +80,10 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpGet("recommended/{userId}")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetRecommendedProducts(string userId)
+        [HttpGet("recommended")]
+        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetRecommendedProducts()
         {
-            //var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.FindFirstValue(AppClaims.UserId);
 
             if (userId != null)
             {
@@ -149,95 +121,6 @@ namespace TechStoreAPI.Controllers
                     Data = null,
                     SystemMessage = Messenger.LoginError,
                     StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
-        }
-
-        [HttpGet("search")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> SearchByName(string keyword, int pageNumber = 1, int pageSize = 12)
-        {
-            var serviceResult = await _productService.SearchByNameAsync(keyword, pageNumber, pageSize);
-
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-        }
-
-        [HttpGet("category")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProductsByCategory(string categorySlug, int pageNumber = 1, int pageSize = 12)
-        {
-
-            var serviceResult = await _productService.GetProductsByCategory(categorySlug, pageNumber, pageSize);
-
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-        }
-
-        [HttpGet("category-brand")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProductsByCategoryAndBrand(string categorySlug, string brandSlug, int pageNumber = 1, int pageSize = 12)
-        {
-
-            var serviceResult = await _productService.GetProductsByCategoryAndBrand(categorySlug, brandSlug, pageNumber, pageSize);
-
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
                 };
             }
         }

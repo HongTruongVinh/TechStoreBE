@@ -12,20 +12,18 @@ namespace TechStore.Model.DTOs.User
         public required string Id { get; set; }
 
         public required string FirstName { get; set; }
-
         public required string LastName { get; set; }
+        public required string PhoneNumber { get; set; }
+
+        public required string Address { get; set; }
+        public required string City { get; set; }
+        public required string District { get; set; }
 
         public required string Email { get; set; }
 
-        public required string PasswordHash { get; set; }
-
         public DateTime? Birthday { get; set; }
-
         public EGender? Gender { get; set; }
 
-        public required string Address { get; set; }
-
-        public required string PhoneNumber { get; set; }
 
         public required string RoleName { get; set; }
 

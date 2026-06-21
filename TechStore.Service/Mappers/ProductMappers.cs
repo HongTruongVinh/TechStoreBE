@@ -13,9 +13,9 @@ namespace TechStore.Service.Mappers
 {
     public static class ProductMappers
     {
-        public static AdminListItemProductModel ToAdminListItemProduct(this Product product)
+        public static AdminListItemProductStatisticModel ToAdminListItemProductStatisticModel(this Product product)
         {
-            return new AdminListItemProductModel
+            return new AdminListItemProductStatisticModel
             {
                 ProductVariantOptionId = product.PublicId,
                 Name = product.Name,
@@ -27,6 +27,21 @@ namespace TechStore.Service.Mappers
                 AverageRating = product.AverageRating,
                 RatedCount = product.RatedCount,
                 SoldCount = product.SoldCount,
+                StartSellingDate = product.StartSellingDate
+            };
+        }
+
+        public static AdminListItemProduct ToAdminProductListItem(this Product product)
+        {
+            return new AdminListItemProduct
+            {
+                Id = product.PublicId,
+                Name = product.Name,
+                MainImageUrl = product.MainImageUrl,
+                SoldCount = product.SoldCount,
+
+                AverageRating = product.AverageRating,
+                RatedCount = product.RatedCount,
                 StartSellingDate = product.StartSellingDate
             };
         }
@@ -151,6 +166,9 @@ namespace TechStore.Service.Mappers
                 Name = product.Name,
                 ShortDescription = product.ShortDescription,
 
+                BrandId = product.BrandPublicId,
+                CategoryId = category.PublicId,
+
                 Description = product.Description,
                 MainImageUrl = product.MainImageUrl,
                 GalleryImageUrls = product.GalleryImageUrls,
@@ -164,15 +182,15 @@ namespace TechStore.Service.Mappers
                 StartSellingDate = product.StartSellingDate,
                 EndSellingDate = product.EndSellingDate,
 
-                Category = category.ToCategoryResponseModel(),
+                //Category = category.ToCategoryResponseModel(),
 
-                Brand = brand.ToBrandResponseModel(),
+                //Brand = brand.ToBrandResponseModel(),
 
                 AverageRating = product.AverageRating,
                 RatedCount = product.RatedCount,
 
                 Slug = product.Slug,
-                Tag = product.Tags,
+                Tags = product.Tags,
                 CreatedAt = product.CreatedAt,
 
                 IsOnSale = product.IsOnSale,
@@ -223,7 +241,8 @@ namespace TechStore.Service.Mappers
                 Name = option.Name,
                 ImageUrl = option.ImageUrl,
                 Stock = option.Stock,
-                Price = option.Price
+                Price = option.Price,
+                ImportPrice = option.ImportPrice,
             };
         }
     }

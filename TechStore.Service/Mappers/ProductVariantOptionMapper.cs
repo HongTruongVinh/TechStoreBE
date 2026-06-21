@@ -10,9 +10,9 @@ namespace TechStore.Service.Mappers
 {
     public static class ProductVariantOptionMapper
     {
-        public static AdminListItemProductModel ToAdminListItemModel(this ProductVariantOption pvo)
+        public static AdminListItemProductStatisticModel ToAdminListItemModel(this ProductVariantOption pvo)
         {
-            return new AdminListItemProductModel()
+            return new AdminListItemProductStatisticModel()
             {
                 ProductVariantOptionId = pvo.PublicId,
                 CategoryName = pvo.ProductVariant.Product.Category.Name,

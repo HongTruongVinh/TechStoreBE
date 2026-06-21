@@ -14,6 +14,6 @@ namespace TechStore.Model.DTOs.ProductVariant
         public decimal? Price { get; set; }
         public decimal? ImportPrice { get; set; }
 
-        public List<ProductVariantOptionUpdateModel>? Options { get; set; }
+        //public List<ProductVariantOptionUpdateModel>? Options { get; set; }
     }
 }

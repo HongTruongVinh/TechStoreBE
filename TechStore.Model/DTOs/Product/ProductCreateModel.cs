@@ -19,7 +19,7 @@ namespace TechStore.Model.DTOs.Product
 
         public required int Warranty { get; set; }
 
-        public required List<string> Tag { get; set; }
+        public required List<string> Tags { get; set; }
         public string? MainImageUrl { get; set; }
         public required List<string> GalleryImageUrls { get; set; } = new();
 

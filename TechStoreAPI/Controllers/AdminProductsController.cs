@@ -23,10 +23,11 @@ namespace TechStoreAPI.Controllers
             _productService = productService;
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpGet]
-        public async Task<ApiResponse<List<AdminProductDetailModel>>> GetProducts(int pageNumber = 1, int pageSize = 20)
+        public async Task<ApiResponse<PagedResult<AdminListItemProduct>>> GetProducts([FromQuery] ProductSearchQuery query)
         {
-            var serviceResult = await _productService.GetAdminProducts(pageNumber, pageSize);
+            var serviceResult = await _productService.GetAdminProductsAsync(query);
 
             if (serviceResult.IsSuccess)
             {
@@ -52,40 +53,11 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpGet("filter")]
-        public async Task<ApiResponse<PagedResult<ListItemProductModel>>> GetProductsFiltered(ProductSearchQuery query)
-        {
-            var serviceResult = await _productService.GetProductsFilteredAsync(query);
-
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-        }
-
-        //[Authorize(Roles = AppRoles.Admin)]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpGet("{id}")]
-        public async Task<ApiResponse<AdminProductDetailModel>> Get(string id)
+        public async Task<ApiResponse<AdminProductDetailModel>> GetAdminProduct(string id)
         {
-            var result = await _productService.GetAdminProductById(id);
+            var result = await _productService.GetAdminProductByIdAsync(id);
 
             if (result != null)
             {
@@ -112,8 +84,9 @@ namespace TechStoreAPI.Controllers
         }
 
         //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.Manager}")]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPost]
-        public async Task<ApiResponse<string>> Post(ProductCreateModel model)
+        public async Task<ApiResponse<string>> AddProduct(ProductCreateModel model)
         {
             var result = await _productService.AddProduct(model);
 
@@ -141,9 +114,9 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = AppRoles.Admin)]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("{id}")]
-        public async Task<ApiResponse<bool>> Put(string id, ProductUpdateModel model)
+        public async Task<ApiResponse<bool>> UpdateProduct(string id, ProductUpdateModel model)
         {
             var result = await _productService.UpdateProduct(id, model);
 
@@ -171,9 +144,9 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = AppRoles.Admin)]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpDelete("{id}")]
-        public async Task<ApiResponse<bool>> Delete(string id)
+        public async Task<ApiResponse<bool>> DeleteProduct(string id)
         {
             var result = await _productService.DeleteProduct(id);
 
@@ -201,7 +174,7 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = AppRoles.Admin)]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("update-count/{id}")]
         public async Task<ApiResponse<bool>> UpdateProductCount(string id, ProductCountUpdateModel model)
         {
@@ -231,6 +204,7 @@ namespace TechStoreAPI.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPost("{productId}/variants")]
         public async Task<ApiResponse<string>> AddProductVariant(string productId, ProductVariantCreateModel model)
         {
@@ -260,6 +234,7 @@ namespace TechStoreAPI.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("{productId}/variants/{variantId}")]
         public async Task<ApiResponse<bool>> UpdateProductVariant(string productId, string variantId, ProductVariantUpdateModel model)
         {
@@ -289,6 +264,7 @@ namespace TechStoreAPI.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpDelete("{productId}/variants/{variantId}")]
         public async Task<ApiResponse<bool>> DeleteProductVariant(string productId, string variantId)
         {
@@ -318,8 +294,9 @@ namespace TechStoreAPI.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPost("{productId}/variants/{variantId}/options")]
-        public async Task<ApiResponse<string>> UpdateProductVariantOption(string productId, string variantId, ProductVariantOptionCreateModel model)
+        public async Task<ApiResponse<string>> AddProductVariantOption(string productId, string variantId, ProductVariantOptionCreateModel model)
         {
             var serviceResult = await _productService.AddProductVariantOptionAsync(productId, variantId, model);
 
@@ -347,6 +324,7 @@ namespace TechStoreAPI.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("{productId}/variants/{variantId}/options/{optionId}")]
         public async Task<ApiResponse<bool>> UpdateProductVariantOption(string productId, string variantId, string optionId, ProductVariantOptionUpdateModel model)
         {
@@ -376,6 +354,7 @@ namespace TechStoreAPI.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpDelete("{productId}/variants/{variantId}/options/{optionId}")]
         public async Task<ApiResponse<bool>> DeleteProductVariantOption(string productId, string variantId, string optionId)
         {

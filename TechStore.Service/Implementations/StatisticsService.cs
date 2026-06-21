@@ -46,13 +46,14 @@ namespace TechStore.Service.Implementations
                 ProcessingOfPendingOrders = new RadialBarChartData(),
                 DeliveringOfProcessingOrders = new RadialBarChartData(),
                 ComplatedOfDeliveringOrders = new RadialBarChartData(),
+                CurrentMonthOrdersCount = new RadialBarChartData(),
                 CategoryChartData = new List<ChartData>(),
                 TotalRevenueChartData = new List<ChartDecimalData>(),
                 TotalProfitChartData = new List<ChartDecimalData>(),
                 TotalOrdersChartData = new List<ChartData>(),
-                HotProducts = new List<AdminListItemProductModel>(),
-                TopSoldProducts = new List<AdminListItemProductModel>(),
-                TopRatedProducts = new List<AdminListItemProductModel>(),
+                HotProducts = new List<AdminListItemProductStatisticModel>(),
+                TopSoldProducts = new List<AdminListItemProductStatisticModel>(),
+                TopRatedProducts = new List<AdminListItemProductStatisticModel>(),
                 LoyalCustomer = new List<UserListItemResponseModel>(),
                 RecentlyActions = new List<ActionModel>()
             };
@@ -62,6 +63,7 @@ namespace TechStore.Service.Implementations
             overviewData.ProcessingOfPendingOrders = await GetProcessingOfPendingOrders();
             overviewData.DeliveringOfProcessingOrders = await GetDeliveringOfProcessingOrders();
             overviewData.ComplatedOfDeliveringOrders = await GetComplatedOfDeliveringOrders();
+            overviewData.CurrentMonthOrdersCount = await GetCurrentMonthOrdersCount();
             overviewData.CategoryChartData = await GetHotCategoryChartData(currentDatetime.Year);
             overviewData.TotalRevenueChartData = await GetMonthlyRevenueSeries(currentDatetime.Year);//doanh thu
             overviewData.TotalProfitChartData = await GetMonthlyProfitSeriesAsync(currentDatetime.Year);//loi nhuan
@@ -83,7 +85,7 @@ namespace TechStore.Service.Implementations
             var data = new List<ChartData>();
 
             var orders = await _uow.Orders.TableNoTracking
-                                    .Where(o => o.CreatedAt.Year == year)
+                                    .Where(o => o.CreatedAt.Year == year && o.OrderStatus == EOrderStatus.Completed)
                                     .Include(o => o.OrderItems)
                                     .ToListAsync();
 
@@ -301,9 +303,49 @@ namespace TechStore.Service.Implementations
             return data;
         }
 
-        public async Task<List<AdminListItemProductModel>> GetHotProducts()
+        public async Task<RadialBarChartData> GetCurrentMonthOrdersCount()
         {
-            var productModels = new List<AdminListItemProductModel>();
+            var data = new RadialBarChartData
+            {
+                Goal = 0,
+                Progress = 0,
+                ProgressPercent = 0
+            };
+
+            var curentMonth = DateTime.Now.Month;
+            var lastMonth = curentMonth - 1;
+            if (curentMonth == 1) lastMonth = 12;
+
+            var lastMonthOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus != EOrderStatus.Canceled 
+                                                                        && o.OrderStatus != EOrderStatus.Refunded
+                                                                        && o.OrderStatus != EOrderStatus.Failed
+                                                                        && o.CreatedAt.Month == lastMonth
+                                                                        );
+            var curentOrderCount = await _uow.Orders.CountAsync(o => o.OrderStatus != EOrderStatus.Canceled
+                                                                        && o.OrderStatus != EOrderStatus.Refunded
+                                                                        && o.OrderStatus != EOrderStatus.Failed
+                                                                        && o.CreatedAt.Month == curentMonth
+                                                                        );
+
+            if (lastMonthOrderCount == 0)
+            {
+                data.Goal = 0;
+                data.Progress = curentOrderCount;
+                data.ProgressPercent = 100;
+            }
+            else
+            {
+                data.Goal = lastMonthOrderCount;
+                data.Progress = curentOrderCount;
+                data.ProgressPercent = Math.Round(data.Progress * 100.0 / data.Goal, 1);
+            }
+
+            return data;
+        }
+
+        public async Task<List<AdminListItemProductStatisticModel>> GetHotProducts()
+        {
+            var productModels = new List<AdminListItemProductStatisticModel>();
 
             int curentMonth = DateTime.Now.Date.Month;
 
@@ -373,29 +415,29 @@ namespace TechStore.Service.Implementations
             return productModels;
         }
 
-        public async Task<List<AdminListItemProductModel>> GetTopSoldProducts()
+        public async Task<List<AdminListItemProductStatisticModel>> GetTopSoldProducts()
         {
-            var productModels = new List<AdminListItemProductModel>();
+            var productModels = new List<AdminListItemProductStatisticModel>();
 
             var topSoldProducts = await _uow.Products.GetTopSoldProductsAsync(7);
 
             foreach (var product in topSoldProducts)
             {
-                productModels.Add(product.ToAdminListItemProduct());
+                productModels.Add(product.ToAdminListItemProductStatisticModel());
             }
 
             return productModels;
         }
 
-        public async Task<List<AdminListItemProductModel>> GetTopRatedProductsAsync()
+        public async Task<List<AdminListItemProductStatisticModel>> GetTopRatedProductsAsync()
         {
-            var productModels = new List<AdminListItemProductModel>();
+            var productModels = new List<AdminListItemProductStatisticModel>();
 
             var top10RatedProducts = await _uow.Products.GetTopRatedProductsAsync(7);
 
             foreach (var product in top10RatedProducts)
             {
-                productModels.Add(product.ToAdminListItemProduct());
+                productModels.Add(product.ToAdminListItemProductStatisticModel());
             }
 
             return productModels;

@@ -30,6 +30,6 @@ namespace TechStore.Model.DTOs.Product
         public DateTime? SaleEnd { get; set; }
         public DateTime? PublishDate { get; set; }
 
-        public List<ProductVariantUpdateModel>? Variants { get; set; }
+        //public List<ProductVariantUpdateModel>? Variants { get; set; }
     }
 }

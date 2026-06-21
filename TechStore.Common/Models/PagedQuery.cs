@@ -20,6 +20,7 @@ namespace TechStore.Common.Models
     public class ProductSearchQuery : PagedQuery
     {
         public string? Keyword { get; set; }
+        public string? ProductId { get; set; }
         public string? CategoryId { get; set; }
         public string? BrandId { get; set; }
 

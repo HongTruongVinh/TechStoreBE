@@ -52,9 +52,12 @@ namespace TechStore.Service.Mappers
                 LastName = user.LastName,
                 FirstName = user.FirstName,
 
-                Email = user.Email ?? "",
-                PhoneNumber = user.PhoneNumber ?? "",
                 Address = user.Address,
+                City = user.City,
+                District = user.District,
+
+                Email = user.Email ?? "",
+                PhoneNumber = user.PhoneNumber,
 
                 PictureUrl = user.PictureUrl,
                 Gender = user.Gender,
@@ -63,8 +66,6 @@ namespace TechStore.Service.Mappers
                 RoleId = user.RoleId,
                 RoleName = roleName,
                 Status = user.Status,
-
-                PasswordHash = user.PasswordHash,
 
                 CreatedAt = user.CreatedAt
             };

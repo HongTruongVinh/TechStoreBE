@@ -16,6 +16,8 @@ namespace TechStore.Model.DTOs.Statistic
 
         public required RadialBarChartData ComplatedOfDeliveringOrders { get; set; }
 
+        public required RadialBarChartData CurrentMonthOrdersCount { get; set; }
+
         public required List<ChartData> CategoryChartData { get; set; }
 
         public required List<ChartDecimalData> TotalRevenueChartData { get; set; }
@@ -24,11 +26,11 @@ namespace TechStore.Model.DTOs.Statistic
 
         public required List<ChartData> TotalOrdersChartData { get; set; }
 
-        public required List<AdminListItemProductModel> HotProducts { get; set; }
+        public required List<AdminListItemProductStatisticModel> HotProducts { get; set; }
 
-        public required List<AdminListItemProductModel> TopSoldProducts { get; set; }
+        public required List<AdminListItemProductStatisticModel> TopSoldProducts { get; set; }
 
-        public required List<AdminListItemProductModel> TopRatedProducts { get; set; }
+        public required List<AdminListItemProductStatisticModel> TopRatedProducts { get; set; }
 
         public required List<UserListItemResponseModel> LoyalCustomer { get; set; }
         public required List<ActionModel> RecentlyActions { get; set; }
