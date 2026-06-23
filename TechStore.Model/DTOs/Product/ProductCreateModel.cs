@@ -16,7 +16,6 @@ namespace TechStore.Model.DTOs.Product
         public required string ShortDescription { get; set; }
         public required string Description { get; set; } = "";
         public string? Slug { get; set; }
-
         public required int Warranty { get; set; }
 
         public required List<string> Tags { get; set; }

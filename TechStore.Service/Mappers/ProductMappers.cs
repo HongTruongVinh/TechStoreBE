@@ -191,6 +191,7 @@ namespace TechStore.Service.Mappers
 
                 Slug = product.Slug,
                 Tags = product.Tags,
+                Warranty = product.Warranty,
                 CreatedAt = product.CreatedAt,
 
                 IsOnSale = product.IsOnSale,

@@ -118,6 +118,7 @@ namespace TechStore.Service.Implementations
             product.CategoryId = category.Id;
             product.BrandId = brand.Id;
             product.Tags = model.Tags ?? product.Tags;
+            product.Warranty = model.Warranty;
             product.SaleStart = model.SaleStart;
             product.SalePrice = model.SalePrice ?? product.SalePrice;
             product.SaleEnd = model.SaleEnd;
@@ -638,7 +639,6 @@ namespace TechStore.Service.Implementations
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
                 EntityStatus = EEntityStatus.Active
             };
-            //await _uow.ProductVariants.AddAsync(variant);
 
             foreach (var pvoModel in pvModel.Options)
             {
@@ -660,6 +660,7 @@ namespace TechStore.Service.Implementations
             product.MinPrice = product.Variants.SelectMany(v => v.Options).Min(o => o.Price);
             product.MaxPrice = product.Variants.SelectMany(v => v.Options).Max(o => o.Price);
 
+            await _uow.ProductVariants.AddAsync(variant);
             _uow.Products.Update(product);
             var result = await _uow.CommitAsync();
 

@@ -30,6 +30,7 @@ namespace TechStore.Model.DTOs.Product
 
         public required string Slug { get; set; }
         public required List<string> Tags { get; set; }
+        public required int Warranty { get; set; }
         public required bool IsFeatured { get; set; }
 
         public string? MainImageUrl { get; set; }

@@ -18,6 +18,7 @@ namespace TechStore.Model.DTOs.Product
         public string? Slug { get; set; }
 
         public List<string> Tags { get; set; } = [];
+        public required int Warranty { get; set; }
         public required string MainImageUrl { get; set; }
         public List<string> GalleryImageUrls { get; set; } = [];
 
