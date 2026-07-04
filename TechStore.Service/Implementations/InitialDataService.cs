@@ -280,121 +280,85 @@ namespace TechStore.Service.Implementations
                     UserInformation = admin1
                 };
 
-                var resultRegisterAdmin1 = await _authenticationService.AdminRegisterWithEmail(registerAdmin1);
+                var resultRegisterAdmin1 = await _authenticationService.RegisterAdminByEmail(registerAdmin1);
 
                 if (resultRegisterAdmin1.Data == null)
                 {
                     throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
                 }
 
-                var user1 = new UserCreateModel
+                var user1 = new CustomerRegisterModel
                 {
                     LastName = "Nguyễn Huy",
                     FirstName = "Hoàng",
-                    PasswordHash = password,
+                    Password = password,
                     Email = "nguyenhuyhoang@gmail.com",
                     City = "Hà Nội",
-                    District = "",
-                    Address = "",
-                    PhoneNumber = "0123456001",
-                    Gender = EGender.Male,
-                    Birthday = new DateTime(2002, 2, 28)
+                    District = "Hoàn Kiếm",
+                    Address = "123, Hoàn Kiếm, Hà Nội",
+                    PhoneNumber = "0345600000",
                 };
 
-                RegisterModel register1 = new RegisterModel
-                {
-                    Phonenumber = user1.Email,
-                    Password = user1.PasswordHash,
-                    UserInformation = user1
-                };
+                var resultRegister1 = await _authenticationService.RegisterCustomer(user1);
 
-                var resultRegister1 = await _authenticationService.Register(register1);
-
-                if (resultRegister1.Data == null)
+                if (resultRegister1.IsSuccess == false)
                 {
                     throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
                 }
 
-                var user2 = new UserCreateModel
+                var user2 = new CustomerRegisterModel
                 {
                     LastName = "Nguyễn Thị",
                     FirstName = "Lan",
-                    PasswordHash = password,
-                    Email = "user2@gmail.com",
+                    Password = password,
+                    Email = "nguyenthilan@gmail.com",
                     City = "Hà Nội",
                     District = "",
-                    Address = "",
-                    PhoneNumber = "0123456002",
-                    Gender = EGender.Female,
-                    Birthday = new DateTime(2002, 2, 28),
+                    Address = "123",
+                    PhoneNumber = "0345600001",
                 };
 
-                RegisterModel register2 = new RegisterModel
-                {
-                    Phonenumber = user2.Email,
-                    Password = user2.PasswordHash,
-                    UserInformation = user2
-                };
+                var resultRegister2 = await _authenticationService.RegisterCustomer(user2);
 
-                var resultRegister2 = await _authenticationService.Register(register2);
-
-                if (resultRegister2.Data == null)
+                if (resultRegister2.IsSuccess == false)
                 {
                     throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
                 }
 
-                var user3 = new UserCreateModel
+                var user3 = new CustomerRegisterModel
                 {
                     LastName = "Nguyễn Văn",
                     FirstName = "Hải",
-                    PasswordHash = password,
-                    Email = "user3@gmail.com",
+                    Password = password,
+                    Email = "nguyenvanhai@gmail.com",
                     City = "Hà Nội",
                     District = "",
-                    Address = "",
-                    PhoneNumber = "0123456003",
-                    Gender = EGender.Male,
-                    Birthday = new DateTime(2002, 2, 28)
+                    Address = "123",
+                    PhoneNumber = "0345600002",
                 };
 
-                RegisterModel register3 = new RegisterModel
-                {
-                    Phonenumber = user3.Email,
-                    Password = user3.PasswordHash,
-                    UserInformation = user3
-                };
+                var resultRegister3 = await _authenticationService.RegisterCustomer(user3);
 
-                var resultRegister3 = await _authenticationService.Register(register3);
-
-                if (resultRegister3.Data == null)
+                if (resultRegister3.IsSuccess == false)
                 {
                     throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
                 }
 
                 for (int i = 4; i <= 14; i++)
                 {
-                    var user = new UserCreateModel
+                    var user = new CustomerRegisterModel
                     {
                         LastName = $"User{i}",
                         FirstName = $"{i}",
-                        PasswordHash = password,
+                        Password = password,
                         Email = $"user{i}@gmail.com",
                         City = "Hà Nội",
                         District = "",
-                        Address = "",
+                        Address = "123",
                         PhoneNumber = $"0912345{i:D3}",
-                        Gender = EGender.Male,
-                        Birthday = new DateTime(2002, 2, 28)
                     };
 
-                    var register = new RegisterModel
-                    {
-                        Phonenumber = user.Email,
-                        Password = user.PasswordHash,
-                        UserInformation = user
-                    };
-
-                    var resultRegister = await _authenticationService.Register(register);
+                    var resultRegister = await _authenticationService.RegisterCustomer(user);
                 }
 
                 for (int i = 1; i <= 3; i++)
@@ -404,10 +368,10 @@ namespace TechStore.Service.Implementations
                         LastName = $"Staff{i}",
                         FirstName = $"{i}",
                         PasswordHash = password,
-                        Email = $"satff{i}@gmail.com",
+                        Email = $"staff{i}@gmail.com",
                         City = "Hà Nội",
                         District = "",
-                        Address = "",
+                        Address = "789",
                         PhoneNumber = $"01234567{i:D3}",
                         Gender = EGender.Male,
                         Birthday = new DateTime(2002, 2, 28)
@@ -420,7 +384,7 @@ namespace TechStore.Service.Implementations
                         UserInformation = user
                     };
 
-                    var resultRegister = await _authenticationService.UserRegisterWithEmail(register);
+                    var resultRegister = await _authenticationService.RegisterAdminByEmail(register);
                 }
 
                 #endregion
@@ -923,14 +887,14 @@ namespace TechStore.Service.Implementations
                 };
                 var productModel17 = new ProductCreateModel
                 {
-                    Name = "Surface Pro 9",
-                    CategoryId = resultCategoryLaptop.Data,
-                    BrandId = resultBrandDell.Data,
+                    Name = "OPPO A56",
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandOppo.Data,
                     ShortDescription = "Tablet lai laptop",
-                    Description = "Microsoft Surface Pro mới nhất",
+                    Description = "OPPO A56 mới nhất",
                     Warranty = 12,
-                    Slug = "surface-pro-9",
-                    Tags = new List<string> { "microsoft", "surface" },
+                    Slug = "oppo-a56",
+                    Tags = new List<string> { "oppo", "a56" },
                     IsFeatured = true,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = DefaultImageLinks.DefaultSmartphoneImage,

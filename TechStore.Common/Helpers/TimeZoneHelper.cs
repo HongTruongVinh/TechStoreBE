@@ -32,5 +32,13 @@ namespace TechStore.Common.Helpers
         {
             return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, Gmt7TimeZone);
         }
+
+        public static DateTime ConvertGmt7ToUtc(DateTime? gmt7DateTime)
+        {
+            if (gmt7DateTime == null)
+                return DateTime.SpecifyKind(new DateTime(1900, 1, 1), DateTimeKind.Utc); ;
+
+            return TimeZoneInfo.ConvertTimeToUtc(gmt7DateTime.Value, Gmt7TimeZone);
+        }
     }
 }

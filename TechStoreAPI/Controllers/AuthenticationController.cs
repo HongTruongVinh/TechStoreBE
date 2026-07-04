@@ -25,7 +25,7 @@ namespace TechStoreAPI.Controllers
         [HttpPost("login")]
         public async Task<ApiResponse<LoginResponseModel>> Login([FromBody] LoginRequestModel loginModel)
         {
-            ServiceResult<LoginResponseModel> serviceResult = await _authenticationService.CustomerLogin(loginModel);
+            ServiceResult<LoginResponseModel> serviceResult = await _authenticationService.LoginCustomer(loginModel);
 
             if (serviceResult.IsSuccess)
             {
@@ -54,7 +54,7 @@ namespace TechStoreAPI.Controllers
         [HttpPost("register")]
         public async Task<ApiResponse<bool>> Register([FromBody] CustomerRegisterModel registerModel)
         {
-            ServiceResult<bool> serviceResult = await _authenticationService.CustomerRegisterAccount(registerModel);
+            ServiceResult<bool> serviceResult = await _authenticationService.RegisterCustomer(registerModel);
 
             if (serviceResult.IsSuccess)
             {

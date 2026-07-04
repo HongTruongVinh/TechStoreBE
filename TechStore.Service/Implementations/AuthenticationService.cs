@@ -41,7 +41,7 @@ namespace TechStore.Service.Implementations
             _passwordService = passwordService;
         }
 
-        public async Task<ServiceResult<LoginResponseModel>> CustomerLogin(LoginRequestModel loginModel)
+        public async Task<ServiceResult<LoginResponseModel>> LoginCustomer(LoginRequestModel loginModel)
         {
             ServiceResult<LoginResponseModel> serviceResult = new ServiceResult<LoginResponseModel>
             {
@@ -78,7 +78,7 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<LoginResponseModel>> AdminLogin(LoginRequestModel loginModel)
+        public async Task<ServiceResult<LoginResponseModel>> LoginAdmin(LoginRequestModel loginModel)
         {
             ServiceResult<LoginResponseModel> serviceResult = new ServiceResult<LoginResponseModel>
             {
@@ -179,7 +179,7 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<string>> AdminRegisterWithEmail(RegisterModel registerModel)
+        public async Task<ServiceResult<string>> RegisterAdminByEmail(RegisterModel registerModel)
         {
             ServiceResult<string> serviceResult = new ServiceResult<string>
             {
@@ -212,122 +212,7 @@ namespace TechStore.Service.Implementations
                 PasswordHash = registerModel.Password,
                 Status = EUserStatus.Active,
                 RoleId = ERole.Admin,
-                Birthday = registerModel.UserInformation.Birthday,
-
-                EntityStatus = EEntityStatus.Active,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-            };
-
-            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
-
-            await _uow.Users.AddAsync(user);
-            var result = await _uow.CommitAsync();
-
-            if (result < 0)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
-
-            serviceResult.Data = userId;
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.UpdateSuccessFull;
-
-            return serviceResult;
-        }
-
-        public async Task<ServiceResult<string>> UserRegisterWithEmail(RegisterModel registerModel)
-        {
-            ServiceResult<string> serviceResult = new ServiceResult<string>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.BadRequest
-            };
-
-            var existUser = await _uow.Users.
-                FindOneAsync(u => u.Email == registerModel.Phonenumber || u.PhoneNumber == registerModel.Phonenumber);
-
-            if (existUser != null)
-            {
-                serviceResult.Message = Messenger.EmailAlreadyExist;
-                return serviceResult;
-            }
-
-            var userId = await _sequenceService.GetNextUserIdAsync();
-
-            User user = new User
-            {
-                PublicId = userId,
-                LastName = registerModel.UserInformation.LastName,
-                FirstName = registerModel.UserInformation.FirstName,
-                Address = registerModel.UserInformation.Address,
-                City = "",
-                District = "",
-                PhoneNumber = registerModel.UserInformation.PhoneNumber,
-                Email = registerModel.Phonenumber,
-                PasswordHash = registerModel.Password,
-                Status = EUserStatus.Active,
-                RoleId = ERole.Customer,
-                Birthday = registerModel.UserInformation.Birthday,
-
-                EntityStatus = EEntityStatus.Active,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-            };
-
-            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
-
-            await _uow.Users.AddAsync(user);
-            var result = await _uow.CommitAsync();
-
-            if (result < 0)
-            {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
-            }
-
-            serviceResult.Data = userId;
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.UpdateSuccessFull;
-
-            return serviceResult;
-        }
-
-
-        public async Task<ServiceResult<string>> Register(RegisterModel registerModel)
-        {
-            ServiceResult<string> serviceResult = new ServiceResult<string>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.SystemError
-            };
-
-            var existUser = await _uow.Users.
-                FindOneAsync(u => u.PhoneNumber == registerModel.Phonenumber);
-
-            if (existUser != null)
-            {
-                serviceResult.Message = "Phone number already exists!";
-                return serviceResult;
-            }
-
-            var userId = await _sequenceService.GetNextUserIdAsync();
-
-            User user = new User
-            {
-                PublicId = userId,
-                LastName = registerModel.UserInformation.LastName,
-                FirstName = registerModel.UserInformation.FirstName,
-                Address = registerModel.UserInformation.Address,
-                City = "",
-                District = "",
-                PhoneNumber = registerModel.UserInformation.PhoneNumber,
-                Email = registerModel.Phonenumber,
-                PasswordHash = registerModel.Password,
-                Status = EUserStatus.Active,
-                RoleId = ERole.Customer,
-                Birthday = registerModel.UserInformation.Birthday,
+                Birthday = TimeZoneHelper.ConvertGmt7ToUtc(registerModel.UserInformation.Birthday),
 
                 EntityStatus = EEntityStatus.Active,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
@@ -456,7 +341,7 @@ namespace TechStore.Service.Implementations
             }
         }
 
-        public async Task<ServiceResult<bool>> CustomerRegisterAccount(CustomerRegisterModel model)
+        public async Task<ServiceResult<bool>> RegisterCustomer(CustomerRegisterModel model)
         {
             ServiceResult<bool> serviceResult = new ServiceResult<bool>
             {
@@ -465,10 +350,15 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.SystemError
             };
 
-            if (!Validator.IsValidPassword(model.Password) || 
-                !Validator.IsValidVietnamPhone(model.PhoneNumber))
+            if (!Validator.IsValidPassword(model.Password))
             {
-                serviceResult.Message = Messenger.IncorrectDataFormat;
+                serviceResult.Message = "Password is not valid";
+                return serviceResult;
+            }
+
+            if (!Validator.IsValidVietnamPhone(model.PhoneNumber))
+            {
+                serviceResult.Message = "Invalid phone number format";
                 return serviceResult;
             }
 
@@ -476,28 +366,35 @@ namespace TechStore.Service.Implementations
             {
                 if (!Validator.IsValidEmail(model.Email))
                 {
-                    serviceResult.Message = Messenger.IncorrectDataFormat;
+                    serviceResult.Message = "Invalid email format";
+                    return serviceResult;
+                }
+
+                var isExistEmail = await _uow.Users.FindOneAsync(u => u.Email == model.Email);
+
+                if (isExistEmail != null)
+                {
+                    serviceResult.Message = "";
+
+                    if (isExistEmail != null)
+                    {
+                        serviceResult.Message += Messenger.EmailAlreadyExist + " ";
+                    }
+
                     return serviceResult;
                 }
             }
 
             if (String.IsNullOrEmpty(model.Address))
             {
-                serviceResult.Message = Messenger.IncorrectDataFormat;
+                serviceResult.Message = "Address is required";
                 return serviceResult;
             }
 
-            var isExistEmail = await _uow.Users.FindOneAsync(u => u.Email == model.Email);
             var isExistPhoneNumber = await _uow.Users.FindOneAsync(u => u.PhoneNumber == model.PhoneNumber);
 
-            if (isExistEmail != null || isExistPhoneNumber != null)
+            if (isExistPhoneNumber != null)
             {
-                serviceResult.Message = "";
-
-                if (isExistEmail != null)
-                {
-                    serviceResult.Message += Messenger.EmailAlreadyExist + " ";
-                }
 
                 if (isExistPhoneNumber != null)
                 {

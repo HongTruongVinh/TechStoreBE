@@ -32,7 +32,7 @@ namespace TechStoreAPI.Controllers
         [HttpPost("login")]
         public async Task<ApiResponse<LoginResponseModel>> Login(LoginRequestModel loginModel)
         {
-            ServiceResult<LoginResponseModel> serviceResult = await _authenticationService.AdminLogin(loginModel);
+            ServiceResult<LoginResponseModel> serviceResult = await _authenticationService.LoginAdmin(loginModel);
 
             if (serviceResult.IsSuccess)
             {
@@ -69,37 +69,7 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpPost("register")]
-        public async Task<ApiResponse<string>> Register([FromBody] RegisterModel registerModel)
-        {
-            ServiceResult<string> serviceResult = await _authenticationService.Register(registerModel);
-
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.BadRequest,
-                    RetCode = ERetCode.BadRequest,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
-        }
-
-
-        //[Authorize]
+        [Authorize]
         [HttpPost("update-role")]
         public async Task<ApiResponse<bool>> UpdateUserRole([FromBody] UserRoleUpdateModel model)
         {

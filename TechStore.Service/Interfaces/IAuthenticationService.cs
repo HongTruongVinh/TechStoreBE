@@ -11,17 +11,14 @@ namespace TechStore.Service.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<ServiceResult<string>> Register(RegisterModel registerModel);
-        Task<ServiceResult<bool>> CustomerRegisterAccount(CustomerRegisterModel registerModel);
-        Task<ServiceResult<LoginResponseModel>> CustomerLogin(LoginRequestModel loginModel);
-        Task<ServiceResult<LoginResponseModel>> AdminLogin(LoginRequestModel loginModel);
+        Task<ServiceResult<bool>> RegisterCustomer(CustomerRegisterModel registerModel);
+        Task<ServiceResult<LoginResponseModel>> LoginCustomer(LoginRequestModel loginModel);
+        Task<ServiceResult<LoginResponseModel>> LoginAdmin(LoginRequestModel loginModel);
 
 
-        Task<ServiceResult<string>> AdminRegisterWithEmail(RegisterModel registerModel);
+        Task<ServiceResult<string>> RegisterAdminByEmail(RegisterModel registerModel);
         Task<ServiceResult<bool>> IsUserExist(string identifier);
         Task<ServiceResult<bool>> UpdateUserRole(UserRoleUpdateModel model);
-
-        Task<ServiceResult<string>> UserRegisterWithEmail(RegisterModel registerModel);
 
         Task<ServiceResult<bool>> LogoutAsync(string token);
     }

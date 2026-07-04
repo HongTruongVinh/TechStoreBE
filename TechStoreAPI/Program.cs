@@ -50,7 +50,8 @@ namespace TechStoreAPI
                 .GetSection("ConnectionStrings")
                 .Get<ConnectionStringSetting>();
 
-            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionSetting!.DefaultConnection));
+            //builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionSetting!.DefaultConnection));
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionSetting!.PostgresConnection));
             #endregion
 
             #region Add services to the container

@@ -9,5 +9,6 @@ namespace TechStore.Common.Constants
     public class ConnectionStringSetting
     {
         public string DefaultConnection { get; set; } = null!;
+        public string PostgresConnection { get; set; } = null!;
     }
 }

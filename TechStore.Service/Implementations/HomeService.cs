@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -123,7 +124,12 @@ namespace TechStore.Service.Implementations
                 Message = Messenger.GetDataSuccessful
             };
 
-            var products = await _uow.Products.GetProductsAsync(p => p.IsFeatured, 1, 16);
+            var products = await _uow.Products.TableNoTracking
+                                                .Where(p => p.IsFeatured == true)
+                                                .OrderByDescending(p => p.CreatedAt)//Mới nhất → Cũ nhất.
+                                                .Take(16)
+                                                .ToListAsync();
+
             if (products != null)
             {
                 foreach (var product in products)
