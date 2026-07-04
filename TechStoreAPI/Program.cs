@@ -187,7 +187,8 @@ namespace TechStoreAPI
                     policy
                         .WithOrigins(
                             "http://localhost:4200",
-                            "http://localhost:4400"
+                            "http://localhost:4400",
+                            "https://techstoreweb.onrender.com"
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
