@@ -36,8 +36,13 @@ namespace TechStore.Data.Repositories.Implementations
             // Keyword
             if (!string.IsNullOrWhiteSpace(query.Keyword))
             {
+                //case-insensitive search in SQLExpress
+                //products = products.Where(p =>
+                //    p.Name.Contains(query.Keyword));
+
+                // Use ILike for case-insensitive search in PostgreSQL -- no need to use ToLower() or ToUpper()
                 products = products.Where(p =>
-                    p.Name.Contains(query.Keyword));
+                EF.Functions.ILike(p.Name, $"%{query.Keyword}%"));
             }
 
             // Category
