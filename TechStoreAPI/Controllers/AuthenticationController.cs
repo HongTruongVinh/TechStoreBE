@@ -125,7 +125,7 @@ namespace TechStoreAPI.Controllers
                     return new ApiResponse<bool>
                     {
                         PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.LoginSuccess,
+                        RetCode = ERetCode.Successfull,
                         Data = serviceResult.Data,
                         SystemMessage = serviceResult.Message,
                         StatusCode = (int)HttpStatusCode.OK
@@ -136,7 +136,7 @@ namespace TechStoreAPI.Controllers
                     return new()
                     {
                         PartnerCode = Messenger.BadRequest,
-                        RetCode = ERetCode.LoginError,
+                        RetCode = ERetCode.SystemError,
                         Data = serviceResult.Data,
                         SystemMessage = serviceResult.Message,
                         StatusCode = (int)HttpStatusCode.BadRequest
@@ -147,8 +147,55 @@ namespace TechStoreAPI.Controllers
             {
                 return new()
                 {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
+                    PartnerCode = Messenger.LoginError,
+                    RetCode = ERetCode.LoginError,
+                    Data = false,
+                    SystemMessage = Messenger.LoginError,
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed
+                };
+            }
+        }
+
+        [HttpPut("change-password")]
+        public async Task<ApiResponse<bool>> ChangePassword([FromBody] ChangePasswordModel changePasswordModel)
+        {
+            var userId = User.FindFirstValue(AppClaims.UserId);
+
+            string? token = Request.Headers["Authorization"].FirstOrDefault();
+
+            if (userId != null && !string.IsNullOrEmpty(token))
+            {
+                var serviceResult = await _authenticationService.ChangePasswordAsync(userId, changePasswordModel);
+
+                if (serviceResult.IsSuccess)
+                {
+                    return new ApiResponse<bool>
+                    {
+                        PartnerCode = Messenger.SuccessFull,
+                        RetCode = ERetCode.Successfull,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        PartnerCode = Messenger.BadRequest,
+                        RetCode = ERetCode.SystemError,
+                        Data = serviceResult.Data,
+                        SystemMessage = serviceResult.Message,
+                        StatusCode = (int)HttpStatusCode.BadRequest
+                    };
+                }
+            }
+            else
+            {
+                return new()
+                {
+                    PartnerCode = Messenger.LoginError,
+                    RetCode = ERetCode.LoginError,
                     Data = false,
                     SystemMessage = Messenger.LoginError,
                     StatusCode = (int)HttpStatusCode.ExpectationFailed

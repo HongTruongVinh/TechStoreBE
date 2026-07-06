@@ -21,5 +21,6 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> UpdateUserRole(UserRoleUpdateModel model);
 
         Task<ServiceResult<bool>> LogoutAsync(string token);
+        Task<ServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordModel model);
     }
 }

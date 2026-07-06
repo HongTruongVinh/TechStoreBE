@@ -204,7 +204,7 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<bool>> ChangePasswordAsync(string id, ChangePasswordRequestModel changePasswordRequestModel)
+        public async Task<ServiceResult<bool>> ChangePasswordAsync(string id, ChangePasswordModel changePasswordRequestModel)
         {
             var serviceResult = new ServiceResult<bool>
             {

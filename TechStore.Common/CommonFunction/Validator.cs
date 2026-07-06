@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TechStore.Common.Models;
 
 namespace TechStore.Common.CommonFunction
 {
@@ -12,6 +13,11 @@ namespace TechStore.Common.CommonFunction
         // Validate string: only alpha, numberic, at least one uppercase, at least one numberic
         public static bool IsValidPassword(string input)
         {
+            if (input.Length > 18)
+            {
+                return false;
+            }
+
             // only alpha and numberic
             var onlyAlphaNum = new Regex("^[A-Za-z0-9]+$");
             var hasUppercase = new Regex("[A-Z]");

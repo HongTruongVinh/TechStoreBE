@@ -19,6 +19,6 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<UserResponseModel>> GetById(string userId);
         Task<ServiceResult<bool>> UpdateUserInformation(string userId, UserUpdateModel model);
         Task<ServiceResult<bool>> DeleteUser(string userId);
-        public Task<ServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordRequestModel changePasswordRequestModel);
+        public Task<ServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordModel changePasswordRequestModel);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Azure.Core;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -58,9 +59,9 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            //bool isValid = _passwordService.VerifyPassword(user, loginModel.Password, user.PasswordHash);
+            bool isValid = _passwordService.VerifyPassword(user, loginModel.Password, user.PasswordHash);
 
-            if (user.PasswordHash != loginModel.Password)
+            if (!isValid)
             {
                 serviceResult.Message = Messenger.LoginError;
                 return serviceResult;
@@ -103,9 +104,9 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            //bool isValid = _passwordService.VerifyPassword(user, loginModel.Password, user.PasswordHash);
+            bool isValid = _passwordService.VerifyPassword(user, loginModel.Password, user.PasswordHash);
 
-            if (user.PasswordHash != loginModel.Password)
+            if (!isValid)
             {
                 serviceResult.Message = Messenger.LoginError;
                 return serviceResult;
@@ -218,7 +219,7 @@ namespace TechStore.Service.Implementations
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 
-            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
+            user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
 
             await _uow.Users.AddAsync(user);
             var result = await _uow.CommitAsync();
@@ -424,7 +425,7 @@ namespace TechStore.Service.Implementations
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 
-            //user.PasswordHash = _passwordService.HashPassword(user, registerModel.Password);
+            user.PasswordHash = _passwordService.HashPassword(user, model.Password);
 
             await _uow.Users.AddAsync(user);
             var result = await _uow.CommitAsync();
@@ -437,6 +438,55 @@ namespace TechStore.Service.Implementations
 
             serviceResult.Data = true;
             serviceResult.IsSuccess = true;
+            serviceResult.Message = Messenger.UpdateSuccessFull;
+
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordModel changePasswordModel)
+        {
+            var serviceResult = new ServiceResult<bool>
+            {
+                IsSuccess = false,
+                Data = false,
+                Message = Messenger.SystemError
+            };
+
+            var user = await _uow.Users.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                serviceResult.Message = Messenger.NotFoundUser;
+                return serviceResult;
+            }
+
+            if (!Validator.IsValidPassword(changePasswordModel.NewPassword))
+            {
+                serviceResult.Message = "Invalid password format";
+                return serviceResult;
+            }
+
+            bool isValid = _passwordService.VerifyPassword(user, changePasswordModel.OldPassword, user.PasswordHash);
+
+            if (!isValid)
+            {
+                serviceResult.Message = "Current password is incorrect";
+                return serviceResult;
+            }
+
+            user.PasswordHash = _passwordService.HashPassword(user, changePasswordModel.NewPassword);
+
+            _uow.Users.Update(user);
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                serviceResult.Message = Messenger.SystemError;
+                return serviceResult;
+            }
+
+            serviceResult.IsSuccess = true;
+            serviceResult.Data = true;
             serviceResult.Message = Messenger.UpdateSuccessFull;
 
             return serviceResult;

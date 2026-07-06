@@ -142,51 +142,5 @@ namespace TechStoreAPI.Controllers
             }
         }
 
-        [HttpPut("change-password/{userId}")]
-        public async Task<ApiResponse<bool>> ChangePassword(string userId, ChangePasswordRequestModel model)
-        {
-            //var userId = User.FindFirstValue(AppClaims.UserId);
-
-            if (userId != null)
-            {
-                var serviceResult = await _userService.ChangePasswordAsync(userId, model);
-
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = false,
-                    SystemMessage = "Fail to change password",
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
-        }
     }
 }
