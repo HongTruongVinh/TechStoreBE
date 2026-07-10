@@ -73,7 +73,9 @@ namespace TechStore.Service.Implementations
                 UserId = customer.Id,
                 Amount = cashPayment.Amount,
                 PaymentMethod = EPaymentMethod.Cash,
-                TransactionCode = "",
+                PaymentCode = "",
+                TransactionId = "",
+                BankReferenceCode = "",
                 PaymentStatus = EPaymentStatus.Paid,
                
 
@@ -218,16 +220,16 @@ namespace TechStore.Service.Implementations
         }
 
 
-        public async Task<ServiceResult<string>> VerifyPaymentForSnapshotAsync(PaymentForSnapshotWebhookRequest request)
+        public async Task<ServiceResult<VerifyResult>> VerifyPaymentForSnapshotAsync(SepayWebhookRequest request)
         {
-            var serviceResult = new ServiceResult<string>
+            var serviceResult = new ServiceResult<VerifyResult>
             {
                 IsSuccess = false,
-                Data = string.Empty,
+                Data = null,
                 Message = Messenger.SystemError,
             };
 
-            var snapshot = await _uow.PaymentSnapshots.GetWithItemsAsync(request.SnapshotId);
+            var snapshot = await _uow.PaymentSnapshots.GetWithItemsAsync(request.Code);
             if (snapshot == null)
             {
                 return serviceResult;
@@ -239,9 +241,9 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            if (snapshot.FinalAmount < request.Amount)
+            if (snapshot.FinalAmount < request.TransferAmount)
             {
-                user.WalletBalance += request.Amount;
+                user.WalletBalance += request.TransferAmount;
                 _uow.Users.Update(user);
                 var updateUserResult = await _uow.CommitAsync();
                 if(updateUserResult < 1)
@@ -250,12 +252,39 @@ namespace TechStore.Service.Implementations
                 }
 
                 serviceResult.Message = PaymentMessenger.IncorrectAmount;
+                serviceResult.Data = new VerifyResult()
+                {
+                    SnapshotId = snapshot.PublicId,
+                    Amount = request.TransferAmount,
+                    Message = PaymentMessenger.IncorrectAmount
+                };
                 return serviceResult;
             }
-            
-            var orderServiceResultOrder = await _orderService.CreatePrePayOnlineOrderAsync(user.PublicId, snapshot, request);
 
-            return orderServiceResultOrder;
+            var paymentData = new PaymentForSnapshot
+            {
+                Amount = request.TransferAmount,
+                Code = request.Code,
+                BankReferenceCode = request.ReferenceCode,
+                TransactionId = request.Id.ToString(),
+            };
+
+
+            var orderServiceResultOrder = await _orderService.CreatePrePayOnlineOrderAsync(user.PublicId, snapshot, paymentData);
+
+            if (orderServiceResultOrder.Data == null)
+            {
+                return serviceResult;
+            }
+
+            serviceResult.Data = new VerifyResult()
+            {
+                SnapshotId = snapshot.PublicId,
+                Amount = request.TransferAmount,
+                Message = PaymentMessenger.PaymentVerified
+            };
+
+            return serviceResult;
         }
 
         public async Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel)
@@ -430,7 +459,9 @@ namespace TechStore.Service.Implementations
                 UserId = invoice.Order.CustomerId,
                 PaymentMethod = EPaymentMethod.DomesticBank,
                 PaymentStatus = EPaymentStatus.Pending,
-                TransactionCode = "",
+                PaymentCode = "",
+                BankReferenceCode = "",
+                TransactionId = "",
                 Amount = model.Amount,
                 CreatedBy = cashier.Id,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
@@ -469,12 +500,12 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
-        public async Task<ServiceResult<string>> VerifyPaymentForInvoiceAsync(PaymentForInvocieWebhookRequest request)
+        public async Task<ServiceResult<VerifyResult>> VerifyPaymentForInvoiceAsync(PaymentForInvocieWebhookRequest request)
         {
-            var serviceResult = new ServiceResult<string>
+            var serviceResult = new ServiceResult<VerifyResult>
             {
                 IsSuccess = false,
-                Data = string.Empty,
+                Data = null,
                 Message = Messenger.NoExitData,
             };
 
@@ -520,6 +551,13 @@ namespace TechStore.Service.Implementations
                 serviceResult.Message = Messenger.SystemError;
                 return serviceResult;
             }
+
+            serviceResult.Data = new VerifyResult()
+            {
+                SnapshotId = payment.PublicId,
+                Amount = payment.Amount,
+                Message = PaymentMessenger.PaymentVerified
+            };
 
             serviceResult.IsSuccess = true;
             serviceResult.Message = Messenger.SuccessFull;

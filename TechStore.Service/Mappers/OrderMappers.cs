@@ -81,7 +81,7 @@ namespace TechStore.Service.Mappers
                 PaymentId = "",
                 PaymentStatus = payment.PaymentStatus,
                 PaymentMethod = payment.PaymentMethod == EPaymentMethod.Cash? "Tiền mặt" : "Online",
-                TransactionCode = payment.TransactionCode,
+                TransactionCode = payment.PaymentCode,
 
                 InvoiceId = order.Invoice?.PublicId ?? "",
                 Note = order.Note ?? "",

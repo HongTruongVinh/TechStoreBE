@@ -11,7 +11,7 @@ namespace TechStore.Service.Interfaces
     {
         Task<ServiceResult<PagedResult<OrderDetailResponseModel>>> GetListOrdersByStatusIdAsync(EOrderStatus statusId, int page, int pageSize);
         Task<ServiceResult<PagedResult<ListItemOrderModel>>> GetOrdersAsync(OrderSearchQuery query);
-        Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshotWebhookRequest request);
+        Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshot request);
         Task<ServiceResult<string>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel createOrderRequest);
         Task<ServiceResult<string>> CreateInStoreOrderAsync(string createdByCashierId, string paymentId, InStoreOrderCreateModel createOrderRequest);
         

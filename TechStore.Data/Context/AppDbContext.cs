@@ -10,7 +10,7 @@ using TechStore.Data.Entities;
 
 namespace TechStore.Data.Context
 {
-    // Add-Migration InitialCreate
+    // Add-Migration InitialCreate                  Add-Migration UpdatePayment
     // Update-Database
 
     // Drop-Database

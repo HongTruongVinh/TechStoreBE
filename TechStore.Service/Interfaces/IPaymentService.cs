@@ -18,7 +18,7 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel);
         Task<ServiceResult<PaymentDataModel>> CreatePaymentForInvoiceByAdminAsync(string cashierId, PaymentCreateModel model);
 
-        Task<ServiceResult<string>> VerifyPaymentForSnapshotAsync(PaymentForSnapshotWebhookRequest request);
-        Task<ServiceResult<string>> VerifyPaymentForInvoiceAsync(PaymentForInvocieWebhookRequest request);
+        Task<ServiceResult<VerifyResult>> VerifyPaymentForSnapshotAsync(SepayWebhookRequest request);
+        Task<ServiceResult<VerifyResult>> VerifyPaymentForInvoiceAsync(PaymentForInvocieWebhookRequest request);
     }
 }

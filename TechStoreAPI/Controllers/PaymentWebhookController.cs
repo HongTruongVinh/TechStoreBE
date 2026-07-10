@@ -25,50 +25,61 @@ namespace TechStoreAPI.Controllers
             _paymentService = paymentService;
         }
 
+        //[HttpPost("verify-payment-of-snapshot")]
+        //public async Task<IActionResult> Verify()
+        //{
+        //    using var reader = new StreamReader(Request.Body);
+        //    var body = await reader.ReadToEndAsync();
+
+        //    _logger.LogInformation("Webhook received: {RequestBody}", body);
+
+        //    return Ok();
+        //}
+
         [HttpPost("verify-payment-of-snapshot")]
-        public async Task<IActionResult> Verify()
+        public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(SepayWebhookRequest request)
         {
             using var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
 
-            _logger.LogInformation("Webhook received: {RequestBody}", body);
+            _logger.LogInformation("SePay Webhook received: {RequestBody}", body);
+
+            var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
+
+            if(result.Data != null)
+            {
+                if (result.IsSuccess)
+                {
+                    await _hubContext
+                        .Clients
+                        .Group(result.Data.SnapshotId)
+                        .SendAsync("PaymentSuccess", new
+                        {
+                            paymentId = result.Data.SnapshotId,
+                            amount = result.Data.Amount,
+                            message = result.Data.Message
+                        });
+                }
+                else
+                {
+                    await _hubContext
+                        .Clients
+                        .Group(result.Data.SnapshotId)
+                        .SendAsync("PaymentFailed", new
+                        {
+                            paymentId = result.Data.SnapshotId,
+                            amount = result.Data.Amount,
+                            message = result.Data.Message 
+                        });
+                }
+            }
+            else
+            {
+                _logger.LogWarning("No snapshot data found for the payment verification.");
+            }
 
             return Ok();
         }
-
-        //[HttpPost("verify-payment-of-snapshot")]
-        //public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(PaymentForSnapshotWebhookRequest request)
-        //{
-
-        //    var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
-
-        //    if (result.IsSuccess)
-        //    {
-        //        await _hubContext
-        //            .Clients
-        //            .Group(request.SnapshotId)
-        //            .SendAsync("PaymentSuccess", new
-        //            {
-        //                paymentId = request.SnapshotId,
-        //                amount = request.Amount,
-        //                message = "Thanh toán thành công"
-        //            });
-        //    }
-        //    else
-        //    {
-        //        await _hubContext
-        //            .Clients
-        //            .Group(request.SnapshotId)
-        //            .SendAsync("PaymentFailed", new
-        //            {
-        //                paymentId = request.SnapshotId,
-        //                amount = request.Amount,
-        //                message = result.Message ?? "Thanh toán thất bại"
-        //            });
-        //    }
-
-        //    return Ok();
-        //}
 
         [HttpPost("verify-payment")]
         public async Task<IActionResult> VerifyPaymenForInvoicetWebhook(PaymentForInvocieWebhookRequest request)
@@ -96,7 +107,7 @@ namespace TechStoreAPI.Controllers
                     {
                         paymentId = request.PaymentId,
                         amount = request.Amount,
-                        message = result.Message ?? "Thanh toán thất bại"
+                        message = result.Data?.Message ?? "Thanh toán thất bại"
                     });
             }
 

@@ -37,7 +37,7 @@ namespace TechStore.Service.Implementations
             _vietQrService = vietQrService;
         }
 
-        public async Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshotWebhookRequest paymentData)
+        public async Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshot paymentData)
         {
             var serviceResult = new ServiceResult<string>
             {
@@ -138,7 +138,9 @@ namespace TechStore.Service.Implementations
                 UserId = customer.Id,
                 Amount = paymentData.Amount,
                 PaymentMethod = EPaymentMethod.DomesticBank,
-                TransactionCode = paymentData.TransactionId,
+                PaymentCode = paymentData.Code,
+                BankReferenceCode = paymentData.BankReferenceCode,
+                TransactionId = paymentData.TransactionId,
                 PaymentStatus = EPaymentStatus.Paid,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
                 EntityStatus = EEntityStatus.Active,
