@@ -11,49 +11,64 @@ namespace TechStoreAPI.Controllers
     [ApiController]
     public class PaymentWebhookController : ControllerBase
     {
+        private readonly ILogger<PaymentWebhookController> _logger;
         private readonly IHubContext<PaymentHub> _hubContext;
         private readonly IPaymentService _paymentService;
 
         public PaymentWebhookController(
+            ILogger<PaymentWebhookController> logger,
             IHubContext<PaymentHub> hubContext,
             IPaymentService paymentService)
         {
+            _logger = logger;
             _hubContext = hubContext;
             _paymentService = paymentService;
         }
 
         [HttpPost("verify-payment-of-snapshot")]
-        public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(PaymentForSnapshotWebhookRequest request)
+        public async Task<IActionResult> Verify()
         {
-            var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
+            using var reader = new StreamReader(Request.Body);
+            var body = await reader.ReadToEndAsync();
 
-            if (result.IsSuccess)
-            {
-                await _hubContext
-                    .Clients
-                    .Group(request.SnapshotId)
-                    .SendAsync("PaymentSuccess", new
-                    {
-                        paymentId = request.SnapshotId,
-                        amount = request.Amount,
-                        message = "Thanh toán thành công"
-                    });
-            }
-            else
-            {
-                await _hubContext
-                    .Clients
-                    .Group(request.SnapshotId)
-                    .SendAsync("PaymentFailed", new
-                    {
-                        paymentId = request.SnapshotId,
-                        amount = request.Amount,
-                        message = result.Message ?? "Thanh toán thất bại"
-                    });
-            }
+            _logger.LogInformation("Webhook received: {RequestBody}", body);
 
             return Ok();
         }
+
+        //[HttpPost("verify-payment-of-snapshot")]
+        //public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(PaymentForSnapshotWebhookRequest request)
+        //{
+
+        //    var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
+
+        //    if (result.IsSuccess)
+        //    {
+        //        await _hubContext
+        //            .Clients
+        //            .Group(request.SnapshotId)
+        //            .SendAsync("PaymentSuccess", new
+        //            {
+        //                paymentId = request.SnapshotId,
+        //                amount = request.Amount,
+        //                message = "Thanh toán thành công"
+        //            });
+        //    }
+        //    else
+        //    {
+        //        await _hubContext
+        //            .Clients
+        //            .Group(request.SnapshotId)
+        //            .SendAsync("PaymentFailed", new
+        //            {
+        //                paymentId = request.SnapshotId,
+        //                amount = request.Amount,
+        //                message = result.Message ?? "Thanh toán thất bại"
+        //            });
+        //    }
+
+        //    return Ok();
+        //}
 
         [HttpPost("verify-payment")]
         public async Task<IActionResult> VerifyPaymenForInvoicetWebhook(PaymentForInvocieWebhookRequest request)
