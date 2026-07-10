@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,17 +27,20 @@ namespace TechStore.Service.Implementations
         private readonly SequenceGeneratorService _sequenceService;
         private readonly IVietQrService _vietQrService;
         private readonly IOrderService _orderService;
+        private readonly PaymentSettings _paymentSettings;
 
         public PaymentService(IUnitOfWork uow,
             SequenceGeneratorService sequenceService,
             IVietQrService vietQrService,
-            IOrderService orderService
+            IOrderService orderService,
+            IOptions<PaymentSettings> paymentSettings
             )
         {
             _uow = uow;
             _sequenceService = sequenceService;
             _vietQrService = vietQrService;
             _orderService = orderService;
+            _paymentSettings = paymentSettings.Value;
         }
 
         public async Task<ServiceResult<string>> AddCashPaymentByAdminAsync(string cashierId, CashPaymentCreateModel cashPayment)
@@ -360,7 +364,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.FinalAmount, $"TECHSTORE {snapshot.PublicId}");
+            var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.FinalAmount, _paymentSettings.PaymentReference + snapshot.PublicId);
 
             if (paymentQrUrl == null)
             {
@@ -443,7 +447,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var paymentQrUrl = await _vietQrService.GenerateQrAsync(payment.Amount, $"TECHSTORE PAY {payment.PublicId}");
+            var paymentQrUrl = await _vietQrService.GenerateQrAsync(payment.Amount, _paymentSettings.PaymentReference + payment.PublicId);
 
             if (paymentQrUrl == null)
             {

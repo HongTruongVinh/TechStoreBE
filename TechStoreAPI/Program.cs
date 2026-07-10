@@ -25,6 +25,7 @@ namespace TechStoreAPI
             #region add service config
             builder.Services.Configure<JWTConfig>(builder.Configuration.GetSection("JWT"));
             builder.Services.Configure<CloudinaryConfig>(builder.Configuration.GetSection("CloudinarySettings"));
+            builder.Services.Configure<PaymentSettings>(builder.Configuration.GetSection("PaymentSettings"));
             //builder.Services.Configure<VietQRConfig>(builder.Configuration.GetSection("VietQrSettings"));
 
             var jwtConfig = builder.Configuration.GetSection("JWT").Get<JWTConfig>() ?? new JWTConfig();
