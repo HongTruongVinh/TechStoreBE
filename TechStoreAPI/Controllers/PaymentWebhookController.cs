@@ -39,19 +39,26 @@ namespace TechStoreAPI.Controllers
         [HttpPost("verify-payment-of-snapshot")]
         public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(SepayWebhookRequest request)
         {
-            using var reader = new StreamReader(Request.Body);
-            var body = await reader.ReadToEndAsync();
-
-            _logger.LogInformation("SePay Webhook received: {RequestBody}", body);
+            _logger.LogInformation(
+                "[SEPAY][RECEIVED] Ref={ReferenceCode}, Code={Code}, Amount={Amount}, Gateway={Gateway}",
+                request.ReferenceCode,
+                request.Code,
+                request.TransferAmount,
+                request.Gateway);
 
             var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
 
-            if(result.Data != null)
+            if (result.Data != null)
             {
                 if (result.IsSuccess)
                 {
-                    await _hubContext
-                        .Clients
+                    _logger.LogInformation(
+                        "[SEPAY][SUCCESS] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
+                        result.Data.SnapshotId,
+                        result.Data.Amount,
+                        result.Data.Message);
+
+                    await _hubContext.Clients
                         .Group(result.Data.SnapshotId)
                         .SendAsync("PaymentSuccess", new
                         {
@@ -62,20 +69,29 @@ namespace TechStoreAPI.Controllers
                 }
                 else
                 {
-                    await _hubContext
-                        .Clients
+                    _logger.LogWarning(
+                        "[SEPAY][FAILED] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
+                        result.Data.SnapshotId,
+                        result.Data.Amount,
+                        result.Data.Message);
+
+                    await _hubContext.Clients
                         .Group(result.Data.SnapshotId)
                         .SendAsync("PaymentFailed", new
                         {
                             paymentId = result.Data.SnapshotId,
                             amount = result.Data.Amount,
-                            message = result.Data.Message 
+                            message = result.Data.Message
                         });
                 }
             }
             else
             {
-                _logger.LogWarning("No snapshot data found for the payment verification.");
+                _logger.LogWarning(
+                    "[SEPAY][NO_SNAPSHOT] Ref={ReferenceCode}, Code={Code}, Amount={Amount}",
+                    request.ReferenceCode,
+                    request.Code,
+                    request.TransferAmount);
             }
 
             return Ok();
