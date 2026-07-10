@@ -277,6 +277,9 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
+            serviceResult.IsSuccess = true;
+            serviceResult.Message = Messenger.SuccessFull;
+
             serviceResult.Data = new VerifyResult()
             {
                 SnapshotId = snapshot.PublicId,
