@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,12 @@ namespace TechStore.Service.Implementations
     public class SequenceGeneratorService
     {
         private readonly IUnitOfWork _uow;
-        public SequenceGeneratorService(IUnitOfWork uow) 
+        private readonly PaymentSettings _paymentSettings;
+        public SequenceGeneratorService(IUnitOfWork uow,
+            IOptions<PaymentSettings> paymentSettings) 
         { 
             _uow = uow;
+            _paymentSettings = paymentSettings.Value;
         }
         public async Task<long> GetNextSequenceValueAsync(string sequenceName)
         {
@@ -164,6 +168,12 @@ namespace TechStore.Service.Implementations
         {
             var sequenceNumber = await GetNextSequenceValueAsync(CollectionName.Shipper);
             var Id = $"SHIP{sequenceNumber:D4}";
+            return Id;
+        }
+
+        public string GetNextSnapshotId()
+        {
+            var Id = _paymentSettings.PaymentReference + $"{DateTime.UtcNow:yyyyMMdd}{(Random.Shared.Next(10000, 100000).ToString() + 1):D6}";
             return Id;
         }
     }

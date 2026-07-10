@@ -313,7 +313,7 @@ namespace TechStore.Service.Implementations
             var snapshot = new PaymentSnapshot
             {
                 Id = Guid.NewGuid(),
-                PublicId = $"{DateTime.UtcNow:yyyyMMdd}{(Random.Shared.Next(10000, 100000).ToString() + 1):D6}",
+                PublicId = _sequenceService.GetNextSnapshotId(),
                 CustomerId = customer.Id,
                 CustomerName = orderCreateModel.CustomerName,
                 CustomerEmail = orderCreateModel.CustomerEmail,
@@ -393,7 +393,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.FinalAmount, _paymentSettings.PaymentReference + snapshot.PublicId);
+            var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.FinalAmount, snapshot.PublicId);
 
             if (paymentQrUrl == null)
             {
@@ -478,7 +478,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            var paymentQrUrl = await _vietQrService.GenerateQrAsync(payment.Amount, _paymentSettings.PaymentReference + payment.PublicId);
+            var paymentQrUrl = await _vietQrService.GenerateQrAsync(payment.Amount, payment.PublicId);
 
             if (paymentQrUrl == null)
             {
