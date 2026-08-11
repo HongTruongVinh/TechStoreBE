@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Techstore.API.Hubs;
+using TechStore.Common.Constants;
 using TechStore.Model.DTOs.Payment;
 using TechStore.Service.Interfaces;
 
@@ -92,6 +93,15 @@ namespace TechStoreAPI.Controllers
                     request.ReferenceCode,
                     request.Code,
                     request.TransferAmount);
+
+                await _hubContext.Clients
+                        .Group(request.Code)
+                        .SendAsync("PaymentFailed", new
+                        {
+                            paymentId = request.Code,
+                            amount = request.TransferAmount,
+                            message = Messenger.SystemError
+                        });
             }
 
             return Ok();

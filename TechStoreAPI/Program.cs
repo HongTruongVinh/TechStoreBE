@@ -208,6 +208,14 @@ namespace TechStoreAPI
                 app.UseSwaggerUI();
             }
 
+            //auto migratetion database if database is not exsist
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                dbContext.Database.Migrate();
+            }
+
             //app.UseHttpsRedirection();
 
             //app.UseCors("AllowAnyOrigin");
