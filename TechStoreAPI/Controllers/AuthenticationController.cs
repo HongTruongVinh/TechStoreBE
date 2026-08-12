@@ -10,10 +10,14 @@ namespace TechStoreAPI.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        private readonly ILogger<AuthenticationController> _logger;
         private readonly IAuthenticationService _authenticationService;
 
-        public AuthenticationController(IAuthenticationService authenticationService)
+        public AuthenticationController(
+            ILogger<AuthenticationController> logger, 
+            IAuthenticationService authenticationService)
         {
+            _logger = logger;
             _authenticationService = authenticationService;
         }
 
@@ -21,6 +25,25 @@ namespace TechStoreAPI.Controllers
         public async Task<ActionResult<ApiResponse<LoginResponseModel>>> Login([FromBody] LoginRequestModel loginModel)
         {
             var serviceResult = await _authenticationService.LoginCustomer(loginModel);
+
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            if (serviceResult.IsSuccess)
+            {
+                _logger.LogInformation(
+                    AuthLogEvents.LoginSuccess,
+                    "Customer login successful. UserId: {UserId}, IP: {IpAddress}",
+                    serviceResult.Data?.User.Id,
+                    ipAddress);
+            }
+            else
+            {
+                _logger.LogWarning(
+                    AuthLogEvents.LoginFailed,
+                    "Customer login failed. Username: {Username}, IP: {IpAddress}",
+                    loginModel.LoginIdentifier,
+                    ipAddress);
+            }
 
             return serviceResult.ToActionResult(this);
         }
