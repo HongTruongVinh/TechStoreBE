@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TechStore.Common.Models;
 using TechStore.Model.DTOs.Product;
 using TechStore.Model.DTOs.ProductVariant;
 using TechStore.Model.DTOs.ProductVariantOption;
+using TechStore.Common.Models;
 
 namespace TechStore.Service.Interfaces
 {

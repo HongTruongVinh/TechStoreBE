@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Security.Claims;
-using TechStore.Common.Constants;
-using TechStore.Common.Enums;
-using TechStore.Common.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.Model.DTOs.Authentication;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -23,184 +18,47 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ApiResponse<LoginResponseModel>> Login([FromBody] LoginRequestModel loginModel)
+        public async Task<ActionResult<ApiResponse<LoginResponseModel>>> Login([FromBody] LoginRequestModel loginModel)
         {
-            ServiceResult<LoginResponseModel> serviceResult = await _authenticationService.LoginCustomer(loginModel);
+            var serviceResult = await _authenticationService.LoginCustomer(loginModel);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new ApiResponse<LoginResponseModel>
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.LoginSuccess,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.BadRequest,
-                    RetCode = ERetCode.LoginError,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPost("register")]
-        public async Task<ApiResponse<bool>> Register([FromBody] CustomerRegisterModel registerModel)
+        public async Task<ActionResult<ApiResponse<bool>>> Register([FromBody] CustomerRegisterModel registerModel)
         {
-            ServiceResult<bool> serviceResult = await _authenticationService.RegisterCustomer(registerModel);
+            var serviceResult = await _authenticationService.RegisterCustomer(registerModel);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.BadRequest,
-                    RetCode = ERetCode.BadRequest,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPost("IsEmailExist")]
-        public async Task<ApiResponse<bool>> IsEmailExist([FromBody] AccountExistModel accountExistModel)
+        public async Task<ActionResult<ApiResponse<bool>>> IsEmailExist([FromBody] AccountExistModel accountExistModel)
         {
-            ServiceResult<bool> serviceResult = await _authenticationService.IsUserExist(accountExistModel.Email);
+            var serviceResult = await _authenticationService.IsUserExist(accountExistModel.Email);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.BadRequest,
-                    RetCode = ERetCode.BadRequest,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPost("logout")]
-        public async Task<ApiResponse<bool>> Logout()
+        public async Task<ActionResult<ApiResponse<bool>>> Logout()
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            string? token = Request.Headers["Authorization"].FirstOrDefault();
+            var serviceResult = await _authenticationService.LogoutAsync(Request.Headers["Authorization"].FirstOrDefault()!);
 
-            if (userId != null && !string.IsNullOrEmpty(token))
-            {
-                var serviceResult = await _authenticationService.LogoutAsync(token);
-
-                if (serviceResult.IsSuccess)
-                {
-                    return new ApiResponse<bool>
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.BadRequest,
-                        RetCode = ERetCode.SystemError,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.BadRequest
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.LoginError,
-                    RetCode = ERetCode.LoginError,
-                    Data = false,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("change-password")]
-        public async Task<ApiResponse<bool>> ChangePassword([FromBody] ChangePasswordModel changePasswordModel)
+        public async Task<ActionResult<ApiResponse<bool>>> ChangePassword([FromBody] ChangePasswordModel changePasswordModel)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            string? token = Request.Headers["Authorization"].FirstOrDefault();
+            var serviceResult = await _authenticationService.ChangePasswordAsync(userId, changePasswordModel);
 
-            if (userId != null && !string.IsNullOrEmpty(token))
-            {
-                var serviceResult = await _authenticationService.ChangePasswordAsync(userId, changePasswordModel);
-
-                if (serviceResult.IsSuccess)
-                {
-                    return new ApiResponse<bool>
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.BadRequest,
-                        RetCode = ERetCode.SystemError,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.BadRequest
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.LoginError,
-                    RetCode = ERetCode.LoginError,
-                    Data = false,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
     }
 }

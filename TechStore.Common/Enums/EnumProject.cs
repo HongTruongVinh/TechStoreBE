@@ -137,4 +137,14 @@ namespace TechStore.Common.Enums
 
         NoPermission
     }
+
+    public enum EErrorType
+    {
+        BadRequest,
+        SystemError,
+        NotFound,
+        ConfictData,
+        Unauthorized,
+        Forbidden
+    }
 }

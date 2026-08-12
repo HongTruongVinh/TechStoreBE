@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using TechStore.Common.Constants;
-using TechStore.Common.Enums;
-using TechStore.Common.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.Model.DTOs.Home;
 using TechStore.Model.DTOs.Product;
-using TechStore.Service.Implementations;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -16,96 +12,34 @@ namespace TechStoreAPI.Controllers
     public class HomeController : ControllerBase
     {
         private readonly IHomeService _homeService;
+
         public HomeController(IHomeService homeService)
         {
             _homeService = homeService;
         }
 
         [HttpGet]
-        public async Task<ApiResponse<HomeResponseModel>> GetData()
+        public async Task<ActionResult<ApiResponse<HomeResponseModel>>> GetData()
         {
             var serviceResult = await _homeService.GetHomeProduct();
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("feature")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetFeaturedProducts()
+        public async Task<ActionResult<ApiResponse<List<ListItemProductModel>>>> GetFeaturedProducts()
         {
             var serviceResult = await _homeService.GetFeaturedProducts();
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("products")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetProductsByBrandName(string brandName, int page = 1, int pageSize = 16)
+        public async Task<ActionResult<ApiResponse<List<ListItemProductModel>>>> GetProductsByBrandName(string brandName, int page = 1, int pageSize = 16)
         {
             var serviceResult = await _homeService.GetProductsByBrandName(brandName, page, pageSize);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
     }
 }

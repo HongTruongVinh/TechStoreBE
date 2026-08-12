@@ -1,16 +1,14 @@
 ﻿using CloudinaryDotNet.Actions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
-using TechStore.Common.Models;
 using TechStore.Model.DTOs.ResponseModel;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
-
     [Route(RouterControllerName.UploadToCloud)]
     [ApiController]
     public class UploadToCloudController : ControllerBase
@@ -22,37 +20,12 @@ namespace TechStoreAPI.Controllers
             _uploadDataToCloudService = uploadDataToCloudService;
         }
 
-        //[HttpPost("cloudinary")]
-        //public async Task<ApiResponse<UploadWithCloudinaryResponseModel>> AddPhotoToCloudinaryAsync(PhotoUploadModel model)
-        //{
-        //    ApiResponse<UploadWithCloudinaryResponseModel> result = new()
-        //    {
-        //        PartnerCode = Messenger.SuccessFull,
-        //        RetCode = ERetCode.Successfull,
-        //        Data = new UploadWithCloudinaryResponseModel(),
-        //        SystemMessage = string.Empty,
-        //        StatusCode = (int)HttpStatusCode.Created
-        //    };
-
-        //    result.Data = await _uploadDataToCloudService.AddPhotoToCloudAsync(model);
-        //    return result;
-        //}
-
         [HttpPost("cloudinary-request")]
-        public async Task<ApiResponse<UploadWithCloudinaryResponseModel>> AddPhotoToCloudinaryRequestAsync()
+        public async Task<ActionResult<ApiResponse<UploadWithCloudinaryResponseModel>>> AddPhotoToCloudinaryRequestAsync()
         {
-            ApiResponse<UploadWithCloudinaryResponseModel> result = new()
-            {
-                PartnerCode = Messenger.SuccessFull,
-                RetCode = ERetCode.Successfull,
-                Data = new UploadWithCloudinaryResponseModel(),
-                SystemMessage = string.Empty,
-                StatusCode = (int)HttpStatusCode.Created
-            };
             var files = Request.Form.Files;
-
             var fileTypeValue = Request.Form["photoType"];
-            Enum.TryParse<EPhotoType>(fileTypeValue, true, out var photoType);
+            Enum.TryParse(fileTypeValue, true, out EPhotoType photoType);
 
             var uploadPhotoModel = new PhotoUploadModel
             {
@@ -60,36 +33,22 @@ namespace TechStoreAPI.Controllers
                 PhotoType = photoType
             };
 
-            result.Data = await _uploadDataToCloudService.AddPhotoToCloudAsync(uploadPhotoModel);
-            return result;
+            var data = await _uploadDataToCloudService.AddPhotoToCloudAsync(uploadPhotoModel);
+
+            return ServiceResult<UploadWithCloudinaryResponseModel>.Success(data).ToActionResult(this);
         }
 
         [HttpDelete("cloudinary/{**photoPublicId}")]
-        public async Task<ApiResponse<DeletionResult>> DeletePhotoToCloudinarAsync([FromRoute] string photoPublicId)
+        public async Task<ActionResult<ApiResponse<DeletionResult>>> DeletePhotoToCloudinarAsync([FromRoute] string photoPublicId)
         {
             if (photoPublicId.Contains(CloudinaryFolders.DefaultImage))
             {
-                return new ApiResponse<DeletionResult>
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = new DeletionResult(),
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.Created
-                };
+                return ServiceResult<DeletionResult>.Success(new DeletionResult()).ToActionResult(this);
             }
 
-            ApiResponse<DeletionResult> result = new()
-            {
-                PartnerCode = Messenger.SuccessFull,
-                RetCode = ERetCode.Successfull,
-                Data = new DeletionResult(),
-                SystemMessage = string.Empty,
-                StatusCode = (int)HttpStatusCode.Created
-            };
+            var data = await _uploadDataToCloudService.DeletePhotoToCloudAsync(photoPublicId);
 
-            result.Data = await _uploadDataToCloudService.DeletePhotoToCloudAsync(photoPublicId);
-            return result;
+            return ServiceResult<DeletionResult>.Success(data).ToActionResult(this);
         }
     }
 }

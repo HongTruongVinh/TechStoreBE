@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using TechStore.Common.Constants;
-using TechStore.Common.Enums;
+﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.Common.Models;
 using TechStore.Model.DTOs.Brand;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -15,159 +12,49 @@ namespace TechStoreAPI.Controllers
     {
         private readonly IBrandService _brandService;
 
-        public BrandsController(IBrandService brandService) 
+        public BrandsController(IBrandService brandService)
         {
             _brandService = brandService;
         }
 
         [HttpGet]
-        public async Task<ApiResponse<IEnumerable<BrandResponseModel>>> GetBrands()
+        public async Task<ActionResult<ApiResponse<List<BrandResponseModel>>>> GetBrands()
         {
             var serviceResult = await _brandService.GetAllBrands();
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
-        //[Authorize(Roles = AppRoles.)]
         [HttpGet("{id}")]
-        public async Task<ApiResponse<BrandResponseModel>> Get(string id)
+        public async Task<ActionResult<ApiResponse<BrandResponseModel>>> Get(string id)
         {
             var serviceResult = await _brandService.GetBrandById(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
-        //[Authorize(Roles = $"{AppRoles.},{AppRoles.Manager}")]
         [HttpPost]
-        public async Task<ApiResponse<string>> Post(BrandCreateModel model)
+        public async Task<ActionResult<ApiResponse<string>>> Post(BrandCreateModel model)
         {
             var serviceResult = await _brandService.AddBrand(model);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
-        //[Authorize(Roles = AppRoles.)]
         [HttpPut("{id}")]
-        public async Task<ApiResponse<bool>> Put(string id, BrandUpdateModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> Put(string id, BrandUpdateModel model)
         {
             var serviceResult = await _brandService.UpdateBrand(id, model);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
-        //[Authorize(Roles = AppRoles.)]
         [HttpDelete("{id}")]
-        public async Task<ApiResponse<bool>> Delete(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> Delete(string id)
         {
             var serviceResult = await _brandService.DeleteBrand(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
-
     }
 }

@@ -12,11 +12,11 @@ using TechStore.Common.CommonFunction;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
 using TechStore.Common.Helpers;
-using TechStore.Common.Models;
 using TechStore.Data.Entities;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Authentication;
 using TechStore.Model.DTOs.User;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
 using TechStore.Service.Mappers;
 
@@ -99,7 +99,7 @@ namespace TechStore.Service.Implementations
             if (user.RoleId != ERole.Admin && user.RoleId != ERole.Staff)
             {
 
-                serviceResult.ErrorCode = "NoPermission";
+                serviceResult.ErrorType = EErrorType.Unauthorized;
                 serviceResult.Message = Messenger.NoPermission;
                 return serviceResult;
             }

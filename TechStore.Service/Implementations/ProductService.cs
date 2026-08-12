@@ -60,24 +60,14 @@ namespace TechStore.Service.Implementations
 
         public async Task<ServiceResult<ProductDetailModel>> GetProductById(string id)
         {
-            var serviceResult = new ServiceResult<ProductDetailModel>
-            {
-                IsSuccess = true,
-                Data = null,
-                Message = Messenger.NoExitData
-            };
-
             var product = await _uow.Products.GetProductWithDetailsByIdAsync(id);
+
             if (product == null)
             {
-                return serviceResult;
+                return ServiceResult<ProductDetailModel>.Fail(EErrorType.NotFound, Messenger.NoExitData);
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = product.ToProductDetail();
-            serviceResult.Message = Messenger.GetDataSuccessful;
-
-            return serviceResult;
+            return ServiceResult<ProductDetailModel>.Success(product.ToProductDetail());
         }
 
         public async Task<ServiceResult<bool>> UpdateProduct(string id, ProductUpdateModel model)

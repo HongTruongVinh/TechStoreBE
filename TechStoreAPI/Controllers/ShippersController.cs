@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using TechStore.Common.Constants;
-using TechStore.Common.Enums;
-using TechStore.Common.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.Model.DTOs.Shipper;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -21,177 +18,51 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse<List<ShipperResponseModel>>> GetAllShippers()
+        public async Task<ActionResult<ApiResponse<List<ShipperResponseModel>>>> GetAllShippers()
         {
             var serviceResult = await _shipperService.GetAllShippers();
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("{id}")]
-        public async Task<ApiResponse<ShipperResponseModel>> GetShipperById(string id)
+        public async Task<ActionResult<ApiResponse<ShipperResponseModel>>> GetShipperById(string id)
         {
             var serviceResult = await _shipperService.GetShipperById(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPost]
-        public async Task<ApiResponse<string>> AddShipper(ShipperCreateModel model)
+        public async Task<ActionResult<ApiResponse<string>>> AddShipper(ShipperCreateModel model)
         {
             var serviceResult = await _shipperService.AddShipper(model);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("{id}")]
-        public async Task<ApiResponse<bool>> UpdateShipper(string id, ShipperUpdateModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateShipper(string id, ShipperUpdateModel model)
         {
             var serviceResult = await _shipperService.UpdateShipper(id, model);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ApiResponse<bool>> DeleteShipper(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> DeleteShipper(string id)
         {
             var serviceResult = await _shipperService.DeleteShipper(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("status/{statusId}")]
-        public async Task<ApiResponse<List<ShipperResponseModel>>> GetShipperByStatus(bool statusId)
+        public async Task<ActionResult<ApiResponse<List<ShipperResponseModel>>>> GetShipperByStatus(bool statusId)
         {
             var serviceResult = await _shipperService.GetShippersByStatus(statusId);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
     }
 }

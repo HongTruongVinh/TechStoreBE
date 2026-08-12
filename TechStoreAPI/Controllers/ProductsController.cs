@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using TechStore.Common.Constants;
-using TechStore.Common.Enums;
-using TechStore.Common.Models;
 using TechStore.Model.DTOs.Product;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -23,135 +20,38 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse<PagedResult<ListItemProductModel>>> GetProducts([FromQuery]ProductSearchQuery query)
+        public async Task<ActionResult<ApiResponse<PagedResult<ListItemProductModel>>>> GetProducts([FromQuery] ProductSearchQuery query)
         {
             var serviceResult = await _productService.GetProductsAsync(query);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("{id}")]
-        public async Task<ApiResponse<ProductDetailModel>> GetProductDetail(string id)
+        public async Task<ActionResult<ApiResponse<ProductDetailModel>>> GetProductDetail(string id)
         {
             var serviceResult = await _productService.GetProductById(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpGet("recommended")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetRecommendedProducts()
+        public async Task<ActionResult<ApiResponse<List<ListItemProductModel>>>> GetRecommendedProducts()
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _productService.GetUserRecommendedProducts(userId);
+            var serviceResult = await _productService.GetUserRecommendedProducts(userId);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = null,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("featured")]
-        public async Task<ApiResponse<IEnumerable<ListItemProductModel>>> GetFeaturedProducts()
+        public async Task<ActionResult<ApiResponse<List<ListItemProductModel>>>> GetFeaturedProducts()
         {
             var serviceResult = await _productService.GetFeaturedProducts();
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
     }
 }

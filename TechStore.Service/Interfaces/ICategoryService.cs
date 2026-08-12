@@ -8,7 +8,6 @@ using TechStore.Common.Models;
 using TechStore.Data.Entities;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Category;
-using TechStore.Service.Implementations;
 
 namespace TechStore.Service.Interfaces
 {

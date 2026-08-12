@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Security.Claims;
-using TechStore.Common.Constants;
-using TechStore.Common.Enums;
-using TechStore.Common.Models;
-using TechStore.Model.DTOs.Authentication;
+﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.Model.DTOs.User;
-using TechStore.Service.Implementations;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -24,123 +18,29 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ApiResponse<UserResponseModel>> GetUser(string userId)
+        public async Task<ActionResult<ApiResponse<UserResponseModel>>> GetUser(string userId)
         {
-            //var userId = User.FindFirstValue(AppClaims.UserId);
+            var serviceResult = await _userService.GetById(userId);
 
-            if (userId != null)
-            {
-                var serviceResult = await _userService.GetById(userId);
-
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.LoginError,
-                    RetCode = ERetCode.LoginError,
-                    Data = null,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut]
-        public async Task<ApiResponse<bool>> UpdateProfile(UserUpdateModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateProfile(UserUpdateModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _userService.UpdateUserInformation(userId, model);
+            var serviceResult = await _userService.UpdateUserInformation(userId, model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = false,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("update-information/{id}")]
-        public async Task<ApiResponse<bool>> AdminUpdateUser(string id, UserUpdateModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> AdminUpdateUser(string id, UserUpdateModel model)
         {
             var serviceResult = await _userService.UpdateUserInformation(id, model);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
-
     }
 }

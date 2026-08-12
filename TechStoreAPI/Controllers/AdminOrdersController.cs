@@ -1,14 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Security.Claims;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
-using TechStore.Common.Models;
 using TechStore.Model.DTOs.Order;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -24,564 +21,138 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse<PagedResult<ListItemOrderModel>>> GetOrders([FromQuery] OrderSearchQuery query)
+        public async Task<ActionResult<ApiResponse<PagedResult<ListItemOrderModel>>>> GetOrders([FromQuery] OrderSearchQuery query)
         {
             var serviceResult = await _orderService.GetOrdersAsync(query);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("status")]
-        public async Task<ApiResponse<PagedResult<OrderDetailResponseModel>>> GetListOrderByStatusId(
+        public async Task<ActionResult<ApiResponse<PagedResult<OrderDetailResponseModel>>>> GetListOrderByStatusId(
             [FromQuery] EOrderStatus status,
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10
-            )
+            [FromQuery] int pageSize = 10)
         {
             var serviceResult = await _orderService.GetListOrdersByStatusIdAsync(status, page, pageSize);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
-        public async Task<ApiResponse<OrderDetailResponseModel>> GetOrderById(string id)
+        public async Task<ActionResult<ApiResponse<OrderDetailResponseModel>>> GetOrderById(string id)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.AdminGetOrderByIdAsync(userId, id);
+            var serviceResult = await _orderService.AdminGetOrderByIdAsync(userId, id);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<OrderDetailResponseModel> result = new()
-                {
-                    PartnerCode = Messenger.SystemError,
-                    RetCode = ERetCode.SystemError,
-                    Data = null,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
-            
-
+            return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPut("cancel/{id}")]
-        public async Task<ApiResponse<bool>> UpdateOrderStatusToCanceled(string id, CancelOrderModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToCanceled(string id, CancelOrderModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.CancelOrderByAdminAsync(userId, id, model);
+            var serviceResult = await _orderService.CancelOrderByAdminAsync(userId, id, model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SystemError,
-                    RetCode = ERetCode.SystemError,
-                    Data = false,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("processing/{id}")]
-        public async Task<ApiResponse<bool>> UpdateOrderStatusToProcessing(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToProcessing(string id)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.UpdateOrderStatusToProcessingAsync(userId, id);
+            var serviceResult = await _orderService.UpdateOrderStatusToProcessingAsync(userId, id);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SystemError,
-                    RetCode = ERetCode.SystemError,
-                    Data = false,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPut("delivering/{id}")]
-        public async Task<ApiResponse<bool>> UpdateOrderStatusToDelivering(string id, UpdateOrderToDeliveringModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToDelivering(string id, UpdateOrderToDeliveringModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.UpdateOrderStatusToDeliveringAsync(userId, id, model);
+            var serviceResult = await _orderService.UpdateOrderStatusToDeliveringAsync(userId, id, model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SystemError,
-                    RetCode = ERetCode.SystemError,
-                    Data = false,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("completed/{id}")]
-        public async Task<ApiResponse<bool>> UpdateOrderStatusToCompeted(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToCompleted(string id)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.UpdateOrderStatusToCompletedAsync(userId, id);
+            var serviceResult = await _orderService.UpdateOrderStatusToCompletedAsync(userId, id);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SystemError,
-                    RetCode = ERetCode.SystemError,
-                    Data = false,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("failed/{id}")]
-        public async Task<ApiResponse<bool>> UpdateOrderStatusToFailed(string id, OrderUpdateStatusModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToFailed(string id, OrderUpdateStatusModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.UpdateOrderStatusToFailedAsync(userId, id, model);
+            var serviceResult = await _orderService.UpdateOrderStatusToFailedAsync(userId, id, model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = false,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("refunded/{id}")]
-        public async Task<ApiResponse<bool>> UpdateOrderStatusToRefunded(string id, OrderUpdateStatusModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToRefunded(string id, OrderUpdateStatusModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.UpdateOrderStatusToRefundedAsync(userId, id, model);
+            var serviceResult = await _orderService.UpdateOrderStatusToRefundedAsync(userId, id, model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = false,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
-        //[Authorize]
         [HttpDelete("delete/{id}")]
-        public async Task<ApiResponse<bool>> DeleteOrder(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> DeleteOrder(string id)
         {
             var serviceResult = await _orderService.DeleteOrderAsync(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("instore-orders")]
-        public async Task<ApiResponse<List<ListItemOrderModel>>> GetStoreOrder()
+        public async Task<ActionResult<ApiResponse<List<ListItemOrderModel>>>> GetStoreOrder()
         {
-
             var serviceResult = await _orderService.GetInStoreOrdersAsync();
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("instore-orders/{id}")]
-        public async Task<ApiResponse<InStoreOrderResponseModel>> GetStoreOrder(string id)
+        public async Task<ActionResult<ApiResponse<InStoreOrderResponseModel>>> GetStoreOrder(string id)
         {
-
             var serviceResult = await _orderService.GetInStoreOrderAsync(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPost("instore-orders")]
-        public async Task<ApiResponse<string>> AddInStoreOrder(InStoreOrderCreateModel model)
+        public async Task<ActionResult<ApiResponse<string>>> AddInStoreOrder(InStoreOrderCreateModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.CreateInStoreOrderAsync(userId, "",model);
+            var serviceResult = await _orderService.CreateInStoreOrderAsync(userId, "", model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<string> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = string.Empty,
-                    SystemMessage = string.Empty,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("instore-orders/confirm-instore-order/{id}")]
-        public async Task<ApiResponse<bool>> ConfirmInStoreOrder(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> ConfirmInStoreOrder(string id)
         {
-
             var serviceResult = await _orderService.ConfirmInStoreOrder(id);
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
     }
 }

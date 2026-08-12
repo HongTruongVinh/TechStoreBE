@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Net;
-using System.Security.Claims;
 using TechStore.Common.Constants;
-using TechStore.Common.Enums;
-using TechStore.Common.Models;
 using TechStore.Model.DTOs.Order;
-using TechStore.Model.DTOs.Payment;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -23,282 +19,56 @@ namespace TechStoreAPI.Controllers
             _orderService = orderService;
         }
 
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpGet]
-        public async Task<ApiResponse<List<ListItemOrderModel>>> GetUserOrders(int page = 1, int pageSize = 1000)
+        public async Task<ActionResult<ApiResponse<List<ListItemOrderModel>>>> GetUserOrders(int page = 1, int pageSize = 1000)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.GetCustomerOrdersAsync(userId, page, pageSize);
+            var serviceResult = await _orderService.GetCustomerOrdersAsync(userId, page, pageSize);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = null,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpGet("{id}")]
-        public async Task<ApiResponse<OrderDetailResponseModel>> GetOrderById(string id)
+        [Authorize(Roles = AppRoles.Customer)]
+        public async Task<ActionResult<ApiResponse<OrderDetailResponseModel>>> GetOrderById(string id)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.GetOrderByIdAsync(userId, id);
+            var serviceResult = await _orderService.GetOrderByIdAsync(userId, id);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = null,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("{id}/cancel")]
-        public async Task<ApiResponse<bool>> CancelOrder(string id, CancelOrderModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> CancelOrder(string id, CancelOrderModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.CancelOrderByCustomerAsync(userId, id, model);
+            var serviceResult = await _orderService.CancelOrderByCustomerAsync(userId, id, model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = false,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPost("cod-order")]
-        public async Task<ApiResponse<string>> CreateCODOnlineOrderAsync(OrderCreateModel orderCreateModel)
+        public async Task<ActionResult<ApiResponse<string>>> CreateCODOnlineOrderAsync(OrderCreateModel orderCreateModel)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.CreateCODOnlineOrderAsync(userId, orderCreateModel);
+            var serviceResult = await _orderService.CreateCODOnlineOrderAsync(userId, orderCreateModel);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<string> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = null,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
 
         [HttpPut("{id}")]
-        public async Task<ApiResponse<bool>> UpdateOrder(string id, UpdateOrderModel model)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateOrder(string id, UpdateOrderModel model)
         {
-            var userId = User.FindFirstValue(AppClaims.UserId);
+            var userId = User.GetRequiredUserId();
 
-            if (userId != null)
-            {
-                var serviceResult = await _orderService.UpdateOrderByCustomerAsync(userId, id, model);
+            var serviceResult = await _orderService.UpdateOrderByCustomerAsync(userId, id, model);
 
-                if (serviceResult.IsSuccess)
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.SuccessFull,
-                        RetCode = ERetCode.Successfull,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        PartnerCode = Messenger.NoExitData,
-                        RetCode = ERetCode.NoExitData,
-                        Data = serviceResult.Data,
-                        SystemMessage = serviceResult.Message,
-                        StatusCode = (int)HttpStatusCode.OK
-                    };
-                }
-            }
-            else
-            {
-                ApiResponse<bool> result = new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = false,
-                    SystemMessage = Messenger.LoginError,
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed
-                };
-
-                return result;
-            }
+            return serviceResult.ToActionResult(this);
         }
-
-        //[HttpPost("prepay-order")]
-        //public async Task<ApiResponse<PaymentDataModel>> CreatePrePayOnlineOrderAsync(OrderCreateModel orderCreateModel)
-        //{
-        //    var userId = User.FindFirstValue(AppClaims.UserId);
-
-        //    if (userId != null)
-        //    {
-        //        var serviceResult = await _orderService.CreatePrePayOnlineOrderAsync(userId, orderCreateModel);
-
-        //        if (serviceResult.IsSuccess)
-        //        {
-        //            return new()
-        //            {
-        //                PartnerCode = Messenger.SuccessFull,
-        //                RetCode = ERetCode.Successfull,
-        //                Data = serviceResult.Data,
-        //                SystemMessage = serviceResult.Message,
-        //                StatusCode = (int)HttpStatusCode.OK
-        //            };
-        //        }
-        //        else
-        //        {
-        //            return new()
-        //            {
-        //                PartnerCode = Messenger.NoExitData,
-        //                RetCode = ERetCode.NoExitData,
-        //                Data = serviceResult.Data,
-        //                SystemMessage = serviceResult.Message,
-        //                StatusCode = (int)HttpStatusCode.OK
-        //            };
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ApiResponse<PaymentDataModel> result = new()
-        //        {
-        //            PartnerCode = Messenger.SuccessFull,
-        //            RetCode = ERetCode.Successfull,
-        //            Data = null,
-        //            SystemMessage = Messenger.LoginError,
-        //            StatusCode = (int)HttpStatusCode.ExpectationFailed
-        //        };
-
-        //        return result;
-        //    }
-        //}
     }
 }

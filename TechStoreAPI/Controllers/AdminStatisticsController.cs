@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
+﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.Common.Constants;
-using TechStore.Common.Enums;
-using TechStore.Common.Models;
 using TechStore.Model.DTOs.Statistic;
+using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Extensions;
 
 namespace TechStoreAPI.Controllers
 {
@@ -21,32 +19,11 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("overview")]
-        public async Task<ApiResponse<DashboardOverviewModel>> GetStatisticsOverviewData()
+        public async Task<ActionResult<ApiResponse<DashboardOverviewModel>>> GetStatisticsOverviewData()
         {
             var serviceResult = await _statisticsService.GetDashboardOverviewData();
 
-            if (serviceResult.IsSuccess)
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.SuccessFull,
-                    RetCode = ERetCode.Successfull,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
-            else
-            {
-                return new()
-                {
-                    PartnerCode = Messenger.NoExitData,
-                    RetCode = ERetCode.NoExitData,
-                    Data = serviceResult.Data,
-                    SystemMessage = serviceResult.Message,
-                    StatusCode = (int)HttpStatusCode.OK
-                };
-            }
+            return serviceResult.ToActionResult(this);
         }
     }
 }
