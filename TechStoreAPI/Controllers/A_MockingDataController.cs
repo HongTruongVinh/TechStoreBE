@@ -6,24 +6,24 @@ namespace TechStoreAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class A_InitialDataController : ControllerBase
+    public class A_MockingDataController : ControllerBase
     {
-        private readonly InitialDataService _service;
+        private readonly MockingDataService _service;
 
-        public A_InitialDataController(InitialDataService service)
+        public A_MockingDataController(MockingDataService service)
         {
             _service = service;
         }
 
         [HttpGet("Data")]
-        public async Task<JsonResult> Get()
+        public async Task<JsonResult> GetData()
         {
             var result = await _service.GetAllInitData();
             return result;
         }
 
         [HttpGet("seed")]
-        public async Task<string> CreateData()
+        public async Task<string> AddData()
         {
             var result = await _service.InitData();
             return result;

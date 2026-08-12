@@ -29,6 +29,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<CartItemResponseModel>>> AddProductToCart(CartItemUpdateModel model)
         {
@@ -39,6 +40,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPut("clear")]
         public async Task<ActionResult<ApiResponse<bool>>> ClearCart()
         {
@@ -49,6 +51,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPut("remove")]
         public async Task<ActionResult<ApiResponse<List<CartItemResponseModel>>>> RemoveCartItems(List<string> listProductId)
         {
@@ -59,7 +62,8 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [HttpPut("{userId}")]
+        [Authorize]
+        [HttpPut]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateCart(CartItemUpdateModel model)
         {
             var userId = User.GetRequiredUserId();

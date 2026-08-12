@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
+using TechStore.Common.Enums;
 using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
@@ -223,33 +224,27 @@ namespace TechStore.Service.Implementations
 
         public async Task<ServiceResult<List<CartItemResponseModel>>> GetCartItems(string userId, int pageNumber, int pageSize)
         {
-            var serviceResult = new ServiceResult<List<CartItemResponseModel>>
-            {
-                IsSuccess = true,
-                Data = new List<CartItemResponseModel>(),
-                Message = Messenger.GetDataSuccessful
-            };
-
             var user = await _uow.Users.GetByIdAsync(userId);
 
             if (user == null)
             {
-                serviceResult.Message = Messenger.NoExitData;
-                return serviceResult;
+                return ServiceResult<List<CartItemResponseModel>>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
             var cartItems = await _uow.CartItems.FindManyWithNumberAsync(c => c.UserId == user.Id, pageNumber, pageSize);
+
+            var cartItemModels = new List<CartItemResponseModel>();
 
             foreach ( var cartItem in cartItems)
             {
                 var productVariantOption = await _uow.ProductVariantOptions.GetProductVariantOptionDetailByInternalIdAsync(cartItem.ProductVariantOptionId);
                 if (productVariantOption != null)
                 {
-                    serviceResult.Data.Add(cartItem.ToCartItemResponseModel(productVariantOption));
+                    cartItemModels.Add(cartItem.ToCartItemResponseModel(productVariantOption));
                 }
             }
 
-            return serviceResult;
+            return ServiceResult<List<CartItemResponseModel>>.Success(cartItemModels);
         }
     }
 }

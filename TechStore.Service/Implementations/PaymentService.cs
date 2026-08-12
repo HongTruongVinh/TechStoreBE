@@ -377,7 +377,7 @@ namespace TechStore.Service.Implementations
                     });
                 }
 
-                decimal itemTotal = item.Quantity * pVO.ProductVariant.Price;
+                decimal itemTotal = item.Quantity * pVO.Price;
                 totalPrice += itemTotal;
             }
 

@@ -44,39 +44,28 @@ namespace TechStore.Service.Implementations
 
         public async Task<ServiceResult<LoginResponseModel>> LoginCustomer(LoginRequestModel loginModel)
         {
-            ServiceResult<LoginResponseModel> serviceResult = new ServiceResult<LoginResponseModel>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.LoginError
-            };
-
             var user = await _uow.Users.
                 FindOneAsync(u => u.Email == loginModel.LoginIdentifier || u.PhoneNumber == loginModel.LoginIdentifier);
 
             if (user == null)
             {
-                return serviceResult;
+                return ServiceResult<LoginResponseModel>.Fail(EErrorType.NotFound, Messenger.LoginError);
             }
 
             bool isValid = _passwordService.VerifyPassword(user, loginModel.Password, user.PasswordHash);
 
             if (!isValid)
             {
-                serviceResult.Message = Messenger.LoginError;
-                return serviceResult;
+                return ServiceResult<LoginResponseModel>.Fail(EErrorType.NotFound, Messenger.LoginError);
             }
 
-            serviceResult.Data = new LoginResponseModel
+            var loginResponse = new LoginResponseModel
             {
                 Token = GenerateJwtTokenForUser(user.PublicId, AppRoles.Customer),
                 User = user.ToUserResponseModel(AppRoles.Customer)
             };
 
-            serviceResult.Message = Messenger.LoginSuccessfull;
-            serviceResult.IsSuccess = true;
-
-            return serviceResult;
+            return ServiceResult<LoginResponseModel>.Success(loginResponse, Messenger.LoginSuccessfull);
         }
 
         public async Task<ServiceResult<LoginResponseModel>> LoginAdmin(LoginRequestModel loginModel)

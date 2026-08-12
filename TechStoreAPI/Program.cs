@@ -62,7 +62,7 @@ namespace TechStoreAPI
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IBrandService, BrandService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
-            builder.Services.AddScoped<InitialDataService, InitialDataService>();
+            builder.Services.AddScoped<MockingDataService, MockingDataService>();
             builder.Services.AddScoped<IInvoiceService, InvoiceService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();

@@ -20,7 +20,7 @@ using TechStore.Service.Interfaces;
 
 namespace TechStore.Service.Implementations
 {
-    public class InitialDataService
+    public class MockingDataService
     {
         private readonly IUnitOfWork _uow;
         private readonly SequenceGeneratorService _sequenceGeneratorService;
@@ -32,7 +32,7 @@ namespace TechStore.Service.Implementations
         private readonly IShipperService _shipperService;
         private readonly IAuthenticationService _authenticationService;
 
-        public InitialDataService(IUnitOfWork uow, 
+        public MockingDataService(IUnitOfWork uow, 
             SequenceGeneratorService sequenceGeneratorService,
             ICategoryService categoryService,
             IBrandService brandService,
@@ -344,7 +344,7 @@ namespace TechStore.Service.Implementations
                     throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
                 }
 
-                for (int i = 4; i <= 14; i++)
+                for (int i = 0; i <= 14; i++)
                 {
                     var user = new CustomerRegisterModel
                     {
@@ -355,7 +355,7 @@ namespace TechStore.Service.Implementations
                         City = "Hà Nội",
                         District = "",
                         Address = "123",
-                        PhoneNumber = $"0912345{i:D3}",
+                        PhoneNumber = $"0345000{i:D3}",
                     };
 
                     var resultRegister = await _authenticationService.RegisterCustomer(user);
@@ -372,7 +372,7 @@ namespace TechStore.Service.Implementations
                         City = "Hà Nội",
                         District = "",
                         Address = "789",
-                        PhoneNumber = $"01234567{i:D3}",
+                        PhoneNumber = $"0340000{i:D3}",
                         Gender = EGender.Male,
                         Birthday = new DateTime(2002, 2, 28)
                     };
