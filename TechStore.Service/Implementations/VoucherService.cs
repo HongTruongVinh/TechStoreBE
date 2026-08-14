@@ -35,8 +35,7 @@ namespace TechStore.Service.Implementations
 
             if (voucher == null)
             {
-                //return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, "Voucher not found");
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, "Không tìm thấy voucher");
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
             }
 
             decimal totalPrice = 0;
@@ -60,7 +59,7 @@ namespace TechStore.Service.Implementations
 
             if(totalPrice < voucher.MinOrderPrice)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.BadRequest, "Đơn hàng không đạt giá trị tối thiểu cho voucher này");
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.BadRequest, VoucherMessenger.MinOrderPriceNotMet);
             }
 
             var model = voucher.ToVoucherResponseModel();

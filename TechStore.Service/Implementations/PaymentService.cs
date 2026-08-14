@@ -309,24 +309,24 @@ namespace TechStore.Service.Implementations
 
                 if (voucher == null)
                 {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, "Voucher not found");
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
                 }
 
                 if (voucher.EndDate < DateTime.UtcNow)
                 {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, "Voucher expired");
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
                 }
 
                 if (voucher.Available == 0)
                 {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, "Voucher usage exceeded");
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
                 }
 
                 var usageCount = await _uow.VoucherUsages.CountAsync(x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
 
                 if (usageCount >= voucher.UsageLimit)
                 {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, "Voucher usage exceeded");
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
                 }
             }
 

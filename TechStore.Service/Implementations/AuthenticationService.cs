@@ -333,65 +333,41 @@ namespace TechStore.Service.Implementations
 
         public async Task<ServiceResult<bool>> RegisterCustomer(CustomerRegisterModel model)
         {
-            ServiceResult<bool> serviceResult = new ServiceResult<bool>
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.SystemError
-            };
-
             if (!Validator.IsValidPassword(model.Password))
             {
-                serviceResult.Message = "Password is not valid";
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.BadRequest, AuthenticationMessenger.InvalidPasswordFormat);
             }
 
             if (!Validator.IsValidVietnamPhone(model.PhoneNumber))
             {
-                serviceResult.Message = "Invalid phone number format";
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.BadRequest, AuthenticationMessenger.InvalidPhoneFormat);
             }
 
             if (!String.IsNullOrEmpty(model.Email))
             {
                 if (!Validator.IsValidEmail(model.Email))
                 {
-                    serviceResult.Message = "Invalid email format";
-                    return serviceResult;
+                    return ServiceResult<bool>.Fail(EErrorType.BadRequest, AuthenticationMessenger.InvalidEmailFormat);
                 }
 
                 var isExistEmail = await _uow.Users.FindOneAsync(u => u.Email == model.Email);
 
                 if (isExistEmail != null)
                 {
-                    serviceResult.Message = "";
-
-                    if (isExistEmail != null)
-                    {
-                        serviceResult.Message += Messenger.EmailAlreadyExist + " ";
-                    }
-
-                    return serviceResult;
+                    return ServiceResult<bool>.Fail(EErrorType.ConfictData, AuthenticationMessenger.EmailAlreadyExist);
                 }
             }
 
             if (String.IsNullOrEmpty(model.Address))
             {
-                serviceResult.Message = "Address is required";
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.BadRequest, AuthenticationMessenger.AddressRequired);
             }
 
             var isExistPhoneNumber = await _uow.Users.FindOneAsync(u => u.PhoneNumber == model.PhoneNumber);
 
             if (isExistPhoneNumber != null)
             {
-
-                if (isExistPhoneNumber != null)
-                {
-                    serviceResult.Message += Messenger.PhonenNumberAlreadyExist;
-                }
-
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.ConfictData, AuthenticationMessenger.PhonenNumberAlreadyExist);
             }
 
             var userId = await _sequenceService.GetNextUserIdAsync();
@@ -421,46 +397,31 @@ namespace TechStore.Service.Implementations
 
             if (result < 0)
             {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.Data = true;
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.UpdateSuccessFull;
-
-            return serviceResult;
+            return ServiceResult<bool>.Success(true, AuthenticationMessenger.RegisterSuccess);
         }
 
         public async Task<ServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordModel changePasswordModel)
         {
-            var serviceResult = new ServiceResult<bool>
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.SystemError
-            };
-
             var user = await _uow.Users.GetByIdAsync(userId);
 
             if (user == null)
             {
-                serviceResult.Message = Messenger.NotFoundUser;
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.NotFound, AuthenticationMessenger.NotFoundUser);
             }
 
             if (!Validator.IsValidPassword(changePasswordModel.NewPassword))
             {
-                serviceResult.Message = "Invalid password format";
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.BadRequest, AuthenticationMessenger.InvalidPasswordFormat);
             }
 
             bool isValid = _passwordService.VerifyPassword(user, changePasswordModel.OldPassword, user.PasswordHash);
 
             if (!isValid)
             {
-                serviceResult.Message = "Current password is incorrect";
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.BadRequest, AuthenticationMessenger.InvalidPasswordFormat);
             }
 
             user.PasswordHash = _passwordService.HashPassword(user, changePasswordModel.NewPassword);
@@ -470,15 +431,10 @@ namespace TechStore.Service.Implementations
 
             if (result < 1)
             {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
+                return ServiceResult<bool>.Fail(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = true;
-            serviceResult.Message = Messenger.UpdateSuccessFull;
-
-            return serviceResult;
+            return ServiceResult<bool>.Success(true, AuthenticationMessenger.UpdateSuccessFull);
         }
     }
 }

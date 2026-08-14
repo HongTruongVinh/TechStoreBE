@@ -47,4 +47,34 @@ namespace TechStore.Common.Constants
     {
         public const string Canceled = " Canceled: ";
     }
+
+    public static class VoucherMessenger
+    {
+        public const string VoucherNotFound = "Voucher not found";
+        public const string VoucherExpired = "Voucher expired";
+        public const string VoucherUsageExceeded = "Voucher usage exceeded";
+        public const string MinOrderPriceNotMet = "Đơn hàng không đạt giá trị tối thiểu cho voucher này";
+    }
+
+    public static class AuthenticationMessenger
+    {
+        public const string RegisterSuccess = "Register successful";
+        public const string LoginError = "Login to system error";
+        public const string EmailAlreadyExist = "The email exits! Please change email!";
+        public const string PhonenNumberAlreadyExist = "The phone numer exits! Please change phone number!";
+        public const string InvalidRegisterType = "Invalid register type!";
+        public const string NotFoundUser = "Not found user on system! Please check again";
+        public const string EmailNull = "The email is empty or null! Please check again";
+        public const string EmailNotExit = "The email is not exit on system! Please check again";
+        public const string LoginWithEmailGoogleNotSuccess = "Login to email is not successfull! Please check with admin";
+        public const string LoginSuccessfull = "Login successfull!";
+        public const string AdminLoginSuccessfull = "Hello Admin!";
+        public const string IsNotAdmin = "You are not an Admin!";
+        public const string NoPermission = "You have no permission to access!";
+        public const string AddressRequired = "Address is required";
+        public const string InvalidEmailFormat = "Invalid email format";
+        public const string InvalidPhoneFormat = "Invalid phone number format";
+        public const string InvalidPasswordFormat = "Password is not valid";
+        public const string UpdateSuccessFull = "Update successful";
+    }
 }
