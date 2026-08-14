@@ -22,7 +22,6 @@ namespace TechStore.Model.DTOs.Order
         public required EOrderStatus Status { get; set; }
 
         public required string PaymentId { get; set; }
-        public string? PaymentQRCode { get; set; }
         public string? PaymentMethod { get; set; }
         public required string TransactionCode { get; set; }
         public required EPaymentStatus PaymentStatus { get; set; }

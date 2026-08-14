@@ -61,7 +61,7 @@ namespace TechStore.Service.Mappers
             return list;
         }
 
-        public static InStoreOrderResponseModel ToInStoreOrderResponseModel(this Order order, List<OrderItem> orderItems, QRCode? paymentQROCde, Payment payment)
+        public static InStoreOrderResponseModel ToInStoreOrderResponseModel(this Order order, List<OrderItem> orderItems, Payment payment)
         {
             var model = new InStoreOrderResponseModel
             {
@@ -76,8 +76,6 @@ namespace TechStore.Service.Mappers
                 Items = orderItems.ToListOrderItemResponseModels(),
 
                 Status = order.OrderStatus,
-                PaymentQRCode = paymentQROCde != null ? Convert.ToBase64String(paymentQROCde.ImageData) : "",
-                //PaymentId = order.Payment?.PublicId ?? "",
                 PaymentId = "",
                 PaymentStatus = payment.PaymentStatus,
                 PaymentMethod = payment.PaymentMethod == EPaymentMethod.Cash? "Tiền mặt" : "Online",

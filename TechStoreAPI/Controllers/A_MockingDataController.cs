@@ -16,21 +16,21 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("Data")]
-        public async Task<JsonResult> GetData()
+        public async Task<ActionResult<JsonResult>> GetData()
         {
             var result = await _service.GetAllInitData();
             return result;
         }
 
         [HttpGet("seed")]
-        public async Task<string> AddData()
+        public async Task<ActionResult<string>> AddData()
         {
             var result = await _service.InitData();
             return result;
         }
 
         [HttpGet("delete")]
-        public async Task<string> DeleteData()
+        public async Task<ActionResult<string>> DeleteData()
         {
             var result = await _service.DeleteAllInitData();
 
@@ -45,7 +45,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("reset")]
-        public async Task<string> ResetData()
+        public async Task<ActionResult<string>> ResetData()
         {
             return await _service.ResetData();
         }

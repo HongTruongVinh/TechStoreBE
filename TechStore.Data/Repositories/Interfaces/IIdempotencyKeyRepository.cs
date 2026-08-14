@@ -7,7 +7,8 @@ using TechStore.Data.Entities;
 
 namespace TechStore.Data.Repositories.Interfaces
 {
-    public interface IQRCodeRepository : IRepository<QRCode>
+    public interface IIdempotencyKeyRepository : IRepository<IdempotencyKey>
     {
+
     }
 }

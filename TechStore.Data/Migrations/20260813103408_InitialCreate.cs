@@ -84,6 +84,7 @@ namespace TechStore.Data.Migrations
                     DiscountAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     FinalAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     Note = table.Column<string>(type: "text", nullable: true),
+                    VoucherId = table.Column<Guid>(type: "uuid", nullable: true),
                     PublicId = table.Column<string>(type: "text", nullable: false),
                     EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -94,29 +95,6 @@ namespace TechStore.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentSnapshots", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "QRCodes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    ImageData = table.Column<byte[]>(type: "bytea", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    RelatedId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RelatedPublicId = table.Column<string>(type: "text", nullable: false),
-                    ExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QRCodes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -237,8 +215,18 @@ namespace TechStore.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    DiscountPercent = table.Column<decimal>(type: "numeric", nullable: false),
+                    Code = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    DiscountType = table.Column<int>(type: "integer", nullable: false),
+                    DiscountValue = table.Column<decimal>(type: "numeric", nullable: false),
+                    MaxDiscountAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    MinOrderPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    UsageLimit = table.Column<int>(type: "integer", nullable: false),
+                    ReservedCount = table.Column<int>(type: "integer", nullable: false),
+                    UsedCount = table.Column<int>(type: "integer", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
                     EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -249,6 +237,7 @@ namespace TechStore.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vouchers", x => x.Id);
+                    table.CheckConstraint("CK_Voucher_Counts_Valid", "\"UsageLimit\" >= 0 AND \"UsedCount\" >= 0 AND \"ReservedCount\" >= 0 AND \"UsedCount\" + \"ReservedCount\" <= \"UsageLimit\"");
                 });
 
             migrationBuilder.CreateTable(
@@ -364,6 +353,36 @@ namespace TechStore.Data.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdempotencyKeys",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RequestKey = table.Column<string>(type: "text", nullable: false),
+                    Endpoint = table.Column<string>(type: "text", nullable: false),
+                    RequestHash = table.Column<string>(type: "text", nullable: false),
+                    StatusCode = table.Column<int>(type: "integer", nullable: false),
+                    ResponseBody = table.Column<string>(type: "text", nullable: false),
+                    ExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdempotencyKeys", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IdempotencyKeys_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -539,6 +558,45 @@ namespace TechStore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VoucherUsages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    VoucherId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VoucherUsages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VoucherUsages_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_VoucherUsages_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_VoucherUsages_Vouchers_VoucherId",
+                        column: x => x.VoucherId,
+                        principalTable: "Vouchers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductVariantOptions",
                 columns: table => new
                 {
@@ -577,7 +635,9 @@ namespace TechStore.Data.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     PaymentMethod = table.Column<int>(type: "integer", nullable: false),
-                    TransactionCode = table.Column<string>(type: "text", nullable: false),
+                    PaymentCode = table.Column<string>(type: "text", nullable: false),
+                    BankReferenceCode = table.Column<string>(type: "text", nullable: false),
+                    TransactionId = table.Column<string>(type: "text", nullable: false),
                     PaymentStatus = table.Column<int>(type: "integer", nullable: false),
                     CheckoutSnapshotJson = table.Column<string>(type: "text", nullable: true),
                     PublicId = table.Column<string>(type: "text", nullable: false),
@@ -694,6 +754,18 @@ namespace TechStore.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IdempotencyKeys_PublicId",
+                table: "IdempotencyKeys",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdempotencyKeys_UserId_RequestKey",
+                table: "IdempotencyKeys",
+                columns: new[] { "UserId", "RequestKey" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Invoices_OrderId",
                 table: "Invoices",
                 column: "OrderId",
@@ -804,12 +876,6 @@ namespace TechStore.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_QRCodes_PublicId",
-                table: "QRCodes",
-                column: "PublicId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Reports_PublicId",
                 table: "Reports",
                 column: "PublicId",
@@ -851,9 +917,37 @@ namespace TechStore.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Vouchers_Code",
+                table: "Vouchers",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_PublicId",
                 table: "Vouchers",
                 column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VoucherUsages_OrderId",
+                table: "VoucherUsages",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VoucherUsages_PublicId",
+                table: "VoucherUsages",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VoucherUsages_UserId",
+                table: "VoucherUsages",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VoucherUsages_VoucherId_UserId_OrderId",
+                table: "VoucherUsages",
+                columns: new[] { "VoucherId", "UserId", "OrderId" },
                 unique: true);
         }
 
@@ -865,6 +959,9 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "IdempotencyKeys");
 
             migrationBuilder.DropTable(
                 name: "InvalidTokens");
@@ -879,9 +976,6 @@ namespace TechStore.Data.Migrations
                 name: "PaymentSnapshotItems");
 
             migrationBuilder.DropTable(
-                name: "QRCodes");
-
-            migrationBuilder.DropTable(
                 name: "Reports");
 
             migrationBuilder.DropTable(
@@ -894,7 +988,7 @@ namespace TechStore.Data.Migrations
                 name: "ShippingDetails");
 
             migrationBuilder.DropTable(
-                name: "Vouchers");
+                name: "VoucherUsages");
 
             migrationBuilder.DropTable(
                 name: "ProductVariantOptions");
@@ -907,6 +1001,9 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Shippers");
+
+            migrationBuilder.DropTable(
+                name: "Vouchers");
 
             migrationBuilder.DropTable(
                 name: "ProductVariants");

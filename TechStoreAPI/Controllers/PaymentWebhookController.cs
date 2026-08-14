@@ -5,6 +5,7 @@ using Techstore.API.Hubs;
 using TechStore.Common.Constants;
 using TechStore.Model.DTOs.Payment;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Hubs;
 
 namespace TechStoreAPI.Controllers
 {
@@ -15,27 +16,19 @@ namespace TechStoreAPI.Controllers
         private readonly ILogger<PaymentWebhookController> _logger;
         private readonly IHubContext<PaymentHub> _hubContext;
         private readonly IPaymentService _paymentService;
+        private readonly IPaymentNotificationService _paymentNotificationService;
 
         public PaymentWebhookController(
             ILogger<PaymentWebhookController> logger,
             IHubContext<PaymentHub> hubContext,
-            IPaymentService paymentService)
+            IPaymentService paymentService,
+            IPaymentNotificationService paymentNotificationService)
         {
             _logger = logger;
             _hubContext = hubContext;
             _paymentService = paymentService;
+            _paymentNotificationService = paymentNotificationService;
         }
-
-        //[HttpPost("verify-payment-of-snapshot")]
-        //public async Task<IActionResult> Verify()
-        //{
-        //    using var reader = new StreamReader(Request.Body);
-        //    var body = await reader.ReadToEndAsync();
-
-        //    _logger.LogInformation("Webhook received: {RequestBody}", body);
-
-        //    return Ok();
-        //}
 
         [HttpPost("verify-payment-of-snapshot")]
         public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(SepayWebhookRequest request)
@@ -49,64 +42,13 @@ namespace TechStoreAPI.Controllers
 
             var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
 
-            if (result.Data != null)
-            {
-                if (result.IsSuccess)
-                {
-                    _logger.LogInformation(
-                        "[SEPAY][SUCCESS] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
-                        result.Data.SnapshotId,
-                        result.Data.Amount,
-                        result.Data.Message);
+            await _paymentNotificationService.NotifyPaymentResultAsync(result, request);
 
-                    await _hubContext.Clients
-                        .Group(result.Data.SnapshotId)
-                        .SendAsync("PaymentSuccess", new
-                        {
-                            paymentId = result.Data.SnapshotId,
-                            amount = result.Data.Amount,
-                            message = result.Data.Message
-                        });
-                }
-                else
-                {
-                    _logger.LogWarning(
-                        "[SEPAY][FAILED] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
-                        result.Data.SnapshotId,
-                        result.Data.Amount,
-                        result.Data.Message);
-
-                    await _hubContext.Clients
-                        .Group(result.Data.SnapshotId)
-                        .SendAsync("PaymentFailed", new
-                        {
-                            paymentId = result.Data.SnapshotId,
-                            amount = result.Data.Amount,
-                            message = result.Data.Message
-                        });
-                }
-            }
-            else
-            {
-                _logger.LogWarning(
-                    "[SEPAY][NO_SNAPSHOT] Ref={ReferenceCode}, Code={Code}, Amount={Amount}",
-                    request.ReferenceCode,
-                    request.Code,
-                    request.TransferAmount);
-
-                await _hubContext.Clients
-                        .Group(request.Code)
-                        .SendAsync("PaymentFailed", new
-                        {
-                            paymentId = request.Code,
-                            amount = request.TransferAmount,
-                            message = Messenger.SystemError
-                        });
-            }
 
             return Ok();
         }
 
+        // this endpoint is used to mocking the payment gateway to verify the payment for invoice
         [HttpPost("verify-payment")]
         public async Task<IActionResult> VerifyPaymenForInvoicetWebhook(PaymentForInvocieWebhookRequest request)
         {

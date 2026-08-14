@@ -31,12 +31,13 @@ namespace TechStore.Data.Context
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<PaymentSnapshot> PaymentSnapshots => Set<PaymentSnapshot>();
         public DbSet<PaymentSnapshotItem> PaymentSnapshotItems => Set<PaymentSnapshotItem>();
-        public DbSet<QRCode> QRCodes => Set<QRCode>();
+        public DbSet<VoucherUsage> VoucherUsages => Set<VoucherUsage>();
         public DbSet<Report> Reports => Set<Report>();
         public DbSet<Shipper> Shippers => Set<Shipper>();
         public DbSet<ShippingDetail> ShippingDetails => Set<ShippingDetail>();
         public DbSet<User> Users => Set<User>();
         public DbSet<Voucher> Vouchers => Set<Voucher>();
+        public DbSet<IdempotencyKey> IdempotencyKeys => Set<IdempotencyKey>();
         public DbSet<SearchKeyword> SearchKeywords => Set<SearchKeyword>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -254,10 +255,31 @@ namespace TechStore.Data.Context
                 .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<QRCode>(entity =>
+            modelBuilder.Entity<VoucherUsage>(entity =>
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
 
+                entity.HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Voucher)
+                .WithMany()
+                .HasForeignKey(p => p.VoucherId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Order)
+                .WithMany()
+                .HasForeignKey(p => p.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => new
+                {
+                    x.VoucherId,
+                    x.UserId,
+                    x.OrderId
+                }).IsUnique();
             });
 
             modelBuilder.Entity<Report>(entity =>
@@ -296,12 +318,48 @@ namespace TechStore.Data.Context
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
 
+                entity.HasIndex(p => p.Code).IsUnique();
+
+            });
+
+            modelBuilder.Entity<Voucher>()
+            .ToTable("Vouchers", table =>
+            {
+                //table.HasCheckConstraint(
+                //    "CK_Voucher_UsageLimit_NonNegative",
+                //    "\"UsageLimit\" >= 0");
+
+                //table.HasCheckConstraint(
+                //    "CK_Voucher_ReservedCount_NonNegative",
+                //    "\"ReservedCount\" >= 0");
+
+                //table.HasCheckConstraint(
+                //    "CK_Voucher_UsedCount_NonNegative",
+                //    "\"UsedCount\" >= 0");
+
+                table.HasCheckConstraint(
+                    "CK_Voucher_Counts_Valid",
+                    "\"UsageLimit\" >= 0 " +
+                    "AND \"UsedCount\" >= 0 " +
+                    "AND \"ReservedCount\" >= 0 " +
+                    "AND \"UsedCount\" + \"ReservedCount\" <= \"UsageLimit\"");
             });
 
             modelBuilder.Entity<SearchKeyword>(entity =>
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
 
+            });
+
+            modelBuilder.Entity<IdempotencyKey>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasIndex(x => new
+                {
+                    x.UserId,
+                    x.RequestKey
+                }).IsUnique();
             });
 
             #endregion

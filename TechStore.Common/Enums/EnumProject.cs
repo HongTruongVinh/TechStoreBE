@@ -52,10 +52,18 @@ namespace TechStore.Common.Enums
         Canceled     // Đã hủy giao hàng
     }
 
+    public enum EDiscountType
+    {
+        Percentage,
+        FixedAmount
+    }
+
     public enum EVoucherStatus
     {
+        Draft,
         Active,
-        Inactive,
+        Expired,
+        Disabled
     }
     public enum EUserStatus
     {

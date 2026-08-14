@@ -13,7 +13,7 @@ using TechStore.Data.Context;
 namespace TechStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260704081319_InitialCreate")]
+    [Migration("20260813103408_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -248,6 +248,67 @@ namespace TechStore.Data.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("TechStore.Data.Entities.IdempotencyKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RequestHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RequestKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ResponseBody")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("StatusCode")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "RequestKey")
+                        .IsUnique();
+
+                    b.ToTable("IdempotencyKeys");
+                });
+
             modelBuilder.Entity("TechStore.Data.Entities.InvalidToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -478,6 +539,10 @@ namespace TechStore.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("BankReferenceCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("CheckoutSnapshotJson")
                         .HasColumnType("text");
 
@@ -493,6 +558,10 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("PaymentCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
@@ -503,7 +572,7 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TransactionCode")
+                    b.Property<string>("TransactionId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -584,6 +653,9 @@ namespace TechStore.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("VoucherId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -898,60 +970,6 @@ namespace TechStore.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ProductVariantOptions");
-                });
-
-            modelBuilder.Entity("TechStore.Data.Entities.QRCode", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ExpiredAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<byte[]>("ImageData")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("PublicId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("RelatedId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("RelatedPublicId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PublicId")
-                        .IsUnique();
-
-                    b.ToTable("QRCodes");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.Report", b =>
@@ -1297,23 +1315,96 @@ namespace TechStore.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("DiscountPercent")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DiscountType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("DiscountValue")
                         .HasColumnType("numeric");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("EntityStatus")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("MaxDiscountAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MinOrderPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("PublicId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Title")
+                    b.Property<int>("ReservedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("UsageLimit")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UsedCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("Vouchers", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Voucher_Counts_Valid", "\"UsageLimit\" >= 0 AND \"UsedCount\" >= 0 AND \"ReservedCount\" >= 0 AND \"UsedCount\" + \"ReservedCount\" <= \"UsageLimit\"");
+                        });
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.VoucherUsage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PublicId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1323,12 +1414,28 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VoucherId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
 
-                    b.ToTable("Vouchers");
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("VoucherId", "UserId", "OrderId")
+                        .IsUnique();
+
+                    b.ToTable("VoucherUsages");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.CartItem", b =>
@@ -1357,6 +1464,17 @@ namespace TechStore.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.IdempotencyKey", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -1490,6 +1608,33 @@ namespace TechStore.Data.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Shipper");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.VoucherUsage", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TechStore.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TechStore.Data.Entities.Voucher", "Voucher")
+                        .WithMany()
+                        .HasForeignKey("VoucherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("User");
+
+                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.Invoice", b =>

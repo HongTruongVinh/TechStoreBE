@@ -9,7 +9,7 @@ namespace TechStore.Data.Entities
 {
     public class PaymentSnapshot : BaseEntity
     {
-        public required Guid CustomerId { get; set; } // public id
+        public required Guid CustomerId { get; set; }
         public required string CustomerName { get; set; }
         public required string ShippingAddress { get; set; }
         public required string CustomerPhoneNumber { get; set; }
@@ -21,6 +21,7 @@ namespace TechStore.Data.Entities
         public required decimal FinalAmount { get; set; }
 
         public string? Note { get; set; }
+        public Guid? VoucherId { get; set; }
 
         public required ICollection<PaymentSnapshotItem> Items { get; set; }
     }

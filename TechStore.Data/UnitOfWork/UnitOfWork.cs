@@ -26,15 +26,17 @@ namespace TechStore.Data.UnitOfWork
         public IPaymentRepository Payments { get; }
         public IPaymentSnapshotRepository PaymentSnapshots { get; }
         public IPaymentSnapshotItemRepository PaymentSnapshotItems { get; }
-        public IQRCodeRepository QRCodes { get; }
+        public IVoucherUsageRepository QRCodes { get; }
         public IReportRepository Reports { get; }
         public IShipperRepository Shippers { get; }
         public IShippingDetailRepository ShippingDetails { get; }
         public IUserRepository Users { get; }
         public IVoucherRepository Vouchers { get; }
+        public IVoucherUsageRepository VoucherUsages { get; }
         public ISearchKeywordRepository SearchKeywords { get; }
         public IInvalidTokenRepository InvalidTokens { get; }
         public ISequenceRepository Sequences { get; }
+        public IIdempotencyKeyRepository IdempotencyKeys { get; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -52,21 +54,27 @@ namespace TechStore.Data.UnitOfWork
             Payments = new PaymentRepository(_context);
             PaymentSnapshots = new PaymentSnapshotRepository(_context);
             PaymentSnapshotItems = new PaymentSnapshotItemRepository(_context);
-            QRCodes = new QRCodeRepository(_context);
+            QRCodes = new VoucherUsageRepository(_context);
             Reports = new ReportRepository(_context);
             Shippers = new ShipperRepository(_context);
             ShippingDetails = new ShippingDetailRepository(_context);
             Users = new UserRepository(_context);
             Vouchers = new VoucherRepository(_context);
+            VoucherUsages = new VoucherUsageRepository(_context);
             SearchKeywords = new SearchKeywordRepository(_context);
             InvalidTokens = new InvalidTokenRepository(_context);
             Sequences = new SequenceRepository(_context);
+            IdempotencyKeys = new IdempotencyKeyRepository(_context);
         }
 
-        public async Task<int> CommitAsync() => await _context.SaveChangesAsync();
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        public Task<int> CommitAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Database.BeginTransactionAsync();
+            return _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            return _context.Database.BeginTransactionAsync(cancellationToken);
         }
 
         public void Dispose() => _context.Dispose();

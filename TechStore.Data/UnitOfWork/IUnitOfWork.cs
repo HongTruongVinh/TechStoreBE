@@ -23,17 +23,19 @@ namespace TechStore.Data.UnitOfWork
         IPaymentRepository Payments { get; }
         IPaymentSnapshotRepository PaymentSnapshots { get; }
         IPaymentSnapshotItemRepository PaymentSnapshotItems { get; }
-        IQRCodeRepository QRCodes { get; }
         IReportRepository Reports { get; }
         IShipperRepository Shippers { get; }
         IShippingDetailRepository ShippingDetails { get; }
         IUserRepository Users { get; }
         IVoucherRepository Vouchers { get; }
+        IVoucherUsageRepository VoucherUsages { get; }
         ISearchKeywordRepository SearchKeywords { get; }
         ISequenceRepository Sequences { get; }
         IInvalidTokenRepository InvalidTokens { get; }
+        IIdempotencyKeyRepository IdempotencyKeys { get; }
 
-        Task<int> CommitAsync();
-        Task<IDbContextTransaction> BeginTransactionAsync();
+        Task<int> CommitAsync(CancellationToken cancellationToken = default);
+
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -9,8 +9,8 @@ using TechStore.Data.Repositories.Interfaces;
 
 namespace TechStore.Data.Repositories.Implementations
 {
-    public class QRCodeRepository : Repository<QRCode>, IQRCodeRepository
+    public class VoucherUsageRepository : Repository<VoucherUsage>, IVoucherUsageRepository
     {
-        public QRCodeRepository(AppDbContext context) : base(context) { }
+        public VoucherUsageRepository(AppDbContext context) : base(context) { }
     }
 }

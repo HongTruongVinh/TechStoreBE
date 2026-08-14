@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
+using TechStore.Common.Extensions;
 using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
@@ -22,35 +23,24 @@ namespace TechStore.Service.Implementations
     {
         private readonly IUnitOfWork _uow;
         private readonly SequenceGeneratorService _sequenceService;
-        private readonly IQRCodeService _qrCodeService;
         private readonly IVietQrService _vietQrService;
 
         public OrderService(IUnitOfWork uow,
             SequenceGeneratorService sequenceService,
-            IQRCodeService qRCodeService,
             IVietQrService vietQrService
             )
         {
             _uow = uow;
             _sequenceService = sequenceService;
-            _qrCodeService = qRCodeService;
             _vietQrService = vietQrService;
         }
 
         public async Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshot paymentData)
         {
-            var serviceResult = new ServiceResult<string>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.BadRequest,
-            };
-
             var customer = await _uow.Users.GetByIdAsync(userId);
             if (customer == null)
             {
-                serviceResult.Message = Messenger.NoExitData + " " + userId;
-                return serviceResult;
+                return ServiceResult<string>.Fail(EErrorType.NotFound, Messenger.NotFoundUser + " " + userId);
             }
 
             var order = new Order
@@ -151,18 +141,39 @@ namespace TechStore.Service.Implementations
 
             await _uow.Orders.AddAsync(order);
 
+            // Add VoucherUsage
+            if (ps.VoucherId != null)
+            {
+                var voucher = await _uow.Vouchers.FindOneAsync(v => v.Id == ps.VoucherId.Value);
+                if (voucher == null)
+                {
+                    return ServiceResult<string>.Fail(EErrorType.NotFound, Messenger.NoExitData + " " + ps.VoucherId.Value);
+                }
+
+                voucher.UsedCount += 1;
+                voucher.ReservedCount -= 1;
+                _uow.Vouchers.Update(voucher);
+
+                await _uow.VoucherUsages.AddAsync(
+                    new VoucherUsage
+                    {
+                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        VoucherId = ps.VoucherId.Value,
+                        UserId = customer.Id,
+                        OrderId = order.Id,
+                        UsedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow
+                    });
+            }
+
             var result = await _uow.CommitAsync();
 
             if (result < 1)
             {
-                return serviceResult;
+                return ServiceResult<string>.Fail(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = order.PublicId;
-            serviceResult.Message = Messenger.SuccessFull;
-
-            return serviceResult;
+            return ServiceResult<string>.Success(order.PublicId);
         }
 
         public async Task<ServiceResult<string>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)

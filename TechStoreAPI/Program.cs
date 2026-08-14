@@ -13,6 +13,7 @@ using TechStore.Data.Repositories.Interfaces;
 using TechStore.Data.UnitOfWork;
 using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Hubs;
 
 namespace TechStoreAPI
 {
@@ -66,9 +67,9 @@ namespace TechStoreAPI
             builder.Services.AddScoped<IInvoiceService, InvoiceService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IPaymentNotificationService, SignalRPaymentNotificationService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICartService, CartService>();
-            builder.Services.AddScoped<IQRCodeService, QRCodeService>();
             builder.Services.AddScoped<SequenceGeneratorService, SequenceGeneratorService>();
             builder.Services.AddScoped<IShipperService, ShipperService>();
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
@@ -76,6 +77,7 @@ namespace TechStoreAPI
             builder.Services.AddHttpClient<VietQrService>();
             builder.Services.AddScoped<IVietQrService, VietQrService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IVoucherService, VoucherService>();
             builder.Services.AddScoped<IHomeService, HomeService>();
 
             builder.Services.AddSignalR();

@@ -5,6 +5,7 @@ using TechStore.Model.DTOs.Payment;
 using TechStore.Common.Models;
 using TechStore.Service.Interfaces;
 using TechStoreAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TechStoreAPI.Controllers
 {
@@ -19,6 +20,7 @@ namespace TechStoreAPI.Controllers
             _paymentService = paymentService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<ApiResponse<List<PaymentResponseModel>>>> GetPayments()
         {
@@ -27,6 +29,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<PaymentResponseModel>>> GetPayment(string id)
         {
@@ -35,16 +38,25 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPost("create-payment-pre-order")]
         public async Task<ActionResult<ApiResponse<PaymentDataForSnapshotModel>>> CreatePaymentForSnapshot(OrderCreateModel createOrderRequest)
         {
             var userId = User.GetRequiredUserId();
 
-            var serviceResult = await _paymentService.CreatePaymentForSnapshotAsync(userId, createOrderRequest);
+            var idempotencyKey = HttpContext.Request.Headers["Idempotency-Key"].FirstOrDefault();
+
+            if (idempotencyKey == null)
+            {
+                return BadRequest(new ApiResponse<PaymentDataForSnapshotModel> { Success = false, Message = "Idempotency-Key header is required" });
+            }
+
+            var serviceResult = await _paymentService.CreatePaymentForSnapshotAsync(userId, createOrderRequest, idempotencyKey);
 
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPost("create-payment-for-invoice")]
         public async Task<ActionResult<ApiResponse<PaymentDataModel>>> CreatePaymentForInvoice(PaymentCreateModel model)
         {
@@ -55,6 +67,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
         [HttpPost("add-cash-payment")]
         public async Task<ActionResult<ApiResponse<string>>> AddCashPayment([FromBody] CashPaymentCreateModel cashPayment)
         {

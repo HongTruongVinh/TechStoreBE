@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
+using TechStore.Common.Extensions;
 using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
@@ -222,44 +223,35 @@ namespace TechStore.Service.Implementations
 
         public async Task<ServiceResult<VerifyResult>> VerifyPaymentForSnapshotAsync(SepayWebhookRequest request)
         {
-            var serviceResult = new ServiceResult<VerifyResult>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.SystemError,
-            };
 
             var snapshot = await _uow.PaymentSnapshots.GetWithItemsAsync(request.Code);
             if (snapshot == null)
             {
-                return serviceResult;
+                return ServiceResult<VerifyResult>.Fail(EErrorType.NotFound, Messenger.SystemError);
             }
 
             var user = await _uow.Users.GetByInternalIdAsync(snapshot.CustomerId);
             if (user == null)
             {
-                return serviceResult;
+                return ServiceResult<VerifyResult>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
             }
+
+            var transaction = await _uow.BeginTransactionAsync();
 
             if (snapshot.FinalAmount < request.TransferAmount)
             {
                 user.WalletBalance += request.TransferAmount;
                 _uow.Users.Update(user);
+
                 var updateUserResult = await _uow.CommitAsync();
-                if(updateUserResult < 1)
+                if (updateUserResult < 1)
                 {
-                    return serviceResult;
+                    return ServiceResult<VerifyResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
                 }
 
-                serviceResult.Message = PaymentMessenger.IncorrectAmount;
-                serviceResult.Data = new VerifyResult()
-                {
-                    SnapshotId = snapshot.PublicId,
-                    Amount = request.TransferAmount,
-                    Message = PaymentMessenger.IncorrectAmount
-                };
-                return serviceResult;
+                return ServiceResult<VerifyResult>.Fail(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
             }
+            
 
             var paymentData = new PaymentForSnapshot
             {
@@ -272,44 +264,76 @@ namespace TechStore.Service.Implementations
 
             var orderServiceResultOrder = await _orderService.CreatePrePayOnlineOrderAsync(user.PublicId, snapshot, paymentData);
 
-            if (orderServiceResultOrder.Data == null)
+            if (orderServiceResultOrder.IsSuccess == false)
             {
-                return serviceResult;
+                await transaction.RollbackAsync();
+                return ServiceResult<VerifyResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.Data = new VerifyResult()
+            return ServiceResult<VerifyResult>.Success(new VerifyResult()
             {
                 SnapshotId = snapshot.PublicId,
                 Amount = request.TransferAmount,
                 Message = PaymentMessenger.PaymentVerified
-            };
-
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.SuccessFull;
-            return serviceResult;
+            });
         }
 
-        public async Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel)
+        public async Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel, string idempotencyKey)
         {
-            var serviceResult = new ServiceResult<PaymentDataForSnapshotModel>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.BadRequest,
-            };
+            var customer = await _uow.Users.TableNoTracking.Where(u => u.PublicId == userId).FirstOrDefaultAsync();
 
-            var customer = await _uow.Users.GetByIdAsync(userId);
             if (customer == null)
             {
-                serviceResult.Message = Messenger.NoExitData + " " + userId;
-                return serviceResult;
+                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+            }
+
+            // validate idempotency key
+            var existingIdempotencyKey = await _uow.IdempotencyKeys.TableNoTracking.Where(i => i.RequestKey == idempotencyKey).FirstOrDefaultAsync();
+
+            if (existingIdempotencyKey != null)
+            {
+                // Check body request hash to ensure the same request is being made
+                if (ShareFunctions.ComputeHash(existingIdempotencyKey.RequestHash) == ShareFunctions.ComputeHash(orderCreateModel))
+                {
+                    return ServiceResult<PaymentDataForSnapshotModel>.Success(JsonSerializer.Deserialize<PaymentDataForSnapshotModel>(existingIdempotencyKey.ResponseBody));
+                }
+            }
+
+            // Validate Voucher
+            Voucher? voucher = null;
+            decimal discountedAmount = 0;
+
+            if (!string.IsNullOrWhiteSpace(orderCreateModel.VoucherCode))
+            {
+                voucher = await _uow.Vouchers.FindOneAsync(x => x.Code == orderCreateModel.VoucherCode);
+
+                if (voucher == null)
+                {
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, "Voucher not found");
+                }
+
+                if (voucher.EndDate < DateTime.UtcNow)
+                {
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, "Voucher expired");
+                }
+
+                if (voucher.Available == 0)
+                {
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, "Voucher usage exceeded");
+                }
+
+                var usageCount = await _uow.VoucherUsages.CountAsync(x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
+
+                if (usageCount >= voucher.UsageLimit)
+                {
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, "Voucher usage exceeded");
+                }
             }
 
             var paymentId = await _sequenceService.GetNextPaymentIdAsync();
 
             // Tính toán tổng tiền
             decimal totalPrice = 0;
-            decimal discountedAmount = 0;
             decimal shippingCharge = 0;
 
             var snapshot = new PaymentSnapshot
@@ -342,21 +366,19 @@ namespace TechStore.Service.Implementations
 
                 if (pVO == null)
                 {
-                    serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
-                    return serviceResult;
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NoExitData + " " + item.ProductVariantOptionId);
                 }
 
                 if (pVO.Stock < item.Quantity)
                 {
-                    serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
-                    return serviceResult;
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.BadRequest, Messenger.NoExitData + " " + item.ProductVariantOptionId);
                 }
                 else
                 {
                     snapshot.Items.Add(new PaymentSnapshotItem
                     {
                         Id = Guid.NewGuid(),
-                        PublicId = $"{DateTime.UtcNow:yyyyMMdd}{(Random.Shared.Next(10000, 100000).ToString() + 1):D6}",
+                        PublicId = ShareFunctions.GenarateRandomStringId(),
                         PaymentSnapshotId = snapshot.Id,
                         PaymentSnapshot = snapshot,
                         ProductVariantOptionId = pVO.Id,
@@ -381,29 +403,47 @@ namespace TechStore.Service.Implementations
                 totalPrice += itemTotal;
             }
 
+            // Calculate Discount
+            if (voucher != null)
+            {
+                if (voucher.DiscountType == EDiscountType.Percentage)
+                {
+                    discountedAmount = voucher.DiscountValue * totalPrice;
+
+                    if (discountedAmount > voucher.MaxDiscountAmount) discountedAmount = voucher.MaxDiscountAmount;
+                }
+                else
+                {
+                    discountedAmount = voucher.DiscountValue;
+                }
+
+                snapshot.VoucherId = voucher.Id;
+
+                voucher.ReservedCount++;
+                _uow.Vouchers.Update(voucher);
+            }
+
+            var finalAmount = totalPrice - discountedAmount;
+
+            if (discountedAmount > totalPrice)
+            {
+                finalAmount = 0;
+            }
+
             snapshot.TotalPrice = totalPrice;
             snapshot.DiscountAmount = discountedAmount;
             snapshot.ShippingCharge = shippingCharge;
             snapshot.FinalAmount = totalPrice - discountedAmount + shippingCharge;
 
-            await _uow.PaymentSnapshots.AddAsync(snapshot);
-
-            var result = await _uow.CommitAsync();
-
-            if (result < 1)
-            {
-                return serviceResult;
-            }
 
             var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.FinalAmount, snapshot.PublicId);
 
             if (paymentQrUrl == null)
             {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
+                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.Data = new PaymentDataForSnapshotModel()
+            var paymentData = new PaymentDataForSnapshotModel()
             {
                 SnapshotId = snapshot.PublicId,
                 QrDataURL = paymentQrUrl,
@@ -412,9 +452,33 @@ namespace TechStore.Service.Implementations
                 ExpiredAt = TimeZoneHelper.GetUtcNow().AddMinutes(15),
             };
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.SuccessFull;
-            return serviceResult;
+            var idempotencyKeyEntry = new IdempotencyKey
+            {
+                Id = Guid.NewGuid(),
+                PublicId = ShareFunctions.GenarateRandomStringId(),
+                UserId = customer.Id,
+                Endpoint = "/api/payments/snapshot",
+                StatusCode = 200,
+                ExpiredAt = TimeZoneHelper.GetUtcNow().AddHours(24),
+                RequestKey = idempotencyKey,
+                RequestHash = ShareFunctions.ComputeHash(orderCreateModel),
+                ResponseBody = JsonSerializer.Serialize(paymentData),
+                CreatedAt = TimeZoneHelper.GetUtcNow(),
+                EntityStatus = EEntityStatus.Active,
+            };
+
+            await _uow.PaymentSnapshots.AddAsync(snapshot);
+
+            await _uow.IdempotencyKeys.AddAsync(idempotencyKeyEntry);
+
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.SystemError, Messenger.SystemError);
+            }
+
+            return ServiceResult<PaymentDataForSnapshotModel>.Success(paymentData);
         }
 
         public async Task<ServiceResult<PaymentDataModel>> CreatePaymentForInvoiceByAdminAsync(string userId, PaymentCreateModel model)

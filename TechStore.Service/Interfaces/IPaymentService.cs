@@ -15,7 +15,7 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> DeletePayment(string paymentId);
         Task<ServiceResult<List<PaymentResponseModel>>> GetPayments();
         Task<ServiceResult<PaymentResponseModel>> GetPayment(string paymentId);
-        Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel);
+        Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel, string idempotencyKey);
         Task<ServiceResult<PaymentDataModel>> CreatePaymentForInvoiceByAdminAsync(string cashierId, PaymentCreateModel model);
 
         Task<ServiceResult<VerifyResult>> VerifyPaymentForSnapshotAsync(SepayWebhookRequest request);

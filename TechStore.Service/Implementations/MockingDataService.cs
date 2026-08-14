@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
+using TechStore.Common.Extensions;
 using TechStore.Common.Helpers;
 using TechStore.Data.Entities;
 using TechStore.Data.UnitOfWork;
@@ -256,6 +257,74 @@ namespace TechStore.Service.Implementations
 
                 #endregion
 
+                #region
+
+                var voucher1 = new Voucher
+                {
+                    Id = Guid.NewGuid(),
+                    PublicId = ShareFunctions.GenarateRandomStringId(),
+                    Code = "D99",
+                    Description = "Giảm giá 99.99% cho đơn hàng đầu tiên. (Mục đích cho việc thử nghiệm chuyển khoản với số tiền thấp)",
+                    DiscountType = EDiscountType.Percentage,
+                    DiscountValue = 99.99m,
+                    MaxDiscountAmount = 1000000000,
+                    MinOrderPrice = 1,
+                    UsageLimit = 100,
+                    ReservedCount = 0,
+                    UsedCount = 0,
+                    Status = EVoucherStatus.Active,
+                    StartDate = TimeZoneHelper.GetUtcNow(),
+                    EndDate = TimeZoneHelper.GetUtcNow().AddMonths(1),
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    EntityStatus = EEntityStatus.Active
+                };
+
+                var voucher2 = new Voucher
+                {
+                    Id = Guid.NewGuid(),
+                    PublicId = ShareFunctions.GenarateRandomStringId(),
+                    Code = "D10",
+                    Description = "Giảm giá 10% cho đơn hàng đầu tiên",
+                    DiscountType = EDiscountType.Percentage,
+                    DiscountValue = 10,
+                    MaxDiscountAmount = 1000000,
+                    MinOrderPrice = 5000000,
+                    UsageLimit = 2,
+                    ReservedCount = 0,
+                    UsedCount = 0,
+                    Status = EVoucherStatus.Active,
+                    StartDate = TimeZoneHelper.GetUtcNow(),
+                    EndDate = TimeZoneHelper.GetUtcNow().AddMonths(1),
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    EntityStatus = EEntityStatus.Active
+                };
+
+                var voucher3 = new Voucher
+                {
+                    Id = Guid.NewGuid(),
+                    PublicId = ShareFunctions.GenarateRandomStringId(),
+                    Code = "D1tr",
+                    Description = "Giảm giá 1.000.000 đồng trong mùa hè não nhiệt",
+                    DiscountType = EDiscountType.FixedAmount,
+                    DiscountValue = 1000000,
+                    MaxDiscountAmount = 1000000,
+                    MinOrderPrice = 5000000,
+                    UsageLimit = 1,
+                    ReservedCount = 0,
+                    UsedCount = 0,
+                    Status = EVoucherStatus.Active,
+                    StartDate = TimeZoneHelper.GetUtcNow(),
+                    EndDate = TimeZoneHelper.GetUtcNow().AddMonths(1),
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    EntityStatus = EEntityStatus.Active
+                };
+
+                await _uow.Vouchers.AddAsync(voucher1);
+                await _uow.Vouchers.AddAsync(voucher2);
+                await _uow.Vouchers.AddAsync(voucher3);
+
+                #endregion
+
                 #region register user
                 string password = "Abcd1234";
 
@@ -340,6 +409,25 @@ namespace TechStore.Service.Implementations
                 var resultRegister3 = await _authenticationService.RegisterCustomer(user3);
 
                 if (resultRegister3.IsSuccess == false)
+                {
+                    throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
+                }
+
+                var user4 = new CustomerRegisterModel
+                {
+                    LastName = "Phạm Văn",
+                    FirstName = "Hiếu",
+                    Password = password,
+                    Email = "phamvanhieu@gmail.com",
+                    City = "HCM",
+                    District = "Q12",
+                    Address = "123 abc",
+                    PhoneNumber = "0345678999",
+                };
+
+                var resultRegister4 = await _authenticationService.RegisterCustomer(user4);
+
+                if (resultRegister4.IsSuccess == false)
                 {
                     throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
                 }
@@ -2128,10 +2216,11 @@ namespace TechStore.Service.Implementations
 
         public async Task<JsonResult> GetAllInitData()
         {
-            var users = await _uow.Users.GetAllAsync();
+            var voucher = await _uow.Vouchers.GetAllAsync();
             var categories = await _uow.Categories.GetAllAsync();
             var brands = await _uow.Brands.GetAllAsync();
             var shippers = await _uow.Shippers.GetAllAsync();
+            var users = await _uow.Users.GetAllAsync();
             var products = await _uow.Products.GetAllAsync();
             var orders = await _uow.Orders.GetAllAsync();
             //var carts = await _cartRepository.GetAllAsync();
@@ -2146,6 +2235,7 @@ namespace TechStore.Service.Implementations
 
             var data = new
             {
+                Voucher = voucher,
                 Categories = categories,
                 Brands = brands,
                 Products = products,
@@ -2167,6 +2257,7 @@ namespace TechStore.Service.Implementations
         {
             try
             {
+                await _uow.VoucherUsages.DeleteAllAsync();
                 await _uow.CartItems.DeleteAllAsync();
                 await _uow.OrderItems.DeleteAllAsync();
                 await _uow.Orders.DeleteAllAsync();
@@ -2176,6 +2267,7 @@ namespace TechStore.Service.Implementations
                 await _uow.ProductVariants.DeleteAllAsync();
                 await _uow.Products.DeleteAllAsync();
                 await _uow.Users.DeleteAllAsync();
+                await _uow.Vouchers.DeleteAllAsync();
                 await _uow.ShippingDetails.DeleteAllAsync();
                 await _uow.InvalidTokens.DeleteAllAsync();
                 //await _uow.QRCodes.DeleteAllAsync();
