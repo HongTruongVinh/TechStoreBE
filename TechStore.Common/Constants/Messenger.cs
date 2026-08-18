@@ -33,6 +33,7 @@ namespace TechStore.Common.Constants
         public const string NoPermission = "You have no permission to access!";
         public const string IncorrectDataFormat = "Incorrect data format!";
         public const string InvoiceUnpaid = "Invoice is unpaid!";
+        public const string IdempotencyKeyConflict = "Idempotency key conflict!";
     }
 
     public static class PaymentMessenger

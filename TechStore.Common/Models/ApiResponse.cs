@@ -14,5 +14,7 @@ namespace TechStore.Common.Models
         public string Message { get; set; } = string.Empty;
 
         public T? Data { get; set; }
+
+        public EErrorType? ErrorType { get; set; }
     }
 }

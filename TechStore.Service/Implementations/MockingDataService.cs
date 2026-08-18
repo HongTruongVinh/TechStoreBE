@@ -257,7 +257,7 @@ namespace TechStore.Service.Implementations
 
                 #endregion
 
-                #region
+                #region add vouchers
 
                 var voucher1 = new Voucher
                 {
@@ -266,7 +266,7 @@ namespace TechStore.Service.Implementations
                     Code = "D99",
                     Description = "Giảm giá 99.99% cho đơn hàng đầu tiên. (Mục đích cho việc thử nghiệm chuyển khoản với số tiền thấp)",
                     DiscountType = EDiscountType.Percentage,
-                    DiscountValue = 99.99m,
+                    DiscountValue = 0.9999m,
                     MaxDiscountAmount = 1000000000,
                     MinOrderPrice = 1,
                     UsageLimit = 100,
@@ -286,7 +286,7 @@ namespace TechStore.Service.Implementations
                     Code = "D10",
                     Description = "Giảm giá 10% cho đơn hàng đầu tiên",
                     DiscountType = EDiscountType.Percentage,
-                    DiscountValue = 10,
+                    DiscountValue = 0.1m,
                     MaxDiscountAmount = 1000000,
                     MinOrderPrice = 5000000,
                     UsageLimit = 2,
@@ -478,6 +478,192 @@ namespace TechStore.Service.Implementations
                 #endregion
 
                 #region create products
+                string productDescripotions = "Thông tin sản phẩm đang được cập nhật";
+                //const string iphone16ImageUrl = "https://www.apple.com/newsroom/images/2024/09/get-ready-to-upgrade-to-the-new-iphone-16-apple-watch-and-airpods-lineups/article/Apple-iPhone-16_inline.jpg.large.jpg";
+                //const string iphone16ProImageUrl = "https://www.apple.com/newsroom/images/2024/09/get-ready-to-upgrade-to-the-new-iphone-16-apple-watch-and-airpods-lineups/article/Apple-iPhone-16-Pro_inline.jpg.large.jpg";
+                //const string galaxyS25ImageUrl = "https://image-us.samsung.com/us/smartphones/galaxy-s25/images/galaxy-s25-features-kv.jpg?imbypass=true";
+                //const string galaxyS25UltraImageUrl = "https://image-us.samsung.com/us/smartphones/galaxy-s25-ultra/images/galaxy-s25-ultra-features-kv.jpg?imbypass=true";
+
+                //var productModel1 = new ProductCreateModel
+                //{
+                //    CategoryId = resultCategoryMobilephone.Data,
+                //    Name = "iPhone 16",
+                //    BrandId = resultBrandApple.Data,
+                //    ShortDescription = "iPhone 16 với chip A18, Camera Control và camera Fusion 48MP.",
+                //    Description = "iPhone 16 sở hữu màn hình Super Retina XDR OLED 6,1 inch, chip A18 mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera Fusion 48MP hỗ trợ chụp ảnh độ phân giải cao, zoom quang học 2x cùng camera Ultra Wide có khả năng chụp macro. Nút Action và Camera Control giúp truy cập nhanh các tính năng thường dùng, trong khi thiết kế nhôm bền bỉ đạt chuẩn kháng nước, bụi IP68.",
+                //    Warranty = 12,
+                //    Slug = "iphone-16",
+                //    Tags = new List<string> { "apple", "iphone", "iphone-16", "smartphone" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    PublishDate = TimeZoneHelper.GetUtcNow(),
+                //    MainImageUrl = iphone16ImageUrl,
+                //    GalleryImageUrls = new List<string> { iphone16ImageUrl },
+                //    SalePrice = 1000000,
+                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                //    {
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "128GB",
+                //            Description = "Phiên bản bộ nhớ 128GB, phù hợp nhu cầu sử dụng hằng ngày.",
+                //            ImportPrice = 18000000,
+                //            Price = 22990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Ultramarine", Stock = 30, ImageUrl = iphone16ImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Black", Stock = 25, ImageUrl = iphone16ImageUrl },
+                //            },
+                //        },
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "256GB",
+                //            Description = "Phiên bản bộ nhớ 256GB cho nhu cầu lưu trữ ảnh, video và ứng dụng lớn.",
+                //            ImportPrice = 21000000,
+                //            Price = 25990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Ultramarine", Stock = 20, ImageUrl = iphone16ImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "White", Stock = 20, ImageUrl = iphone16ImageUrl },
+                //            },
+                //        },
+                //    },
+                //};
+
+                //var productModel2 = new ProductCreateModel
+                //{
+                //    CategoryId = resultCategoryMobilephone.Data,
+                //    Name = "iPhone 16 Pro",
+                //    BrandId = resultBrandApple.Data,
+                //    ShortDescription = "iPhone cao cấp với chip A18 Pro, khung titan và camera chuyên nghiệp.",
+                //    Description = "iPhone 16 Pro trang bị màn hình Super Retina XDR 6,3 inch với ProMotion, khung titan nhẹ và bền cùng chip A18 Pro. Cụm camera gồm camera Fusion 48MP, Ultra Wide 48MP và Telephoto 5x, hỗ trợ quay video 4K Dolby Vision ở tốc độ 120 fps. Camera Control giúp thao tác chụp nhanh, còn thời lượng pin được cải thiện để đáp ứng công việc, sáng tạo nội dung và chơi game cường độ cao.",
+                //    Warranty = 12,
+                //    Slug = "iphone-16-pro",
+                //    Tags = new List<string> { "apple", "iphone", "iphone-16-pro", "smartphone", "flagship" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    PublishDate = TimeZoneHelper.GetUtcNow(),
+                //    MainImageUrl = iphone16ProImageUrl,
+                //    GalleryImageUrls = new List<string> { iphone16ProImageUrl },
+                //    SalePrice = 1500000,
+                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                //    {
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "256GB",
+                //            Description = "Bộ nhớ 256GB cân bằng giữa hiệu năng và khả năng lưu trữ.",
+                //            ImportPrice = 27000000,
+                //            Price = 31990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Desert Titanium", Stock = 25, ImageUrl = iphone16ProImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Black Titanium", Stock = 20, ImageUrl = iphone16ProImageUrl },
+                //            },
+                //        },
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "512GB",
+                //            Description = "Bộ nhớ 512GB dành cho quay video chất lượng cao và lưu trữ chuyên nghiệp.",
+                //            ImportPrice = 33000000,
+                //            Price = 37990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Desert Titanium", Stock = 15, ImageUrl = iphone16ProImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Natural Titanium", Stock = 15, ImageUrl = iphone16ProImageUrl },
+                //            },
+                //        },
+                //    },
+                //};
+
+                //var productModel8 = new ProductCreateModel
+                //{
+                //    CategoryId = resultCategoryMobilephone.Data,
+                //    Name = "Samsung Galaxy S25",
+                //    BrandId = resultBrandSamsung.Data,
+                //    ShortDescription = "Galaxy S25 nhỏ gọn với Galaxy AI và Snapdragon 8 Elite for Galaxy.",
+                //    Description = "Samsung Galaxy S25 kết hợp thiết kế nhỏ gọn, khung Armor Aluminum và màn hình Dynamic AMOLED 2X mượt mà. Vi xử lý Snapdragon 8 Elite for Galaxy cùng 12GB RAM mang lại hiệu năng nhanh cho công việc và giải trí. Camera chính 50MP được hỗ trợ bởi AI ProVisual Engine, pin 4.000mAh đáp ứng thời gian sử dụng dài và chuẩn IP68 tăng khả năng bảo vệ trong điều kiện hằng ngày.",
+                //    Warranty = 12,
+                //    Slug = "samsung-galaxy-s25",
+                //    Tags = new List<string> { "samsung", "galaxy", "galaxy-s25", "smartphone", "galaxy-ai" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    PublishDate = TimeZoneHelper.GetUtcNow(),
+                //    MainImageUrl = galaxyS25ImageUrl,
+                //    GalleryImageUrls = new List<string> { galaxyS25ImageUrl },
+                //    SalePrice = 1500000,
+                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                //    {
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "12GB 256GB",
+                //            Description = "RAM 12GB và bộ nhớ 256GB cho đa nhiệm mượt mà.",
+                //            ImportPrice = 17000000,
+                //            Price = 22990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Icyblue", Stock = 30, ImageUrl = galaxyS25ImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Navy", Stock = 25, ImageUrl = galaxyS25ImageUrl },
+                //            },
+                //        },
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "12GB 512GB",
+                //            Description = "RAM 12GB và bộ nhớ lớn 512GB cho ảnh, video và ứng dụng.",
+                //            ImportPrice = 21000000,
+                //            Price = 26990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Silver Shadow", Stock = 20, ImageUrl = galaxyS25ImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Mint", Stock = 20, ImageUrl = galaxyS25ImageUrl },
+                //            },
+                //        },
+                //    },
+                //};
+
+                //var productModel9 = new ProductCreateModel
+                //{
+                //    CategoryId = resultCategoryMobilephone.Data,
+                //    Name = "Samsung Galaxy S25 Ultra",
+                //    BrandId = resultBrandSamsung.Data,
+                //    ShortDescription = "Flagship Galaxy với camera 200MP, S Pen và khung titan.",
+                //    Description = "Samsung Galaxy S25 Ultra sở hữu khung titan, kính Gorilla Armor 2 và khả năng kháng nước, bụi IP68. Màn hình lớn sắc nét đi cùng Snapdragon 8 Elite for Galaxy, RAM 12GB và pin 5.000mAh. Camera chính 200MP kết hợp AI ProVisual Engine hỗ trợ chụp ảnh, quay video chi tiết trong nhiều điều kiện; S Pen tích hợp giúp ghi chú, phác thảo và xử lý công việc chính xác hơn.",
+                //    Warranty = 12,
+                //    Slug = "samsung-galaxy-s25-ultra",
+                //    Tags = new List<string> { "samsung", "galaxy", "galaxy-s25-ultra", "smartphone", "flagship", "s-pen" },
+                //    IsFeatured = true,
+                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                //    PublishDate = TimeZoneHelper.GetUtcNow(),
+                //    MainImageUrl = galaxyS25UltraImageUrl,
+                //    GalleryImageUrls = new List<string> { galaxyS25UltraImageUrl },
+                //    SalePrice = 2000000,
+                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                //    {
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "12GB 256GB",
+                //            Description = "Phiên bản 256GB dành cho nhu cầu cao cấp hằng ngày.",
+                //            ImportPrice = 27000000,
+                //            Price = 33990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Silverblue", Stock = 25, ImageUrl = galaxyS25UltraImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Black", Stock = 25, ImageUrl = galaxyS25UltraImageUrl },
+                //            },
+                //        },
+                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                //        {
+                //            Name = "12GB 512GB",
+                //            Description = "Phiên bản 512GB phù hợp sáng tạo nội dung và lưu trữ dung lượng lớn.",
+                //            ImportPrice = 32000000,
+                //            Price = 38990000,
+                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                //            {
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Gray", Stock = 15, ImageUrl = galaxyS25UltraImageUrl },
+                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Whitesilver", Stock = 15, ImageUrl = galaxyS25UltraImageUrl },
+                //            },
+                //        },
+                //    },
+                //};
+
                 var productModel3 = new ProductCreateModel
                 {
                     CategoryId = resultCategoryLaptop.Data,
@@ -1394,11 +1580,15 @@ namespace TechStore.Service.Implementations
                     }
                 };
 
+                //var resultProduct1 = await _productService.AddProduct(productModel1);
+                //var resultProduct2 = await _productService.AddProduct(productModel2);
                 var resultProduct3 = await _productService.AddProduct(productModel3);
                 var resultProduct4 = await _productService.AddProduct(productModel4);
                 var resultProduct5 = await _productService.AddProduct(productModel5);
                 var resultProduct6 = await _productService.AddProduct(productModel6);
                 var resultProduct7 = await _productService.AddProduct(productModel7);
+                //var resultProduct8 = await _productService.AddProduct(productModel8);
+                //var resultProduct9 = await _productService.AddProduct(productModel9);
                 var resultProduct10 = await _productService.AddProduct(productModel10);
                 var resultProduct11 = await _productService.AddProduct(productModel11);
                 var resultProduct12 = await _productService.AddProduct(productModel12);
@@ -1803,7 +1993,7 @@ namespace TechStore.Service.Implementations
                         Description = "Điện thoại thông minh",
                         Warranty = 12,
                         Slug = "iphone-" + i,
-                        Tags = new List<string> { "iphone", "iphone" + i},
+                        Tags = new List<string> { "iphone", "iphone" + i },
                         IsFeatured = true,
                         StartSellingDate = TimeZoneHelper.GetUtcNow(),
                         MainImageUrl = DefaultImageLinks.DefaultIphone14PurpleImage,
@@ -2166,10 +2356,11 @@ namespace TechStore.Service.Implementations
                     });
                 }
 
+
                 #endregion
 
-                    #region add orders
-                    var productVariantOptions = await _uow.ProductVariantOptions.GetAllAsync();
+                #region add orders
+                var productVariantOptions = await _uow.ProductVariantOptions.GetAllAsync();
                     var users = await _uow.Users.FindManyAsync(u => u.LastName.Contains("User"));
 
                 if (productVariantOptions != null && users != null)

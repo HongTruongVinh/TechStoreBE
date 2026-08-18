@@ -20,6 +20,8 @@ namespace TechStoreAPI.Extensions
 
             return result.ErrorType switch
             {
+                EErrorType.BadRequest => controller.BadRequest(response),
+
                 EErrorType.NotFound => controller.NotFound(response),
 
                 EErrorType.ConfictData => controller.Conflict(response),
@@ -28,7 +30,9 @@ namespace TechStoreAPI.Extensions
 
                 EErrorType.Forbidden => controller.Forbid(),
 
-                _ => controller.BadRequest(response)
+                EErrorType.Status500InternalServerError => controller.StatusCode(500, response),
+
+                _ => controller.StatusCode(500, response)
             };
         }
     }

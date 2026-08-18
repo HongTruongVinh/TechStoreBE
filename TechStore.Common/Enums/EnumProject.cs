@@ -153,6 +153,9 @@ namespace TechStore.Common.Enums
         NotFound,
         ConfictData,
         Unauthorized,
-        Forbidden
+        Forbidden,
+        Status500InternalServerError,
+
+        IdempotencyKeyConflict
     }
 }

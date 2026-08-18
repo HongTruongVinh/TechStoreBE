@@ -293,11 +293,15 @@ namespace TechStore.Service.Implementations
             if (existingIdempotencyKey != null)
             {
                 // Check body request hash to ensure the same request is being made
-                if (ShareFunctions.ComputeHash(existingIdempotencyKey.RequestHash) == ShareFunctions.ComputeHash(orderCreateModel))
+                if (existingIdempotencyKey.RequestHash == ShareFunctions.ComputeHash(orderCreateModel))
                 {
                     return ServiceResult<PaymentDataForSnapshotModel>.Success(JsonSerializer.Deserialize<PaymentDataForSnapshotModel>(existingIdempotencyKey.ResponseBody));
                 }
-            }
+                else
+                {
+                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
+                }
+            } 
 
             // Validate Voucher
             Voucher? voucher = null;
