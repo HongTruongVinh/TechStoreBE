@@ -7,8 +7,8 @@ using TechStore.Data.Entities;
 
 namespace TechStore.Data.Repositories.Interfaces
 {
-    public interface IProductVariantRepository : IRepository<ProductVariant>
+    public interface IPaymentTransactionRepository : IRepository<PaymentTransaction>
     {
-        Task<ProductVariant?> GetProductVariantOptionDetailAsync(string publicId);
+
     }
 }

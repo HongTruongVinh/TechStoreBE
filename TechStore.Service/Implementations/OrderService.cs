@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
@@ -14,6 +19,7 @@ using TechStore.Data.Entities;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Order;
 using TechStore.Model.DTOs.Payment;
+using TechStore.Model.DTOs.Snapshot;
 using TechStore.Service.Interfaces;
 using TechStore.Service.Mappers;
 
@@ -23,268 +29,924 @@ namespace TechStore.Service.Implementations
     {
         private readonly IUnitOfWork _uow;
         private readonly SequenceGeneratorService _sequenceService;
-        private readonly IVietQrService _vietQrService;
+        private readonly PaymentSettings _paymentSettings;
+        private readonly ILogger<OrderService> _logger;
 
         public OrderService(IUnitOfWork uow,
+            ILogger<OrderService> logger,
             SequenceGeneratorService sequenceService,
-            IVietQrService vietQrService
+            IOptions<PaymentSettings> paymentSettings
             )
         {
             _uow = uow;
             _sequenceService = sequenceService;
-            _vietQrService = vietQrService;
+            _logger = logger;
+            _paymentSettings = paymentSettings.Value;
         }
 
-        public async Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshot paymentData)
+        public async Task<ServiceResult<CreatePaymentSnapshotResult>> CreateSnapshotAsync(string userId, OrderCreateModel orderCreateModel, string idempotencyKey)
         {
-            var customer = await _uow.Users.GetByIdAsync(userId);
+
+            var customer = await _uow.Users.TableNoTracking.Where(u => u.PublicId == userId).FirstOrDefaultAsync();
+
             if (customer == null)
             {
-                return ServiceResult<string>.Fail(EErrorType.NotFound, Messenger.NotFoundUser + " " + userId);
+                return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
-            var order = new Order
+            var requestHash = ShareFunctions.ComputeHash(orderCreateModel);
+            var transaction = await _uow.BeginTransactionAsync();
+            try
             {
-                Id = Guid.NewGuid(),
-                PublicId = await _sequenceService.GetNextOrderIdAsync(),
-                Customer = customer,
-                CustomerId = customer.Id,
-                CustomerPublicId = customer.PublicId,
+                #region validate idempotency key
+                var existingIdempotencyKey = await _uow.IdempotencyKeys.TableNoTracking.FirstOrDefaultAsync(x =>
+                                                        x.UserId == customer.Id &&
+                                                        x.RequestKey == idempotencyKey);
 
-                CustomerName = ps.CustomerName,
-                CustomerPhoneNumber = ps.CustomerPhoneNumber,
-                CustomerEmail = ps.CustomerEmail,
-                ShippingAddress = ps.ShippingAddress,
-                Note = ps.Note,
-
-                TotalPrice = ps.TotalPrice,
-                ShippingCharge = ps.ShippingCharge,
-                DiscountAmount = ps.DiscountAmount,
-                FinalAmount = ps.FinalAmount,
-
-                OrderStatus = EOrderStatus.Processing,
-                OrderItems = new List<OrderItem>(),
-
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                UpdatedAt = TimeZoneHelper.GetUtcNow(),
-                CreatedBy = customer.Id,
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            foreach (var item in ps.Items)
-            {
-                var pvo = await _uow.ProductVariantOptions.FindOneAsync(pvo => pvo.Id == item.ProductVariantOptionId);
-
-                if (pvo != null)
+                if (existingIdempotencyKey != null)
                 {
-                    pvo.SoldCount += item.Quantity;
-                    pvo.Stock -= item.Quantity;
-                    _uow.ProductVariantOptions.Update(pvo);
+                    // Check body request hash to ensure the same request is being made
+                    if (existingIdempotencyKey.RequestHash == requestHash)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Success(JsonSerializer.Deserialize<CreatePaymentSnapshotResult>(existingIdempotencyKey.ResponseBody));
+                    }
+                    else
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
+                    }
+                }
+                #endregion
 
-                    order.OrderItems.Add(new OrderItem
+                #region Validate Items
+
+                Guid snapshotId = Guid.NewGuid();
+                string snapshotPublicId = _sequenceService.GetNextSnapshotId();
+
+
+                List<PaymentSnapshotItem> snapshotItems = new List<PaymentSnapshotItem>();
+                var productVariantOptionsDic = new Dictionary<ProductVariantOption, int>();
+
+                // Tính toán tổng tiền
+                decimal subtotalAmount = 0;
+
+                var groupedItems = orderCreateModel.Items
+                                    .GroupBy(x => x.ProductVariantOptionId)
+                                    .Select(g => new
+                                    {
+                                        ProductVariantOptionId = g.Key,
+                                        Quantity = g.Sum(x => x.Quantity)
+                                    })
+                                    .ToList();
+
+                foreach (var item in groupedItems)
+                {
+                    var pVO = await _uow.ProductVariantOptions.GetForUpdateAsync_PostgreSQL(item.ProductVariantOptionId);
+
+                    if (pVO == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.NotFound, Messenger.NoExitData + " " + item.ProductVariantOptionId);
+                    }
+
+                    if (item.Quantity <= 0)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+                    }
+
+                    var reservedStock = await _uow.StockReservations
+                                                .TableNoTracking
+                                                .Where(x =>
+                                                    x.ProductVariantOptionId == pVO.Id &&
+                                                    x.Status == StockReservationStatus.Reserved &&
+                                                    x.ExpiresAt > TimeZoneHelper.GetUtcNow())
+                                                .SumAsync(x => x.Quantity);
+
+                    if (item.Quantity > pVO.Stock - reservedStock)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                    }
+
+                    var productVariant = await _uow.ProductVariants
+                        .TableNoTracking
+                        .Where(x => x.Id == pVO.ProductVariantId)
+                        .Include(x => x.Product)
+                        .ThenInclude(p => p.Category)
+                        .FirstOrDefaultAsync();
+
+                    if (productVariant == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                    }
+
+                    snapshotItems.Add(new PaymentSnapshotItem
                     {
                         Id = Guid.NewGuid(),
-                        PublicId = $"{DateTime.UtcNow:yyyyMMdd}{(Random.Shared.Next(100000, 1000000).ToString() + 1):D6}",
-                        ProductVariantOptionId = item.ProductVariantOptionId,
-                        ProductVariantOptionPublicId = item.ProductVariantOptionPublicId,
-                        Order = order,
-                        OrderId = order.Id,
-                        Quantity = item.Quantity,
-                        ImageUrl = item.UrlImage,
-                        CategoryName = item.CategoryName,
-                        ProductName = item.ProductName,
-                        PriceAtOrderTime = item.PriceAtOrderTime,
-                        TotalPrice = item.TotalPrice,
-
-                        CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active,
-                    });
-                }
-            }
-
-            var invoice = new Invoice
-            {
-                Id = Guid.NewGuid(),
-                PublicId = await _sequenceService.GetNextInvoiceIdAsync(),
-
-                TotalAmount = ps.FinalAmount,
-                PaidAmount = paymentData.Amount,
-
-                Payments = new List<Payment>(),
-
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                CreatedBy = customer.Id,
-                InvoiceStatus = paymentData.Amount >= ps.FinalAmount ? EInvoiceStatus.Paid : EInvoiceStatus.PartiallyPaid,
-                EntityStatus = EEntityStatus.Active
-            };
-
-            Payment payment = new Payment
-            {
-                Id = Guid.NewGuid(),
-                PublicId = await _sequenceService.GetNextPaymentIdAsync(),
-                Invoice = invoice,
-                InvoiceId = invoice.Id,
-                User = customer,
-                UserId = customer.Id,
-                Amount = paymentData.Amount,
-                PaymentMethod = EPaymentMethod.DomesticBank,
-                PaymentCode = paymentData.Code,
-                BankReferenceCode = paymentData.BankReferenceCode,
-                TransactionId = paymentData.TransactionId,
-                PaymentStatus = EPaymentStatus.Paid,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            invoice.Payments.Add(payment);
-            order.Invoice = invoice;
-
-            await _uow.Orders.AddAsync(order);
-
-            // Add VoucherUsage
-            if (ps.VoucherId != null)
-            {
-                var voucher = await _uow.Vouchers.FindOneAsync(v => v.Id == ps.VoucherId.Value);
-                if (voucher == null)
-                {
-                    return ServiceResult<string>.Fail(EErrorType.NotFound, Messenger.NoExitData + " " + ps.VoucherId.Value);
-                }
-
-                voucher.UsedCount += 1;
-                voucher.ReservedCount -= 1;
-                _uow.Vouchers.Update(voucher);
-
-                await _uow.VoucherUsages.AddAsync(
-                    new VoucherUsage
-                    {
                         PublicId = ShareFunctions.GenarateRandomStringId(),
-                        VoucherId = ps.VoucherId.Value,
-                        UserId = customer.Id,
-                        OrderId = order.Id,
-                        UsedAt = DateTime.UtcNow,
-                        CreatedAt = DateTime.UtcNow
-                    });
-            }
-
-            var result = await _uow.CommitAsync();
-
-            if (result < 1)
-            {
-                return ServiceResult<string>.Fail(EErrorType.SystemError, Messenger.SystemError);
-            }
-
-            return ServiceResult<string>.Success(order.PublicId);
-        }
-
-        public async Task<ServiceResult<string>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)
-        {
-            var serviceResult = new ServiceResult<string>
-            {
-                IsSuccess = false,
-                Data = null,
-                Message = Messenger.BadRequest,
-            };
-
-            var customer = await _uow.Users.GetByIdAsync(userId);
-            if (customer == null)
-            {
-                serviceResult.Message = Messenger.NoExitData + " " + userId;
-                return serviceResult;
-            }
-
-            var orderId = await _sequenceService.GetNextOrderIdAsync();
-
-            decimal totalPrice = 0;
-            decimal totalDiscount = 0;
-            var order = new Order
-            {
-                Id = Guid.NewGuid(),
-                PublicId = orderId,
-                Customer = customer,
-                CustomerId = customer.Id,
-                CustomerPublicId = customer.PublicId,
-                CustomerName = orderCreateModel.CustomerName,
-                CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
-                CustomerEmail = orderCreateModel.CustomerEmail,
-                TotalPrice = 0,
-                ShippingCharge = 0,
-                DiscountAmount = totalDiscount,
-                FinalAmount = 0,
-                OrderStatus = EOrderStatus.Pending,
-                OrderItems = new List<OrderItem>(),
-                ShippingAddress = orderCreateModel.ShippingAddress,
-                Note = orderCreateModel.Note,
-
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                UpdatedAt = TimeZoneHelper.GetUtcNow(),
-                CreatedBy = customer.Id,
-                EntityStatus = EEntityStatus.Active,
-            };
-
-
-            var today = DateTime.UtcNow.Date;
-            foreach (var item in orderCreateModel.Items)
-            {
-                var pVO = await _uow.ProductVariantOptions.GetOrderItemDetailAsync(item.ProductVariantOptionId);
-
-                if (pVO == null)
-                {
-                    serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
-                    return serviceResult;
-                }
-
-                if (pVO.Stock < item.Quantity)
-                {
-                    serviceResult.Message = Messenger.NoExitData + " " + item.ProductVariantOptionId;
-                    return serviceResult;
-                }
-                else
-                {
-                    pVO.Stock -= item.Quantity;
-                    _uow.ProductVariantOptions.Update(pVO);
-
-                    order.OrderItems.Add(new OrderItem
-                    {
-                        PublicId = $"{today:yyyyMMdd}{(Random.Shared.Next(100000, 1000000).ToString() + 1):D6}",
+                        PaymentSnapshotId = snapshotId,
                         ProductVariantOptionId = pVO.Id,
                         ProductVariantOptionPublicId = pVO.PublicId,
-                        OrderId = order.Id,
-                        Order = order,
-                        CategoryName = pVO.ProductVariant.Product.Category.Name,
-                        ProductName = pVO.ProductVariant.Product.Name + " " + pVO.ProductVariant.Name + " " + pVO.Name,
-                        ImageUrl = pVO.ImageUrl,
+
+                        CategoryName = productVariant.Product.Category.Name,
+                        ProductName = productVariant.Product.Name + " " + productVariant.Name + " " + pVO.Name,
+                        UrlImage = pVO.ImageUrl,
+
                         Quantity = item.Quantity,
                         PriceAtOrderTime = pVO.Price,
                         TotalPrice = item.Quantity * pVO.Price,
+
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        UpdatedAt = TimeZoneHelper.GetUtcNow(),
+                        CreatedBy = customer.Id,
+                        EntityStatus = EEntityStatus.Active,
+                    });
+
+                    productVariantOptionsDic.Add(pVO, item.Quantity);
+
+                    decimal itemTotal = item.Quantity * pVO.Price;
+                    subtotalAmount += itemTotal;
+                }
+
+                if (snapshotItems.Count < 1)
+                {
+                    transaction.Rollback();
+                    return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+                }
+
+                #endregion
+
+                #region Validate Voucher
+                Voucher? voucher = null;
+                decimal discountedAmount = 0;
+
+                if (!string.IsNullOrWhiteSpace(orderCreateModel.VoucherCode))
+                {
+                    voucher = await _uow.Vouchers.GetForUpdateByVoucherCodeAsync_PostgreSQL(orderCreateModel.VoucherCode);
+
+                    if (voucher == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
+                    }
+
+                    if (voucher.EndDate < DateTime.UtcNow)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                    }
+
+                    if (voucher.StartDate > DateTime.UtcNow)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                    }
+
+                    if (voucher.Status != EVoucherStatus.Active)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                    }
+
+                    if (voucher.Available <= 0)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                    }
+
+                    var usageCount = await _uow.VoucherUsages.CountAsync(x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
+
+                    if (usageCount >= voucher.UsageLimit)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                    }
+
+                    if (subtotalAmount < voucher.MinOrderPrice)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.MinOrderPriceNotMet);
+                    }
+
+                    if (voucher.DiscountType == EDiscountType.Percentage)
+                    {
+                        discountedAmount = voucher.DiscountValue * subtotalAmount;
+
+                        if (discountedAmount > voucher.MaxDiscountAmount) discountedAmount = voucher.MaxDiscountAmount;
+                    }
+                    else
+                    {
+                        discountedAmount = voucher.DiscountValue;
+                    }
+
+                    voucher.ReservedCount++;
+                }
+
+                #endregion
+
+                decimal shippingCharge = 0;
+                var totalAmount = subtotalAmount - discountedAmount + shippingCharge;
+
+                if (totalAmount < 0)
+                {
+                    totalAmount = 0;
+                }
+
+                #region Create snapshot
+
+                var snapshot = new PaymentSnapshot
+                {
+                    Id = snapshotId,
+                    PublicId = snapshotPublicId,
+                    CustomerId = customer.Id,
+                    CustomerName = orderCreateModel.CustomerName,
+                    CustomerEmail = orderCreateModel.CustomerEmail,
+                    ShippingAddress = orderCreateModel.ShippingAddress,
+                    CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
+                    Note = orderCreateModel.Note,
+                    VoucherId = voucher != null ? voucher.Id : null,
+
+                    ExpiredAt = TimeZoneHelper.GetUtcNow().AddMinutes(_paymentSettings.ExpireMinutes),
+                    Status = totalAmount == 0 ? EPaymentSnapshotStatus.Paid : EPaymentSnapshotStatus.PendingPayment,
+
+                    SubtotalAmount = subtotalAmount,
+                    ShippingCharge = shippingCharge,
+                    TotalAmount = totalAmount,
+                    DiscountAmount = discountedAmount,
+
+                    Items = snapshotItems,
+
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    UpdatedAt = TimeZoneHelper.GetUtcNow(),
+                    CreatedBy = customer.Id,
+                    EntityStatus = EEntityStatus.Active,
+                };
+
+                await _uow.PaymentSnapshots.AddAsync(snapshot);
+
+
+                foreach (var item in productVariantOptionsDic)
+                {
+                    await _uow.StockReservations.AddAsync(new StockReservation
+                    {
+                        ProductVariantOptionId = item.Key.Id,
+                        PaymentSnapshotId = snapshotId,
+                        Quantity = item.Value,
+                        ReservedAt = TimeZoneHelper.GetUtcNow(),
+                        ExpiresAt = snapshot.ExpiredAt,
+
+                        PublicId = ShareFunctions.GenarateRandomStringId(),
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
                         EntityStatus = EEntityStatus.Active,
                     });
                 }
 
-                decimal itemTotal = pVO.Price * item.Quantity;
-                totalPrice += itemTotal;
+                var createPaymentSnapshotResult = new CreatePaymentSnapshotResult
+                {
+                    SnapshotId = snapshot.PublicId,
+                    Amount = snapshot.TotalAmount,
+                    Status = snapshot.Status
+                };
+
+                if (existingIdempotencyKey == null)
+                {
+                    var idempotencyKeyId = Guid.NewGuid();
+
+                    var idempotencyKeyEntity = new IdempotencyKey
+                    {
+                        Id = idempotencyKeyId,
+                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        UserId = customer.Id,
+                        Endpoint = "/api/order/create-snapshot",
+                        StatusCode = 200,
+                        ExpiredAt = TimeZoneHelper.GetUtcNow().AddHours(24),
+                        RequestKey = idempotencyKey,
+                        RequestHash = requestHash,
+                        ResponseBody = JsonSerializer.Serialize(createPaymentSnapshotResult),
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        EntityStatus = EEntityStatus.Active,
+                    };
+
+                    await _uow.IdempotencyKeys.AddAsync(idempotencyKeyEntity);
+                }
+
+                #endregion
+
+                #region Add new order if final amount == 0
+                if(totalAmount == 0)
+                {
+                    Guid orderId = Guid.NewGuid();
+                    var order = new Order
+                    {
+                        Id = orderId,
+                        CustomerId = customer.Id,
+                        CustomerPublicId = customer.PublicId,
+                        CustomerName = orderCreateModel.CustomerName,
+                        CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
+                        CustomerEmail = orderCreateModel.CustomerEmail,
+                        ShippingAddress = orderCreateModel.ShippingAddress,
+
+                        SubtotalAmount = snapshot.SubtotalAmount,
+                        DiscountAmount = snapshot.DiscountAmount,
+                        ShippingCharge = snapshot.ShippingCharge,
+                        TotalAmount = snapshot.TotalAmount,
+
+                        OrderStatus = EOrderStatus.Processing,
+                        OrderItems = snapshotItems.Select(x => x.ToOrderItem(orderId)).ToList(),
+
+                        PublicId = await _sequenceService.GetNextOrderIdAsync(),
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        EntityStatus = EEntityStatus.Active
+                    };
+
+                    var invoice = new Invoice
+                    {
+                        Id = Guid.NewGuid(),
+                        PublicId = await _sequenceService.GetNextInvoiceIdAsync(),
+
+                        SubTotal = order.SubtotalAmount,
+                        TotalAmount = order.TotalAmount,
+                        DiscountAmount= order.DiscountAmount,
+                        PaidAmount = order.TotalAmount,
+
+                        Payments = new List<Payment>(),
+
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        CreatedBy = customer.Id,
+                        InvoiceStatus = EInvoiceStatus.Paid,
+                        EntityStatus = EEntityStatus.Active
+                    };
+
+                    Payment payment = new Payment
+                    {
+                        Id = Guid.NewGuid(),
+                        PublicId = await _sequenceService.GetNextPaymentIdAsync(),
+                        Invoice = invoice,
+                        InvoiceId = invoice.Id,
+                        User = customer,
+                        UserId = customer.Id,
+                        Amount = totalAmount,
+                        PaymentMethod = EPaymentMethod.VoucherOrFree,
+                        PaymentStatus = EPaymentStatus.Paid,
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        EntityStatus = EEntityStatus.Active,
+                    };
+
+                    invoice.Payments.Add(payment);
+                    order.Invoice = invoice;
+
+                    await _uow.Orders.AddAsync(order);
+
+                    createPaymentSnapshotResult.OrderId = order.PublicId;
+                }
+
+                #endregion
+
+                var result = await _uow.CommitAsync();
+
+                if (result < 1)
+                {
+                    await transaction.RollbackAsync();
+                    return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
+                }
+
+                await transaction.CommitAsync();
+
+                return ServiceResult<CreatePaymentSnapshotResult>.Success(createPaymentSnapshotResult);
             }
-
-            var finalAmount = totalPrice - totalDiscount;
-
-            order.TotalPrice = totalPrice;
-            order.DiscountAmount = totalDiscount;
-            order.FinalAmount = finalAmount;
-
-            await _uow.Orders.AddAsync(order);
-
-            var result = await _uow.CommitAsync();
-
-            if (result < 1)
+            catch (DbUpdateException ex)
             {
-                return serviceResult;
+                await transaction.RollbackAsync();
+
+                if (ex.InnerException is not PostgresException postgresException ||
+                    postgresException.SqlState != PostgresErrorCodes.UniqueViolation ||
+                    postgresException.ConstraintName != "IX_IdempotencyKeys_UserId_RequestKey")
+                {
+                    throw;
+                }
+
+                var existingIdempotencyKey = await _uow.IdempotencyKeys.TableNoTracking
+                    .SingleOrDefaultAsync(x =>
+                        x.UserId == customer.Id &&
+                        x.RequestKey == idempotencyKey);
+
+                if (existingIdempotencyKey == null)
+                {
+                    throw;
+                }
+
+                if (existingIdempotencyKey.RequestHash != requestHash)
+                {
+                    return ServiceResult<CreatePaymentSnapshotResult>.Fail(
+                        EErrorType.IdempotencyKeyConflict,
+                        Messenger.IdempotencyKeyConflict);
+                }
+
+                var storedResponse = JsonSerializer.Deserialize<CreatePaymentSnapshotResult>(
+                    existingIdempotencyKey.ResponseBody);
+
+                if (storedResponse == null)
+                {
+                    throw new InvalidOperationException("Stored idempotency response is invalid.");
+                }
+
+                return ServiceResult<CreatePaymentSnapshotResult>.Success(storedResponse);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<ServiceResult<CreatePrePayOnlineOrderResult>> CreatePrepaidOnlineOrderFromSepayWebhookAsync(SepayWebhookRequest request)
+        {
+            var paymentTransaction = new PaymentTransaction()
+            {
+                TransactionId = request.Id.ToString(),
+                PaymentCode = request.Code,
+                Amount = request.TransferAmount,
+                TransactionDate = request.TransactionDate,
+                ReferenceCode = request.ReferenceCode,
+                Gateway = request.Gateway,
+                TransferContent = request.Content,
+                Status = EPaymentTransactionStatus.Received,
+
+                PublicId = ShareFunctions.GenarateRandomStringId(),
+                EntityStatus = EEntityStatus.Active,
+                CreatedAt = TimeZoneHelper.GetUtcNow()
+            };
+
+            await using var transaction = await _uow.BeginTransactionAsync();
+
+            try
+            {
+                //Validate duplicate transaction
+                var existingTransaction = await _uow.PaymentTransactions.FindOneAsync(
+                    x => x.TransactionId == paymentTransaction.TransactionId);
+
+                if (existingTransaction != null)
+                {
+                    await transaction.RollbackAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.PaymentAlreadyProcessed);
+                }
+
+                var snapshot = await _uow.PaymentSnapshots.GetForUpdateAsync_PostgreSQL(request.Code);
+                if (snapshot == null)
+                {
+                    _logger.LogInformation(OrderMessenger.NotFoundSnapshot + " snapshot Id " + request.Code);
+                    paymentTransaction.Status = EPaymentTransactionStatus.InvalidSnapshot;
+                    await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                    await _uow.CommitAsync();
+                    await transaction.CommitAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.SystemError);
+                }
+
+                if (snapshot.Status != EPaymentSnapshotStatus.PendingPayment || snapshot.ExpiredAt <= TimeZoneHelper.GetUtcNow())
+                {
+                    paymentTransaction.Status = EPaymentTransactionStatus.ExpiredSnapshot;
+                    await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                    await _uow.CommitAsync();
+                    await transaction.CommitAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.PaymentSnapshotExpired);
+                }
+
+                var customer = await _uow.Users.GetByInternalIdAsync(snapshot.CustomerId);
+                if (customer == null)
+                {
+                    _logger.LogInformation(Messenger.NotFoundUser + " user Id " + snapshot.CustomerId);
+                    paymentTransaction.PaymentSnapshotId = snapshot.Id;
+                    paymentTransaction.Status = EPaymentTransactionStatus.ManualReview;
+                    paymentTransaction.Note = Messenger.NotFoundUser;
+                    await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                    await _uow.CommitAsync();
+                    await transaction.CommitAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.SystemError);
+                }
+
+                if (request.TransferAmount < snapshot.TotalAmount)
+                {
+                    paymentTransaction.PaymentSnapshotId = snapshot.Id;
+                    paymentTransaction.Status = EPaymentTransactionStatus.IncorrectAmount;
+                    paymentTransaction.Note = PaymentMessenger.IncorrectAmount;
+                    await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                    await _uow.CommitAsync();
+                    await transaction.CommitAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
+                }
+
+                if (snapshot.TotalAmount < request.TransferAmount)
+                {
+                    customer.WalletBalance += request.TransferAmount - snapshot.TotalAmount;
+                    _uow.Users.Update(customer);
+                }
+                else if (snapshot.TotalAmount > request.TransferAmount)
+                {
+                    _logger.LogInformation(PaymentMessenger.IncorrectAmount + " sanpshot Id " + request.Code);
+                    paymentTransaction.Status = EPaymentTransactionStatus.IncorrectAmount;
+                    paymentTransaction.Note = PaymentMessenger.IncorrectAmount;
+                    await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                    await _uow.CommitAsync();
+                    await transaction.CommitAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
+                }
+
+                var snapshotItems = await _uow.PaymentSnapshotItems.FindManyAsync(i => i.PaymentSnapshotId == snapshot.Id);
+                snapshot.Items = snapshotItems.ToList();
+
+                paymentTransaction.PaymentSnapshotId = snapshot.Id;
+
+                #region Validate StockReservation
+
+                var reservations = await _uow.StockReservations.GetByPaymentSnapshotIdAsync(snapshot.Id, CancellationToken.None);
+                if (reservations.Count == 0 || reservations.Any(x => x.Status != StockReservationStatus.Reserved))
+                {
+                    paymentTransaction.Status = EPaymentTransactionStatus.ManualReview;
+                    paymentTransaction.Note = OrderMessenger.NotEnoughQuantity;
+                    await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                    await _uow.CommitAsync();
+                    await transaction.CommitAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                }
+
+                var reservationQuantities = reservations
+                    .GroupBy(x => x.ProductVariantOptionId)
+                    .ToDictionary(x => x.Key, x => x.Sum(r => r.Quantity));
+
+                if (snapshotItems.Any(item =>
+                        !reservationQuantities.TryGetValue(item.ProductVariantOptionId, out var quantity) ||
+                        quantity != item.Quantity) ||
+                    reservationQuantities.Count != snapshotItems.Count)
+                {
+                    paymentTransaction.Status = EPaymentTransactionStatus.ManualReview;
+                    paymentTransaction.Note = "Stock reservation does not match payment snapshot.";
+                    await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                    await _uow.CommitAsync();
+                    await transaction.CommitAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, Messenger.SystemError);
+                }
+
+                foreach (var item in snapshotItems)
+                {
+                    var pvo = await _uow.ProductVariantOptions.GetForUpdateAsync_PostgreSQL(item.ProductVariantOptionPublicId);
+                    if (pvo == null || pvo.Stock < item.Quantity)
+                    {
+                        paymentTransaction.Status = EPaymentTransactionStatus.ManualReview;
+                        paymentTransaction.Note = OrderMessenger.NotEnoughQuantity;
+                        await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                        await _uow.CommitAsync();
+                        await transaction.CommitAsync();
+                        return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                    }
+
+                    pvo.Stock -= item.Quantity;
+                    _uow.ProductVariantOptions.Update(pvo);
+                }
+
+                foreach (var reservation in reservations)
+                {
+                    reservation.Status = StockReservationStatus.Confirmed;
+                    _uow.StockReservations.Update(reservation);
+                }
+
+                #endregion
+
+                #region Validate Voucher
+                Voucher? voucher = null;
+
+                if (snapshot.VoucherId != null)
+                {
+                    voucher = await _uow.Vouchers.GetForUpdateByIdAsync_PostgreSQL(snapshot.VoucherId.Value);
+
+                    if (voucher == null)
+                    {
+                        paymentTransaction.PaymentSnapshotId = snapshot.Id;
+                        paymentTransaction.Status = EPaymentTransactionStatus.ManualReview;
+                        paymentTransaction.Note = "Voucher not found.";
+
+                        await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+                        await _uow.CommitAsync();
+                        await transaction.CommitAsync();
+
+                        return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
+                    }
+                }
+
+                #endregion
+
+                #region create order
+
+                Guid orderId = Guid.NewGuid();
+                string orderPublicId = await _sequenceService.GetNextOrderIdAsync();
+
+                var order = new Order
+                {
+                    Id = orderId,
+                    CustomerId = customer.Id,
+                    CustomerPublicId = customer.PublicId,
+                    CustomerName = snapshot.CustomerName,
+                    CustomerPhoneNumber = snapshot.CustomerPhoneNumber,
+                    CustomerEmail = snapshot.CustomerEmail,
+                    ShippingAddress = snapshot.ShippingAddress,
+                    Note = snapshot.Note,
+
+                    SubtotalAmount = snapshot.SubtotalAmount,
+                    DiscountAmount = snapshot.DiscountAmount,
+                    ShippingCharge = snapshot.ShippingCharge,
+                    TotalAmount = snapshot.TotalAmount,
+
+                    OrderStatus = EOrderStatus.Processing,
+                    OrderItems = snapshotItems.Select(x => x.ToOrderItem(orderId)).ToList(),
+
+                    PublicId = orderPublicId,
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    EntityStatus = EEntityStatus.Active
+                };
+
+                var invoice = new Invoice
+                {
+                    Id = Guid.NewGuid(),
+                    PublicId = await _sequenceService.GetNextInvoiceIdAsync(),
+
+                    SubTotal = order.SubtotalAmount,
+                    TotalAmount = order.TotalAmount,
+                    DiscountAmount = order.DiscountAmount,
+                    PaidAmount = order.TotalAmount,
+
+                    Payments = new List<Payment>(),
+
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    CreatedBy = customer.Id,
+                    InvoiceStatus = EInvoiceStatus.Paid,
+                    EntityStatus = EEntityStatus.Active
+                };
+
+                Payment payment = new Payment
+                {
+                    Id = Guid.NewGuid(),
+                    PublicId = await _sequenceService.GetNextPaymentIdAsync(),
+                    Invoice = invoice,
+                    InvoiceId = invoice.Id,
+                    User = customer,
+                    UserId = customer.Id,
+                    Amount = order.TotalAmount,
+                    PaymentMethod = EPaymentMethod.DomesticBank,
+                    PaymentStatus = EPaymentStatus.Paid,
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                    EntityStatus = EEntityStatus.Active,
+                };
+
+                paymentTransaction.PaymentId = payment.Id;
+                paymentTransaction.Status = EPaymentTransactionStatus.Processed;
+                await _uow.PaymentTransactions.AddAsync(paymentTransaction);
+
+                invoice.Payments.Add(payment);
+                order.Invoice = invoice;
+
+                await _uow.Orders.AddAsync(order);
+
+                // Add VoucherUsage
+                if (voucher != null)
+                {
+                    voucher.UsedCount += 1;
+                    voucher.ReservedCount -= 1;
+                    _uow.Vouchers.Update(voucher);
+
+                    await _uow.VoucherUsages.AddAsync(
+                        new VoucherUsage
+                        {
+                            PublicId = ShareFunctions.GenarateRandomStringId(),
+                            VoucherId = voucher.Id,
+                            UserId = customer.Id,
+                            OrderId = order.Id,
+                            UsedAt = DateTime.UtcNow,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                }
+
+                snapshot.Status = EPaymentSnapshotStatus.Paid;
+                snapshot.PaidAt = TimeZoneHelper.GetUtcNow();
+                snapshot.UpdatedAt = TimeZoneHelper.GetUtcNow();
+                _uow.PaymentSnapshots.Update(snapshot);
+
+                var result = await _uow.CommitAsync();
+
+                if (result < 1)
+                {
+                    await transaction.RollbackAsync();
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
+                }
+
+                #endregion
+
+                await transaction.CommitAsync();
+
+                var createOrderResult = new CreatePrePayOnlineOrderResult
+                {
+                    OrderId = order.PublicId,
+                    PaymentSnapshotId = snapshot.PublicId,
+                    Amount = order.TotalAmount,
+                };
+
+                return ServiceResult<CreatePrePayOnlineOrderResult>.Success(createOrderResult);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<ServiceResult<CreateCODOnlineOrderResult>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)
+        {
+            var customer = await _uow.Users.GetByIdAsync(userId);
+            if (customer == null)
+            {
+                return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = order.PublicId;
-            serviceResult.Message = Messenger.SuccessFull;
+            if (orderCreateModel.Items == null || orderCreateModel.Items.Count == 0)
+            {
+                return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+            }
 
-            return serviceResult;
+            await using var transaction = await _uow.BeginTransactionAsync();
+
+            try
+            {
+                var groupedItems = orderCreateModel.Items
+                    .GroupBy(x => x.ProductVariantOptionId)
+                    .OrderBy(x => x.Key, StringComparer.Ordinal)
+                    .Select(x => new
+                    {
+                        ProductVariantOptionId = x.Key,
+                        Quantity = x.Sum(item => item.Quantity)
+                    })
+                    .ToList();
+
+                if (groupedItems.Any(x => string.IsNullOrWhiteSpace(x.ProductVariantOptionId) || x.Quantity <= 0))
+                {
+                    await transaction.RollbackAsync();
+                    return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+                }
+
+                var orderItems = new List<OrderItem>();
+                var orderId = Guid.NewGuid();
+                decimal subtotalAmount = 0;
+                var now = TimeZoneHelper.GetUtcNow();
+
+                foreach (var item in groupedItems)
+                {
+                    var pvo = await _uow.ProductVariantOptions
+                        .GetForUpdateAsync_PostgreSQL(item.ProductVariantOptionId);
+
+                    if (pvo == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.NoExitData);
+                    }
+
+                    var reservedStock = await _uow.StockReservations.TableNoTracking
+                        .Where(x => x.ProductVariantOptionId == pvo.Id &&
+                                    x.Status == StockReservationStatus.Reserved &&
+                                    x.ExpiresAt > now)
+                        .SumAsync(x => x.Quantity);
+
+                    if (item.Quantity > pvo.Stock - reservedStock)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                    }
+
+                    pvo.Stock -= item.Quantity;
+                    _uow.ProductVariantOptions.Update(pvo);
+
+                    orderItems.Add(new OrderItem
+                    {
+                        PublicId = $"{now:yyyyMMdd}{Random.Shared.Next(100000, 1000000):D6}",
+                        ProductVariantOptionId = pvo.Id,
+                        ProductVariantOptionPublicId = pvo.PublicId,
+                        OrderId = orderId,
+                        CategoryName = pvo.ProductVariant.Product.Category.Name,
+                        ProductName = pvo.ProductVariant.Product.Name + " " + pvo.ProductVariant.Name + " " + pvo.Name,
+                        ImageUrl = pvo.ImageUrl,
+                        Quantity = item.Quantity,
+                        PriceAtOrderTime = pvo.Price,
+                        TotalPrice = item.Quantity * pvo.Price,
+                        CreatedAt = now,
+                        EntityStatus = EEntityStatus.Active,
+                    });
+
+                    subtotalAmount += item.Quantity * pvo.Price;
+                }
+
+                Voucher? voucher = null;
+                decimal discountAmount = 0;
+
+                if (!string.IsNullOrWhiteSpace(orderCreateModel.VoucherCode))
+                {
+                    voucher = await _uow.Vouchers
+                        .GetForUpdateByVoucherCodeAsync_PostgreSQL(orderCreateModel.VoucherCode);
+
+                    if (voucher == null ||
+                        voucher.Status != EVoucherStatus.Active ||
+                        voucher.StartDate > now ||
+                        voucher.EndDate < now ||
+                        voucher.Available <= 0 ||
+                        subtotalAmount < voucher.MinOrderPrice)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                    }
+
+                    var usageCount = await _uow.VoucherUsages.CountAsync(
+                        x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
+
+                    if (usageCount >= voucher.UsageLimit)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                    }
+
+                    discountAmount = voucher.DiscountType == EDiscountType.Percentage
+                        ? voucher.DiscountValue * subtotalAmount
+                        : voucher.DiscountValue;
+
+                    if (discountAmount > voucher.MaxDiscountAmount)
+                    {
+                        discountAmount = voucher.MaxDiscountAmount;
+                    }
+
+                    voucher.ReservedCount++;
+                    _uow.Vouchers.Update(voucher);
+                }
+
+                var totalAmount = Math.Max(0, subtotalAmount - discountAmount);
+                var order = new Order
+                {
+                    Id = orderId,
+                    PublicId = await _sequenceService.GetNextOrderIdAsync(),
+                    Customer = customer,
+                    CustomerId = customer.Id,
+                    CustomerPublicId = customer.PublicId,
+                    CustomerName = orderCreateModel.CustomerName,
+                    CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
+                    CustomerEmail = orderCreateModel.CustomerEmail,
+                    SubtotalAmount = subtotalAmount,
+                    ShippingCharge = 0,
+                    DiscountAmount = discountAmount,
+                    TotalAmount = totalAmount,
+                    OrderStatus = EOrderStatus.Pending,
+                    OrderItems = orderItems,
+                    ShippingAddress = orderCreateModel.ShippingAddress,
+                    Note = orderCreateModel.Note,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    CreatedBy = customer.Id,
+                    EntityStatus = EEntityStatus.Active,
+                };
+
+                await _uow.Orders.AddAsync(order);
+
+                if (voucher != null)
+                {
+                    voucher.UsedCount++;
+                    voucher.ReservedCount--;
+                    _uow.Vouchers.Update(voucher);
+
+                    await _uow.VoucherUsages.AddAsync(new VoucherUsage
+                    {
+                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        VoucherId = voucher.Id,
+                        UserId = customer.Id,
+                        OrderId = order.Id,
+                        UsedAt = now,
+                        CreatedAt = now,
+                        EntityStatus = EEntityStatus.Active,
+                    });
+                }
+
+                var result = await _uow.CommitAsync();
+                if (result < 1)
+                {
+                    await transaction.RollbackAsync();
+                    return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                }
+
+                await transaction.CommitAsync();
+
+                var response = new CreateCODOnlineOrderResult { Id = order.PublicId };
+
+                return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
        
@@ -706,7 +1368,9 @@ namespace TechStore.Service.Implementations
                 Order = order,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
                 CreatedBy = userUpdating.Id,
-                TotalAmount = order.FinalAmount,
+                SubTotal = order.SubtotalAmount,
+                DiscountAmount = order.DiscountAmount,
+                TotalAmount = order.TotalAmount,
                 PaidAmount = 0,
                 Payments = new List<Payment>(),
                 InvoiceStatus = EInvoiceStatus.Unpaid,

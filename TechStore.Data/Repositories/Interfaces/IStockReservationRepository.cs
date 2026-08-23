@@ -7,8 +7,8 @@ using TechStore.Data.Entities;
 
 namespace TechStore.Data.Repositories.Interfaces
 {
-    public interface IProductVariantRepository : IRepository<ProductVariant>
+    public interface IStockReservationRepository : IRepository<StockReservation>
     {
-        Task<ProductVariant?> GetProductVariantOptionDetailAsync(string publicId);
+        Task<List<StockReservation>> GetByPaymentSnapshotIdAsync(Guid snapshotId, CancellationToken cancellationToken);
     }
 }

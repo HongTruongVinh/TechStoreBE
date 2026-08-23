@@ -17,16 +17,19 @@ namespace TechStoreAPI.Controllers
         private readonly IHubContext<PaymentHub> _hubContext;
         private readonly IPaymentService _paymentService;
         private readonly IPaymentNotificationService _paymentNotificationService;
+        private readonly IOrderService _orderService;
 
         public PaymentWebhookController(
             ILogger<PaymentWebhookController> logger,
             IHubContext<PaymentHub> hubContext,
             IPaymentService paymentService,
+            IOrderService orderService,
             IPaymentNotificationService paymentNotificationService)
         {
             _logger = logger;
             _hubContext = hubContext;
             _paymentService = paymentService;
+            _orderService = orderService;
             _paymentNotificationService = paymentNotificationService;
         }
 
@@ -40,7 +43,7 @@ namespace TechStoreAPI.Controllers
                 request.TransferAmount,
                 request.Gateway);
 
-            var result = await _paymentService.VerifyPaymentForSnapshotAsync(request);
+            var result = await _orderService.CreatePrepaidOnlineOrderFromSepayWebhookAsync(request);
 
             await _paymentNotificationService.NotifyPaymentResultAsync(result, request);
 

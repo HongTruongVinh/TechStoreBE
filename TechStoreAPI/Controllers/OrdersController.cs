@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TechStore.Common.Constants;
-using TechStore.Model.DTOs.Order;
 using TechStore.Common.Models;
+using TechStore.Model.DTOs.Order;
+using TechStore.Model.DTOs.Payment;
+using TechStore.Model.DTOs.Snapshot;
+using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
 using TechStoreAPI.Extensions;
 
@@ -51,8 +54,26 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize]
+        [HttpPost("create-snapshot-order")]
+        public async Task<ActionResult<ApiResponse<CreatePaymentSnapshotResult>>> CreateSnapshotOrderAsync(OrderCreateModel createOrderRequest)
+        {
+            var userId = User.GetRequiredUserId();
+
+            var idempotencyKey = HttpContext.Request.Headers["Idempotency-Key"].FirstOrDefault();
+
+            if (idempotencyKey == null)
+            {
+                return BadRequest(new ApiResponse<PaymentDataForSnapshotModel> { Success = false, Message = "Idempotency-Key header is required" });
+            }
+
+            var serviceResult = await _orderService.CreateSnapshotAsync(userId, createOrderRequest, idempotencyKey);
+
+            return serviceResult.ToActionResult(this);
+        }
+
         [HttpPost("cod-order")]
-        public async Task<ActionResult<ApiResponse<string>>> CreateCODOnlineOrderAsync(OrderCreateModel orderCreateModel)
+        public async Task<ActionResult<ApiResponse<CreateCODOnlineOrderResult>>> CreateCODOnlineOrderAsync(OrderCreateModel orderCreateModel)
         {
             var userId = User.GetRequiredUserId();
 

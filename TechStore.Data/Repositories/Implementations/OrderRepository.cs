@@ -54,8 +54,8 @@ namespace TechStore.Data.Repositories.Implementations
             orders = query.SortBy?.ToLower() switch
             {
                 "totalprice" => query.Descending
-                    ? orders.OrderByDescending(o => o.TotalPrice)
-                    : orders.OrderBy(o => o.TotalPrice),
+                    ? orders.OrderByDescending(o => o.SubtotalAmount)
+                    : orders.OrderBy(o => o.SubtotalAmount),
 
                 "createdat" => query.Descending
                     ? orders.OrderByDescending(o => o.CreatedAt)

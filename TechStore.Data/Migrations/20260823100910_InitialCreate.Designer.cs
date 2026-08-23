@@ -13,7 +13,7 @@ using TechStore.Data.Context;
 namespace TechStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260813103408_InitialCreate")]
+    [Migration("20260823100910_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -349,6 +349,9 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<int>("EntityStatus")
                         .HasColumnType("integer");
 
@@ -367,6 +370,9 @@ namespace TechStore.Data.Migrations
                     b.Property<string>("PublicId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("numeric");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric");
@@ -424,9 +430,6 @@ namespace TechStore.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("FinalAmount")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
@@ -443,7 +446,10 @@ namespace TechStore.Data.Migrations
                     b.Property<decimal>("ShippingCharge")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<decimal>("SubtotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -539,13 +545,6 @@ namespace TechStore.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("BankReferenceCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CheckoutSnapshotJson")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -558,10 +557,6 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PaymentCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
@@ -569,10 +564,6 @@ namespace TechStore.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("PublicId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TransactionId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -629,11 +620,14 @@ namespace TechStore.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("FinalAmount")
-                        .HasColumnType("numeric");
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PublicId")
                         .IsRequired()
@@ -646,7 +640,13 @@ namespace TechStore.Data.Migrations
                     b.Property<decimal>("ShippingCharge")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SubtotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -730,6 +730,89 @@ namespace TechStore.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("PaymentSnapshotItems");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.PaymentTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Gateway")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PaymentCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PaymentSnapshotId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RawPayload")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReferenceCode")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TransactionDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TransferContent")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentCode");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("PaymentSnapshotId");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
+                    b.ToTable("PaymentTransactions");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.Product", b =>
@@ -1224,6 +1307,62 @@ namespace TechStore.Data.Migrations
                     b.ToTable("ShippingDetails");
                 });
 
+            modelBuilder.Entity("TechStore.Data.Entities.StockReservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PaymentSnapshotId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductVariantOptionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductVariantOptionId");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentSnapshotId", "ProductVariantOptionId")
+                        .IsUnique();
+
+                    b.ToTable("StockReservations");
+                });
+
             modelBuilder.Entity("TechStore.Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1550,6 +1689,21 @@ namespace TechStore.Data.Migrations
                     b.Navigation("PaymentSnapshot");
                 });
 
+            modelBuilder.Entity("TechStore.Data.Entities.PaymentTransaction", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId");
+
+                    b.HasOne("TechStore.Data.Entities.PaymentSnapshot", "PaymentSnapshot")
+                        .WithMany()
+                        .HasForeignKey("PaymentSnapshotId");
+
+                    b.Navigation("Payment");
+
+                    b.Navigation("PaymentSnapshot");
+                });
+
             modelBuilder.Entity("TechStore.Data.Entities.Product", b =>
                 {
                     b.HasOne("TechStore.Data.Entities.Brand", "Brand")
@@ -1608,6 +1762,25 @@ namespace TechStore.Data.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Shipper");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.StockReservation", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.PaymentSnapshot", "PaymentSnapshot")
+                        .WithMany()
+                        .HasForeignKey("PaymentSnapshotId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TechStore.Data.Entities.ProductVariantOption", "ProductVariantOption")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantOptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PaymentSnapshot");
+
+                    b.Navigation("ProductVariantOption");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.VoucherUsage", b =>

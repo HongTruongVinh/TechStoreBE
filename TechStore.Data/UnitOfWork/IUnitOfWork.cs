@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechStore.Data.Repositories.Implementations;
 using TechStore.Data.Repositories.Interfaces;
 
 namespace TechStore.Data.UnitOfWork
@@ -21,11 +22,13 @@ namespace TechStore.Data.UnitOfWork
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItems { get; }
         IPaymentRepository Payments { get; }
+        IPaymentTransactionRepository PaymentTransactions { get; }
         IPaymentSnapshotRepository PaymentSnapshots { get; }
         IPaymentSnapshotItemRepository PaymentSnapshotItems { get; }
         IReportRepository Reports { get; }
         IShipperRepository Shippers { get; }
         IShippingDetailRepository ShippingDetails { get; }
+        IStockReservationRepository StockReservations { get; }
         IUserRepository Users { get; }
         IVoucherRepository Vouchers { get; }
         IVoucherUsageRepository VoucherUsages { get; }

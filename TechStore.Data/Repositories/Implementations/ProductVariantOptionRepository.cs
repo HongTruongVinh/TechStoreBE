@@ -38,5 +38,31 @@ namespace TechStore.Data.Repositories.Implementations
                 .ThenInclude(p => p.Category)
                 .FirstOrDefaultAsync(p => p.PublicId == publicId);
         }
+
+        public async Task<ProductVariantOption?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return await _dbSet.Where(p => p.Id == id).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<ProductVariantOption?> GetForUpdateAsync_PostgreSQL(string publicId)
+        {
+            return await _context.ProductVariantOptions
+                                    .FromSqlInterpolated($@"
+                                        SELECT *
+                                        FROM ""ProductVariantOptions""
+                                        WHERE ""PublicId"" = {publicId}
+                                        FOR UPDATE")
+                                    .SingleOrDefaultAsync();
+        }
+
+        public async Task<ProductVariantOption?> GetForUpdateAsync_SQLServer(Guid id)
+        {
+            return await _context.ProductVariantOptions
+                                   .FromSqlInterpolated($@"
+                                        SELECT *
+                                        FROM ProductVariantOptions WITH (UPDLOCK, ROWLOCK)
+                                        WHERE Id = {id}")
+                                   .SingleOrDefaultAsync();
+        }
     }
 }

@@ -29,13 +29,47 @@ namespace TechStore.Service.Implementations
             _uow = uow;
         }
 
-        public async Task<ServiceResult<VoucherResponseModel>> CheckVoucherAsync(string voucherCode, List<OrderItemCreateModel> product)
+        public async Task<ServiceResult<VoucherResponseModel>> CheckVoucherAsync(string userId, string voucherCode, List<OrderItemCreateModel> product)
         {
+            var customer = await _uow.Users.TableNoTracking.Where(u => u.PublicId == userId).FirstOrDefaultAsync();
+
+            if (customer == null)
+            {
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+            }
+
             var voucher = await _uow.Vouchers.TableNoTracking.Where(v => v.Code == voucherCode).FirstOrDefaultAsync();
 
             if (voucher == null)
             {
                 return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
+            }
+
+            if (voucher.EndDate < DateTime.UtcNow)
+            {
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+            }
+
+            if (voucher.StartDate > DateTime.UtcNow)
+            {
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+            }
+
+            if (voucher.Status != EVoucherStatus.Active)
+            {
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+            }
+
+            if (voucher.Available <= 0)
+            {
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+            }
+
+            var usageCount = await _uow.VoucherUsages.CountAsync(x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
+
+            if (usageCount >= voucher.UsageLimit)
+            {
+                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
             }
 
             decimal totalPrice = 0;

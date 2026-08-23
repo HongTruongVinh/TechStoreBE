@@ -2,6 +2,7 @@
 using Techstore.API.Hubs;
 using TechStore.Common.Constants;
 using TechStore.Common.Models;
+using TechStore.Model.DTOs.Order;
 using TechStore.Model.DTOs.Payment;
 using TechStoreAPI.Controllers;
 
@@ -14,7 +15,7 @@ namespace TechStoreAPI.Hubs
 
         Task NotifyPaymentFailedAsync(string snapshotId, decimal amount, string message);
 
-        Task NotifyPaymentResultAsync(ServiceResult<VerifyResult> result, SepayWebhookRequest request);
+        Task NotifyPaymentResultAsync(ServiceResult<CreatePrePayOnlineOrderResult> result, SepayWebhookRequest request);
     }
 
     public class SignalRPaymentNotificationService : IPaymentNotificationService
@@ -53,44 +54,24 @@ namespace TechStoreAPI.Hubs
                 });
         }
 
-        public async Task NotifyPaymentResultAsync(ServiceResult<VerifyResult> result, SepayWebhookRequest request)
+        public async Task NotifyPaymentResultAsync(ServiceResult<CreatePrePayOnlineOrderResult> result, SepayWebhookRequest request)
         {
             if (result.Data != null)
             {
-                if (result.IsSuccess)
-                {
-                    _logger.LogInformation(
+                _logger.LogInformation(
                         "[SEPAY][SUCCESS] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
-                        result.Data.SnapshotId,
+                        result.Data.PaymentSnapshotId,
                         result.Data.Amount,
-                        result.Data.Message);
+                        result.Message);
 
-                    await _hubContext.Clients
-                        .Group(result.Data.SnapshotId)
-                        .SendAsync("PaymentSuccess", new
-                        {
-                            paymentId = result.Data.SnapshotId,
-                            amount = result.Data.Amount,
-                            message = result.Data.Message
-                        });
-                }
-                else
-                {
-                    _logger.LogWarning(
-                        "[SEPAY][FAILED] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
-                        result.Data.SnapshotId,
-                        result.Data.Amount,
-                        result.Data.Message);
-
-                    await _hubContext.Clients
-                        .Group(result.Data.SnapshotId)
-                        .SendAsync("PaymentFailed", new
-                        {
-                            paymentId = result.Data.SnapshotId,
-                            amount = result.Data.Amount,
-                            message = result.Data.Message
-                        });
-                }
+                await _hubContext.Clients
+                    .Group(result.Data.PaymentSnapshotId)
+                    .SendAsync("PaymentSuccess", new CreatePrePayOnlineOrderResult
+                    {
+                        PaymentSnapshotId = result.Data.PaymentSnapshotId,
+                        Amount = result.Data.Amount,
+                        OrderId = result.Data.OrderId
+                    });
             }
             else
             {
@@ -104,11 +85,69 @@ namespace TechStoreAPI.Hubs
                         .Group(request.Code)
                         .SendAsync("PaymentFailed", new
                         {
-                            paymentId = request.Code,
+                            PaymentSnapshotId = request.Code,
                             amount = request.TransferAmount,
-                            message = Messenger.SystemError
+                            message = result.Message
                         });
             }
         }
+
+        //public async Task NotifyPaymentResultAsync(ServiceResult<VerifyResult> result, SepayWebhookRequest request)
+        //{
+        //    if (result.Data != null)
+        //    {
+        //        if (result.IsSuccess)
+        //        {
+        //            _logger.LogInformation(
+        //                "[SEPAY][SUCCESS] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
+        //                result.Data.SnapshotId,
+        //                result.Data.Amount,
+        //                result.Data.Message);
+
+        //            await _hubContext.Clients
+        //                .Group(result.Data.SnapshotId)
+        //                .SendAsync("PaymentSuccess", new
+        //                {
+        //                    paymentId = result.Data.SnapshotId,
+        //                    amount = result.Data.Amount,
+        //                    message = result.Data.Message
+        //                });
+        //        }
+        //        else
+        //        {
+        //            _logger.LogWarning(
+        //                "[SEPAY][FAILED] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
+        //                result.Data.SnapshotId,
+        //                result.Data.Amount,
+        //                result.Data.Message);
+
+        //            await _hubContext.Clients
+        //                .Group(result.Data.SnapshotId)
+        //                .SendAsync("PaymentFailed", new
+        //                {
+        //                    paymentId = result.Data.SnapshotId,
+        //                    amount = result.Data.Amount,
+        //                    message = result.Data.Message
+        //                });
+        //        }
+        //    }
+        //    else
+        //    {
+        //        _logger.LogWarning(
+        //            "[SEPAY][NO_SNAPSHOT] Ref={ReferenceCode}, Code={Code}, Amount={Amount}",
+        //            request.ReferenceCode,
+        //            request.Code,
+        //            request.TransferAmount);
+
+        //        await _hubContext.Clients
+        //                .Group(request.Code)
+        //                .SendAsync("PaymentFailed", new
+        //                {
+        //                    paymentId = request.Code,
+        //                    amount = request.TransferAmount,
+        //                    message = Messenger.SystemError
+        //                });
+        //    }
+        //}
     }
 }

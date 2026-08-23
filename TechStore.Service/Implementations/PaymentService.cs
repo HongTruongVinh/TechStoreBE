@@ -74,9 +74,6 @@ namespace TechStore.Service.Implementations
                 UserId = customer.Id,
                 Amount = cashPayment.Amount,
                 PaymentMethod = EPaymentMethod.Cash,
-                PaymentCode = "",
-                TransactionId = "",
-                BankReferenceCode = "",
                 PaymentStatus = EPaymentStatus.Paid,
                
 
@@ -221,270 +218,6 @@ namespace TechStore.Service.Implementations
         }
 
 
-        public async Task<ServiceResult<VerifyResult>> VerifyPaymentForSnapshotAsync(SepayWebhookRequest request)
-        {
-
-            var snapshot = await _uow.PaymentSnapshots.GetWithItemsAsync(request.Code);
-            if (snapshot == null)
-            {
-                return ServiceResult<VerifyResult>.Fail(EErrorType.NotFound, Messenger.SystemError);
-            }
-
-            var user = await _uow.Users.GetByInternalIdAsync(snapshot.CustomerId);
-            if (user == null)
-            {
-                return ServiceResult<VerifyResult>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
-            }
-
-            var transaction = await _uow.BeginTransactionAsync();
-
-            if (snapshot.FinalAmount < request.TransferAmount)
-            {
-                user.WalletBalance += request.TransferAmount;
-                _uow.Users.Update(user);
-
-                var updateUserResult = await _uow.CommitAsync();
-                if (updateUserResult < 1)
-                {
-                    return ServiceResult<VerifyResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
-                }
-
-                return ServiceResult<VerifyResult>.Fail(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
-            }
-            
-
-            var paymentData = new PaymentForSnapshot
-            {
-                Amount = request.TransferAmount,
-                Code = request.Code,
-                BankReferenceCode = request.ReferenceCode,
-                TransactionId = request.Id.ToString(),
-            };
-
-
-            var orderServiceResultOrder = await _orderService.CreatePrePayOnlineOrderAsync(user.PublicId, snapshot, paymentData);
-
-            if (orderServiceResultOrder.IsSuccess == false)
-            {
-                await transaction.RollbackAsync();
-                return ServiceResult<VerifyResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
-            }
-
-            return ServiceResult<VerifyResult>.Success(new VerifyResult()
-            {
-                SnapshotId = snapshot.PublicId,
-                Amount = request.TransferAmount,
-                Message = PaymentMessenger.PaymentVerified
-            });
-        }
-
-        public async Task<ServiceResult<PaymentDataForSnapshotModel>> CreatePaymentForSnapshotAsync(string userId, OrderCreateModel orderCreateModel, string idempotencyKey)
-        {
-            var customer = await _uow.Users.TableNoTracking.Where(u => u.PublicId == userId).FirstOrDefaultAsync();
-
-            if (customer == null)
-            {
-                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
-            }
-
-            // validate idempotency key
-            var existingIdempotencyKey = await _uow.IdempotencyKeys.TableNoTracking.Where(i => i.RequestKey == idempotencyKey).FirstOrDefaultAsync();
-
-            if (existingIdempotencyKey != null)
-            {
-                // Check body request hash to ensure the same request is being made
-                if (existingIdempotencyKey.RequestHash == ShareFunctions.ComputeHash(orderCreateModel))
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Success(JsonSerializer.Deserialize<PaymentDataForSnapshotModel>(existingIdempotencyKey.ResponseBody));
-                }
-                else
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
-                }
-            } 
-
-            // Validate Voucher
-            Voucher? voucher = null;
-            decimal discountedAmount = 0;
-
-            if (!string.IsNullOrWhiteSpace(orderCreateModel.VoucherCode))
-            {
-                voucher = await _uow.Vouchers.FindOneAsync(x => x.Code == orderCreateModel.VoucherCode);
-
-                if (voucher == null)
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
-                }
-
-                if (voucher.EndDate < DateTime.UtcNow)
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
-                }
-
-                if (voucher.Available == 0)
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
-                }
-
-                var usageCount = await _uow.VoucherUsages.CountAsync(x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
-
-                if (usageCount >= voucher.UsageLimit)
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
-                }
-            }
-
-            var paymentId = await _sequenceService.GetNextPaymentIdAsync();
-
-            // Tính toán tổng tiền
-            decimal totalPrice = 0;
-            decimal shippingCharge = 0;
-
-            var snapshot = new PaymentSnapshot
-            {
-                Id = Guid.NewGuid(),
-                PublicId = _sequenceService.GetNextSnapshotId(),
-                CustomerId = customer.Id,
-                CustomerName = orderCreateModel.CustomerName,
-                CustomerEmail = orderCreateModel.CustomerEmail,
-                ShippingAddress = orderCreateModel.ShippingAddress,
-                CustomerPhoneNumber = orderCreateModel.CustomerPhoneNumber,
-                Note = orderCreateModel.Note,
-
-                TotalPrice = 0,
-                ShippingCharge = 0,
-                FinalAmount = 0,
-                DiscountAmount = 0,
-
-                Items = new List<PaymentSnapshotItem>(),
-
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                UpdatedAt = TimeZoneHelper.GetUtcNow(),
-                CreatedBy = customer.Id,
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            foreach (var item in orderCreateModel.Items)
-            {
-                var pVO = await _uow.ProductVariantOptions.GetOrderItemDetailAsync(item.ProductVariantOptionId);
-
-                if (pVO == null)
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NoExitData + " " + item.ProductVariantOptionId);
-                }
-
-                if (pVO.Stock < item.Quantity)
-                {
-                    return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.BadRequest, Messenger.NoExitData + " " + item.ProductVariantOptionId);
-                }
-                else
-                {
-                    snapshot.Items.Add(new PaymentSnapshotItem
-                    {
-                        Id = Guid.NewGuid(),
-                        PublicId = ShareFunctions.GenarateRandomStringId(),
-                        PaymentSnapshotId = snapshot.Id,
-                        PaymentSnapshot = snapshot,
-                        ProductVariantOptionId = pVO.Id,
-                        ProductVariantOptionPublicId = pVO.PublicId,
-
-                        CategoryName = pVO.ProductVariant.Product.Category.Name,
-                        ProductName = pVO.ProductVariant.Product.Name + " " + pVO.ProductVariant.Name + " " + pVO.Name,
-                        UrlImage = pVO.ImageUrl,
-
-                        Quantity = item.Quantity,
-                        PriceAtOrderTime = pVO.Price,
-                        TotalPrice = item.Quantity * pVO.Price,
-
-                        CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        UpdatedAt = TimeZoneHelper.GetUtcNow(),
-                        CreatedBy = customer.Id,
-                        EntityStatus = EEntityStatus.Active,
-                    });
-                }
-
-                decimal itemTotal = item.Quantity * pVO.Price;
-                totalPrice += itemTotal;
-            }
-
-            // Calculate Discount
-            if (voucher != null)
-            {
-                if (voucher.DiscountType == EDiscountType.Percentage)
-                {
-                    discountedAmount = voucher.DiscountValue * totalPrice;
-
-                    if (discountedAmount > voucher.MaxDiscountAmount) discountedAmount = voucher.MaxDiscountAmount;
-                }
-                else
-                {
-                    discountedAmount = voucher.DiscountValue;
-                }
-
-                snapshot.VoucherId = voucher.Id;
-
-                voucher.ReservedCount++;
-                _uow.Vouchers.Update(voucher);
-            }
-
-            var finalAmount = totalPrice - discountedAmount;
-
-            if (discountedAmount > totalPrice)
-            {
-                finalAmount = 0;
-            }
-
-            snapshot.TotalPrice = totalPrice;
-            snapshot.DiscountAmount = discountedAmount;
-            snapshot.ShippingCharge = shippingCharge;
-            snapshot.FinalAmount = totalPrice - discountedAmount + shippingCharge;
-
-
-            var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.FinalAmount, snapshot.PublicId);
-
-            if (paymentQrUrl == null)
-            {
-                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.SystemError, Messenger.SystemError);
-            }
-
-            var paymentData = new PaymentDataForSnapshotModel()
-            {
-                SnapshotId = snapshot.PublicId,
-                QrDataURL = paymentQrUrl,
-                Amount = snapshot.FinalAmount,
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                ExpiredAt = TimeZoneHelper.GetUtcNow().AddMinutes(15),
-            };
-
-            var idempotencyKeyEntry = new IdempotencyKey
-            {
-                Id = Guid.NewGuid(),
-                PublicId = ShareFunctions.GenarateRandomStringId(),
-                UserId = customer.Id,
-                Endpoint = "/api/payments/snapshot",
-                StatusCode = 200,
-                ExpiredAt = TimeZoneHelper.GetUtcNow().AddHours(24),
-                RequestKey = idempotencyKey,
-                RequestHash = ShareFunctions.ComputeHash(orderCreateModel),
-                ResponseBody = JsonSerializer.Serialize(paymentData),
-                CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active,
-            };
-
-            await _uow.PaymentSnapshots.AddAsync(snapshot);
-
-            await _uow.IdempotencyKeys.AddAsync(idempotencyKeyEntry);
-
-            var result = await _uow.CommitAsync();
-
-            if (result < 1)
-            {
-                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.SystemError, Messenger.SystemError);
-            }
-
-            return ServiceResult<PaymentDataForSnapshotModel>.Success(paymentData);
-        }
-
         public async Task<ServiceResult<PaymentDataModel>> CreatePaymentForInvoiceByAdminAsync(string userId, PaymentCreateModel model)
         {
             var serviceResult = new ServiceResult<PaymentDataModel>
@@ -529,9 +262,6 @@ namespace TechStore.Service.Implementations
                 UserId = invoice.Order.CustomerId,
                 PaymentMethod = EPaymentMethod.DomesticBank,
                 PaymentStatus = EPaymentStatus.Pending,
-                PaymentCode = "",
-                BankReferenceCode = "",
-                TransactionId = "",
                 Amount = model.Amount,
                 CreatedBy = cashier.Id,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
@@ -632,6 +362,57 @@ namespace TechStore.Service.Implementations
             serviceResult.IsSuccess = true;
             serviceResult.Message = Messenger.SuccessFull;
             return serviceResult;
+        }
+
+        public async Task<ServiceResult<PaymentDataForSnapshotModel>> GenerateSnapshotPaymentQrAsync(string userId, string snapshotId)
+        {
+            var now = TimeZoneHelper.GetUtcNow();
+            var customer = await _uow.Users.TableNoTracking
+                .Where(u => u.PublicId == userId)
+                .Select(u => new { u.Id })
+                .FirstOrDefaultAsync();
+
+            if (customer == null)
+            {
+                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+            }
+
+            var snapshot = await _uow.PaymentSnapshots.TableNoTracking
+                .Where(x =>
+                    x.PublicId == snapshotId &&
+                    x.CustomerId == customer.Id &&
+                    x.Status == EPaymentSnapshotStatus.PendingPayment &&
+                    x.ExpiredAt > now)
+                .Select(x => new
+                {
+                    x.PublicId,
+                    x.TotalAmount,
+                    x.ExpiredAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (snapshot == null)
+            {
+                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NoExitData);
+            }
+
+            var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.TotalAmount, snapshot.PublicId);
+
+            if (paymentQrUrl == null)
+            {
+                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+            }
+
+            var paymentData = new PaymentDataForSnapshotModel()
+            {
+                SnapshotId = snapshot.PublicId,
+                QrDataURL = paymentQrUrl,
+                Amount = snapshot.TotalAmount,
+                CreatedAt = now,
+                ExpiredAt = snapshot.ExpiredAt,
+            };
+
+            return ServiceResult<PaymentDataForSnapshotModel>.Success(paymentData);
         }
     }
 }

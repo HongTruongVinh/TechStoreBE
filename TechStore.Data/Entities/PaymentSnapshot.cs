@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechStore.Common.Enums;
 
 namespace TechStore.Data.Entities
 {
@@ -15,10 +16,14 @@ namespace TechStore.Data.Entities
         public required string CustomerPhoneNumber { get; set; }
         public string? CustomerEmail { get; set; }
 
-        public required decimal TotalPrice { get; set; }
+        public required decimal SubtotalAmount { get; set; }
         public required decimal ShippingCharge { get; set; }
         public required decimal DiscountAmount { get; set; }
-        public required decimal FinalAmount { get; set; }
+        public required decimal TotalAmount { get; set; }
+
+        public required DateTime ExpiredAt { get; set; }
+        public required EPaymentSnapshotStatus Status { get; set; }
+        public DateTime? PaidAt { get; set; }
 
         public string? Note { get; set; }
         public Guid? VoucherId { get; set; }

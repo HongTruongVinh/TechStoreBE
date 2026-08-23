@@ -17,7 +17,6 @@ namespace TechStore.Service.Mappers
                 Id = payment.PublicId,
                 Amount = payment.Amount,
                 PaymentMethod = payment.PaymentMethod,
-                TransactionCode = payment.PaymentCode,
                 PaymentStatus = payment.PaymentStatus,
                 CreatedAt = payment.CreatedAt
             };

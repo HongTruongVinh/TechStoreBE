@@ -4,6 +4,7 @@ using TechStore.Common.Models;
 using TechStore.Data.Entities;
 using TechStore.Model.DTOs.Order;
 using TechStore.Model.DTOs.Payment;
+using TechStore.Model.DTOs.Snapshot;
 
 namespace TechStore.Service.Interfaces
 {
@@ -11,8 +12,10 @@ namespace TechStore.Service.Interfaces
     {
         Task<ServiceResult<PagedResult<OrderDetailResponseModel>>> GetListOrdersByStatusIdAsync(EOrderStatus statusId, int page, int pageSize);
         Task<ServiceResult<PagedResult<ListItemOrderModel>>> GetOrdersAsync(OrderSearchQuery query);
-        Task<ServiceResult<string>> CreatePrePayOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshot request);
-        Task<ServiceResult<string>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel createOrderRequest);
+        //Task<ServiceResult<string>> CreatePrepaidOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshot request);
+        Task<ServiceResult<CreatePrePayOnlineOrderResult>> CreatePrepaidOnlineOrderFromSepayWebhookAsync(SepayWebhookRequest request);
+        Task<ServiceResult<CreatePaymentSnapshotResult>> CreateSnapshotAsync(string userId, OrderCreateModel orderCreateModel, string idempotencyKey);
+        Task<ServiceResult<CreateCODOnlineOrderResult>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel createOrderRequest);
         Task<ServiceResult<string>> CreateInStoreOrderAsync(string createdByCashierId, string paymentId, InStoreOrderCreateModel createOrderRequest);
         
         Task<ServiceResult<List<ListItemOrderModel>>> GetInStoreOrdersAsync();

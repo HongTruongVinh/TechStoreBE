@@ -140,7 +140,7 @@ namespace TechStore.Service.Implementations
             foreach (var order in orders)
             {
                 int monthIndex = order.CreatedAt.Month - 1; // từ 0 đến 11
-                data[monthIndex].Value += order.FinalAmount;
+                data[monthIndex].Value += order.TotalAmount;
             }
 
             return data;

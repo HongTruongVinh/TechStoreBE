@@ -9,5 +9,6 @@ namespace TechStore.Common.Constants
     public class PaymentSettings
     {
         public string PaymentReference { get; set; } = null!;
+        public int ExpireMinutes { get; set; } = 10;
     }
 }

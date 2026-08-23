@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Enums;
-using TechStore.Model.DTOs.QrCode;
 
 namespace TechStore.Model.DTOs.Payment
 {

@@ -12,6 +12,8 @@ namespace TechStore.Data.Entities
         public Guid OrderId { get; set; }
         public Order Order { get; set; } = null!;
 
+        public required decimal SubTotal { get; set; }
+        public required decimal DiscountAmount { get; set; }
         public required decimal TotalAmount { get; set; }
         public required decimal PaidAmount { get; set; }
         public decimal RemainingAmount => TotalAmount - PaidAmount;

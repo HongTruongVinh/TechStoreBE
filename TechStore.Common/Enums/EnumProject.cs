@@ -36,11 +36,20 @@ namespace TechStore.Common.Enums
         Canceled,
     }
 
+    public enum EPaymentSnapshotStatus
+    {
+        PendingPayment = 1,
+        Paid = 2,
+        Expired = 3,
+        Cancelled = 4
+    }
+
     public enum EPaymentMethod
     {
         COD,
         DomesticBank,
-        Cash
+        Cash,
+        VoucherOrFree
     }
 
     public enum EShippingStatus
@@ -73,7 +82,6 @@ namespace TechStore.Common.Enums
         Deleted
     }
 
-
     public enum ERole
     {
         Admin,
@@ -102,23 +110,42 @@ namespace TechStore.Common.Enums
         Shipper
     }
 
-    public enum EQRCodeType
-    {
-        Payment,
-        OrderTracking
-    }
-
     public enum EDeviceType
     {
         Mobile,
         Desktop
     }
 
-    public enum ERegisterType
+    public enum EPaymentTransactionStatus
     {
-        Email,
-        PhoneNumber,
-        //SocialMedia // Mạng xã hội
+        Received = 1,
+
+        Processed = 2,
+
+        Duplicate = 3,
+
+        ExpiredSnapshot = 4,
+
+        IncorrectAmount = 5,
+
+        InvalidSnapshot = 6,
+
+        RefundPending = 7,
+
+        Refunded = 8,
+
+        ManualReview = 9
+    }
+
+    public enum StockReservationStatus
+    {
+        Reserved = 1,
+
+        Confirmed = 2,
+
+        Released = 3,
+
+        Expired = 4
     }
 
     public enum ERetCode

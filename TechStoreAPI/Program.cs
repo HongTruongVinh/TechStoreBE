@@ -11,6 +11,7 @@ using TechStore.Data.Repositories;
 using TechStore.Data.Repositories.Implementations;
 using TechStore.Data.Repositories.Interfaces;
 using TechStore.Data.UnitOfWork;
+using TechStore.Service.Background;
 using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
 using TechStoreAPI.Hubs;
@@ -79,6 +80,10 @@ namespace TechStoreAPI
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IVoucherService, VoucherService>();
             builder.Services.AddScoped<IHomeService, HomeService>();
+
+            builder.Services.AddScoped<IPaymentSnapshotExpirationService, PaymentSnapshotExpirationService>();
+
+            builder.Services.AddHostedService<PaymentSnapshotExpirationWorker>();
 
             builder.Services.AddSignalR();
             #endregion

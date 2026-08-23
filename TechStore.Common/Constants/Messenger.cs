@@ -42,11 +42,16 @@ namespace TechStore.Common.Constants
         public const string PaymentIsPaid = "Payment is paid!";
         public const string PaymentVerified = "Payment verified successfully!";
         public const string PaymentNotVerified = "Payment not verified!";
+        public const string PaymentAlreadyProcessed = "Payment already processed!";
+        public const string PaymentSnapshotExpired = "Payment snapshot expired!";
     }
 
     public static class OrderMessenger
     {
         public const string Canceled = " Canceled: ";
+        public const string NotFoundSnapshot = " Snapshot is not found: ";
+        public const string ExpiredSnapshot = " Snapshot is expired: ";
+        public const string NotEnoughQuantity = " Not Enough Quantity: ";
     }
 
     public static class VoucherMessenger
@@ -55,6 +60,11 @@ namespace TechStore.Common.Constants
         public const string VoucherExpired = "Voucher expired";
         public const string VoucherUsageExceeded = "Voucher usage exceeded";
         public const string MinOrderPriceNotMet = "Đơn hàng không đạt giá trị tối thiểu cho voucher này";
+    }
+
+    public static class ProductMessenger
+    {
+        public const string NotFoundProductVariantOption = "ProductVariantOption not found: ";
     }
 
     public static class AuthenticationMessenger

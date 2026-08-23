@@ -11,12 +11,12 @@ namespace TechStore.Data.Entities
     {
         public required Guid CustomerId { get; set; }
         public required string CustomerPublicId { get; set; }
-        public required User Customer { get; set; }
+        public User Customer { get; set; } = null!;
 
-        public required decimal TotalPrice { get; set; }
+        public required decimal SubtotalAmount { get; set; }
         public required decimal ShippingCharge { get; set; }
         public required decimal DiscountAmount { get; set; }
-        public required decimal FinalAmount { get; set; }
+        public required decimal TotalAmount { get; set; }
 
         public required string CustomerName { get; set; }
         public string? ShippingAddress { get; set; }

@@ -11,7 +11,7 @@ namespace TechStore.Service.Interfaces
 {
     public interface IVoucherService
     {
-        Task<ServiceResult<VoucherResponseModel>> CheckVoucherAsync(string voucherCode, List<OrderItemCreateModel> products);
+        Task<ServiceResult<VoucherResponseModel>> CheckVoucherAsync(string userId, string voucherCode, List<OrderItemCreateModel> products);
         Task<ServiceResult<List<VoucherResponseModel>>> GetVouchersAsync(string? userId);
     }
 }

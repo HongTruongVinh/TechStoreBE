@@ -28,13 +28,13 @@ namespace TechStore.Service.Mappers
                 OrderStatus = order.OrderStatus,
 
                 ShippingAddress = order.ShippingAddress ?? "",
-                TotalPrice = order.TotalPrice,
+                TotalPrice = order.SubtotalAmount,
                 DiscountAmount = order.DiscountAmount,
 
                 Items = order.OrderItems.Select(i => i.ToOrderItemResponseModel()).ToList(),
 
                 ShippingCharge = order.ShippingCharge,
-                FinalAmount = order.FinalAmount,
+                FinalAmount = order.TotalAmount,
                 UpdatedAt = order.UpdatedAt ?? DateTime.UtcNow,
                 CreatedAt = order.CreatedAt,
             };
@@ -45,7 +45,7 @@ namespace TechStore.Service.Mappers
             return new OrderHistoryModel
             {
                 OrderId = order.PublicId,
-                FinalAmount = order.FinalAmount,
+                FinalAmount = order.TotalAmount,
                 OrderDate = order.CreatedAt 
             };
         }
@@ -61,34 +61,34 @@ namespace TechStore.Service.Mappers
             return list;
         }
 
-        public static InStoreOrderResponseModel ToInStoreOrderResponseModel(this Order order, List<OrderItem> orderItems, Payment payment)
-        {
-            var model = new InStoreOrderResponseModel
-            {
-                Id = order.PublicId,
-                CustomerName = order.CustomerName,
-                CustomerPhonenumber = order.CustomerPhoneNumber,
-                CustomerEmail = order.CustomerEmail ?? "",
+        //public static InStoreOrderResponseModel ToInStoreOrderResponseModel(this Order order, List<OrderItem> orderItems, Payment payment)
+        //{
+        //    var model = new InStoreOrderResponseModel
+        //    {
+        //        Id = order.PublicId,
+        //        CustomerName = order.CustomerName,
+        //        CustomerPhonenumber = order.CustomerPhoneNumber,
+        //        CustomerEmail = order.CustomerEmail ?? "",
 
-                TotalPrice = order.TotalPrice,
-                DiscountAmount = order.DiscountAmount,
-                FinalAmount = order.FinalAmount,
-                Items = orderItems.ToListOrderItemResponseModels(),
+        //        TotalPrice = order.SubtotalAmount,
+        //        DiscountAmount = order.DiscountAmount,
+        //        FinalAmount = order.TotalAmount,
+        //        Items = orderItems.ToListOrderItemResponseModels(),
 
-                Status = order.OrderStatus,
-                PaymentId = "",
-                PaymentStatus = payment.PaymentStatus,
-                PaymentMethod = payment.PaymentMethod == EPaymentMethod.Cash? "Tiền mặt" : "Online",
-                TransactionCode = payment.PaymentCode,
+        //        Status = order.OrderStatus,
+        //        PaymentId = "",
+        //        PaymentStatus = payment.PaymentStatus,
+        //        PaymentMethod = payment.PaymentMethod == EPaymentMethod.Cash? "Tiền mặt" : "Online",
+        //        TransactionCode = payment.PaymentCode,
 
-                InvoiceId = order.Invoice?.PublicId ?? "",
-                Note = order.Note ?? "",
-                CreatedAt = order.CreatedAt,
-                UpdatedAt = order.UpdatedAt ?? DateTime.UtcNow
-            };
+        //        InvoiceId = order.Invoice?.PublicId ?? "",
+        //        Note = order.Note ?? "",
+        //        CreatedAt = order.CreatedAt,
+        //        UpdatedAt = order.UpdatedAt ?? DateTime.UtcNow
+        //    };
 
-            return model;
-        }
+        //    return model;
+        //}
 
         //public static OrderResponseModel ToOrderResponseModel(this Order order, User customer)
         //{
@@ -162,10 +162,10 @@ namespace TechStore.Service.Mappers
                 ShippingAddress = order.ShippingAddress ?? "",
                 CustomerPhonenumber = order.CustomerPhoneNumber,
                 CustomerEmail = order.CustomerEmail ?? "",
-                TotalPrice = order.TotalPrice,
+                TotalPrice = order.SubtotalAmount,
                 DiscountAmount = order.DiscountAmount,
                 ShippingCharge = order.ShippingCharge,
-                FinalAmount = order.FinalAmount,
+                FinalAmount = order.TotalAmount,
                 OrderStatus = order.OrderStatus,
                 Notes = order.Note??"",
                 CreatedAt = TimeZoneHelper.ConvertUtcToGmt7(order.CreatedAt),

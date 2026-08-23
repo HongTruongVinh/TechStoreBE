@@ -22,6 +22,7 @@ namespace TechStore.Data.Context
         public DbSet<Product> Products => Set<Product>();
         public DbSet<ProductVariant> ProductVariants  => Set<ProductVariant>();
         public DbSet<ProductVariantOption> ProductVariantOptions => Set<ProductVariantOption>();
+        public DbSet<StockReservation> StockReservations => Set<StockReservation>();
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<InvalidToken> InvalidTokens => Set<InvalidToken>();
@@ -29,6 +30,7 @@ namespace TechStore.Data.Context
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
         public DbSet<PaymentSnapshot> PaymentSnapshots => Set<PaymentSnapshot>();
         public DbSet<PaymentSnapshotItem> PaymentSnapshotItems => Set<PaymentSnapshotItem>();
         public DbSet<VoucherUsage> VoucherUsages => Set<VoucherUsage>();
@@ -176,6 +178,19 @@ namespace TechStore.Data.Context
 
             });
 
+            modelBuilder.Entity<PaymentTransaction>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.HasIndex(p => p.TransactionId).IsUnique();
+
+                entity.HasIndex(x => x.PaymentCode);
+
+                entity.HasIndex(x => x.PaymentSnapshotId);
+
+                entity.HasIndex(x => x.Status);
+            });
+
             modelBuilder.Entity<PaymentSnapshot>(entity =>
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
@@ -306,6 +321,43 @@ namespace TechStore.Data.Context
                 .WithOne(o => o.ShippingDetail)
                 .HasForeignKey<ShippingDetail>(o => o.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<StockReservation>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+
+                entity.Property(x => x.Quantity).IsRequired();
+
+                entity.Property(x => x.ReservedAt)
+                    .IsRequired();
+
+                entity.Property(x => x.ExpiresAt)
+                    .IsRequired();
+
+                entity.Property(x => x.Status)
+                    .IsRequired();
+
+                // ProductVariantOption -> StockReservation
+                entity.HasOne(x => x.ProductVariantOption)
+                    .WithMany()
+                    .HasForeignKey(x => x.ProductVariantOptionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // PaymentSnapshot -> StockReservation
+                entity.HasOne(x => x.PaymentSnapshot)
+                    .WithMany()
+                    .HasForeignKey(x => x.PaymentSnapshotId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Một PaymentSnapshot không được tạo reservation
+                // trùng cho cùng một ProductVariantOption
+                entity.HasIndex(x => new
+                {
+                    x.PaymentSnapshotId,
+                    x.ProductVariantOptionId
+                })
+                .IsUnique();
             });
 
             modelBuilder.Entity<User>(entity =>

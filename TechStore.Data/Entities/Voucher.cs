@@ -20,7 +20,7 @@ namespace TechStore.Data.Entities
         public required int UsageLimit { get; set; }
         public required int ReservedCount { get; set; }
         public required int UsedCount { get; set; }
-        public decimal Available => UsageLimit - UsedCount - ReservedCount;
+        public int Available => UsageLimit - UsedCount - ReservedCount;
 
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }

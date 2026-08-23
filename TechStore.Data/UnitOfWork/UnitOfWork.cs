@@ -24,12 +24,14 @@ namespace TechStore.Data.UnitOfWork
         public IOrderRepository Orders { get; }
         public IOrderItemRepository OrderItems { get; }
         public IPaymentRepository Payments { get; }
+        public IPaymentTransactionRepository PaymentTransactions { get; }
         public IPaymentSnapshotRepository PaymentSnapshots { get; }
         public IPaymentSnapshotItemRepository PaymentSnapshotItems { get; }
         public IVoucherUsageRepository QRCodes { get; }
         public IReportRepository Reports { get; }
         public IShipperRepository Shippers { get; }
         public IShippingDetailRepository ShippingDetails { get; }
+        public IStockReservationRepository StockReservations { get; }
         public IUserRepository Users { get; }
         public IVoucherRepository Vouchers { get; }
         public IVoucherUsageRepository VoucherUsages { get; }
@@ -52,12 +54,14 @@ namespace TechStore.Data.UnitOfWork
             Orders = new OrderRepository(_context);
             OrderItems = new OrderItemRepository(_context);
             Payments = new PaymentRepository(_context);
+            PaymentTransactions = new PaymentTransactionRepository(_context);
             PaymentSnapshots = new PaymentSnapshotRepository(_context);
             PaymentSnapshotItems = new PaymentSnapshotItemRepository(_context);
             QRCodes = new VoucherUsageRepository(_context);
             Reports = new ReportRepository(_context);
             Shippers = new ShipperRepository(_context);
             ShippingDetails = new ShippingDetailRepository(_context);
+            StockReservations = new StockReservationRepository(_context);
             Users = new UserRepository(_context);
             Vouchers = new VoucherRepository(_context);
             VoucherUsages = new VoucherUsageRepository(_context);

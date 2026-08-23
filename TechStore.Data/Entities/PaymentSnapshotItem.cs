@@ -9,7 +9,7 @@ namespace TechStore.Data.Entities
     public class PaymentSnapshotItem : BaseEntity
     {
         public required Guid PaymentSnapshotId { get; set; }
-        public required PaymentSnapshot PaymentSnapshot { get; set; }
+        public PaymentSnapshot PaymentSnapshot { get; set; } = null!;
 
         public required Guid ProductVariantOptionId { get; set; }
         public required string ProductVariantOptionPublicId { get; set; }

@@ -38,20 +38,31 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        //[Authorize]
+        //[HttpPost("create-payment-pre-order")]
+        //public async Task<ActionResult<ApiResponse<PaymentDataForSnapshotModel>>> CreatePaymentForSnapshot(OrderCreateModel createOrderRequest)
+        //{
+        //    var userId = User.GetRequiredUserId();
+
+        //    var idempotencyKey = HttpContext.Request.Headers["Idempotency-Key"].FirstOrDefault();
+
+        //    if (idempotencyKey == null)
+        //    {
+        //        return BadRequest(new ApiResponse<PaymentDataForSnapshotModel> { Success = false, Message = "Idempotency-Key header is required" });
+        //    }
+
+        //    var serviceResult = await _paymentService.CreateSnapshotAsync(userId, createOrderRequest, idempotencyKey);
+
+        //    return serviceResult.ToActionResult(this);
+        //}
+
         [Authorize]
-        [HttpPost("create-payment-pre-order")]
-        public async Task<ActionResult<ApiResponse<PaymentDataForSnapshotModel>>> CreatePaymentForSnapshot(OrderCreateModel createOrderRequest)
+        [HttpGet("get-payment-qr-for-snapshot/{snapshotId}")]
+        public async Task<ActionResult<ApiResponse<PaymentDataForSnapshotModel>>> GetPaymentQrForSnapshot(string snapshotId)
         {
             var userId = User.GetRequiredUserId();
 
-            var idempotencyKey = HttpContext.Request.Headers["Idempotency-Key"].FirstOrDefault();
-
-            if (idempotencyKey == null)
-            {
-                return BadRequest(new ApiResponse<PaymentDataForSnapshotModel> { Success = false, Message = "Idempotency-Key header is required" });
-            }
-
-            var serviceResult = await _paymentService.CreatePaymentForSnapshotAsync(userId, createOrderRequest, idempotencyKey);
+            var serviceResult = await _paymentService.GenerateSnapshotPaymentQrAsync(userId, snapshotId);
 
             return serviceResult.ToActionResult(this);
         }

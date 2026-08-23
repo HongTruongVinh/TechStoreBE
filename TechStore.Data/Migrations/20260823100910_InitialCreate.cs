@@ -79,10 +79,13 @@ namespace TechStore.Data.Migrations
                     ShippingAddress = table.Column<string>(type: "text", nullable: false),
                     CustomerPhoneNumber = table.Column<string>(type: "text", nullable: false),
                     CustomerEmail = table.Column<string>(type: "text", nullable: true),
-                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    SubtotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     ShippingCharge = table.Column<decimal>(type: "numeric", nullable: false),
                     DiscountAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    FinalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    ExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    PaidAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Note = table.Column<string>(type: "text", nullable: true),
                     VoucherId = table.Column<Guid>(type: "uuid", nullable: true),
                     PublicId = table.Column<string>(type: "text", nullable: false),
@@ -392,10 +395,10 @@ namespace TechStore.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     CustomerPublicId = table.Column<string>(type: "text", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    SubtotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     ShippingCharge = table.Column<decimal>(type: "numeric", nullable: false),
                     DiscountAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    FinalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     CustomerName = table.Column<string>(type: "text", nullable: false),
                     ShippingAddress = table.Column<string>(type: "text", nullable: true),
                     CustomerPhoneNumber = table.Column<string>(type: "text", nullable: false),
@@ -492,6 +495,8 @@ namespace TechStore.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubTotal = table.Column<decimal>(type: "numeric", nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     PaidAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     PaidAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -635,11 +640,7 @@ namespace TechStore.Data.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     PaymentMethod = table.Column<int>(type: "integer", nullable: false),
-                    PaymentCode = table.Column<string>(type: "text", nullable: false),
-                    BankReferenceCode = table.Column<string>(type: "text", nullable: false),
-                    TransactionId = table.Column<string>(type: "text", nullable: false),
                     PaymentStatus = table.Column<int>(type: "integer", nullable: false),
-                    CheckoutSnapshotJson = table.Column<string>(type: "text", nullable: true),
                     PublicId = table.Column<string>(type: "text", nullable: false),
                     EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -700,6 +701,80 @@ namespace TechStore.Data.Migrations
                         principalTable: "ProductVariantOptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockReservations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProductVariantOptionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PaymentSnapshotId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    ReservedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockReservations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockReservations_PaymentSnapshots_PaymentSnapshotId",
+                        column: x => x.PaymentSnapshotId,
+                        principalTable: "PaymentSnapshots",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StockReservations_ProductVariantOptions_ProductVariantOptio~",
+                        column: x => x.ProductVariantOptionId,
+                        principalTable: "ProductVariantOptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TransactionId = table.Column<string>(type: "text", nullable: false),
+                    PaymentCode = table.Column<string>(type: "text", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    TransactionDate = table.Column<string>(type: "text", nullable: false),
+                    ReferenceCode = table.Column<string>(type: "text", nullable: true),
+                    Gateway = table.Column<string>(type: "text", nullable: true),
+                    TransferContent = table.Column<string>(type: "text", nullable: true),
+                    PaymentSnapshotId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PaymentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    RawPayload = table.Column<string>(type: "text", nullable: true),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaymentTransactions_PaymentSnapshots_PaymentSnapshotId",
+                        column: x => x.PaymentSnapshotId,
+                        principalTable: "PaymentSnapshots",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PaymentTransactions_Payments_PaymentId",
+                        column: x => x.PaymentId,
+                        principalTable: "Payments",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -838,6 +913,38 @@ namespace TechStore.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PaymentTransactions_PaymentCode",
+                table: "PaymentTransactions",
+                column: "PaymentCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentTransactions_PaymentId",
+                table: "PaymentTransactions",
+                column: "PaymentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentTransactions_PaymentSnapshotId",
+                table: "PaymentTransactions",
+                column: "PaymentSnapshotId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentTransactions_PublicId",
+                table: "PaymentTransactions",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentTransactions_Status",
+                table: "PaymentTransactions",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentTransactions_TransactionId",
+                table: "PaymentTransactions",
+                column: "TransactionId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_BrandId",
                 table: "Products",
                 column: "BrandId");
@@ -911,6 +1018,23 @@ namespace TechStore.Data.Migrations
                 column: "ShipperId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StockReservations_PaymentSnapshotId_ProductVariantOptionId",
+                table: "StockReservations",
+                columns: new[] { "PaymentSnapshotId", "ProductVariantOptionId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockReservations_ProductVariantOptionId",
+                table: "StockReservations",
+                column: "ProductVariantOptionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockReservations_PublicId",
+                table: "StockReservations",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_PublicId",
                 table: "Users",
                 column: "PublicId",
@@ -970,10 +1094,10 @@ namespace TechStore.Data.Migrations
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
-                name: "Payments");
+                name: "PaymentSnapshotItems");
 
             migrationBuilder.DropTable(
-                name: "PaymentSnapshotItems");
+                name: "PaymentTransactions");
 
             migrationBuilder.DropTable(
                 name: "Reports");
@@ -988,22 +1112,28 @@ namespace TechStore.Data.Migrations
                 name: "ShippingDetails");
 
             migrationBuilder.DropTable(
+                name: "StockReservations");
+
+            migrationBuilder.DropTable(
                 name: "VoucherUsages");
 
             migrationBuilder.DropTable(
-                name: "ProductVariantOptions");
-
-            migrationBuilder.DropTable(
-                name: "Invoices");
-
-            migrationBuilder.DropTable(
-                name: "PaymentSnapshots");
+                name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "Shippers");
 
             migrationBuilder.DropTable(
+                name: "PaymentSnapshots");
+
+            migrationBuilder.DropTable(
+                name: "ProductVariantOptions");
+
+            migrationBuilder.DropTable(
                 name: "Vouchers");
+
+            migrationBuilder.DropTable(
+                name: "Invoices");
 
             migrationBuilder.DropTable(
                 name: "ProductVariants");
