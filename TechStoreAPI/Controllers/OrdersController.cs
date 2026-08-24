@@ -72,12 +72,19 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [HttpPost("cod-order")]
+        [HttpPost("create-cod-order")]
         public async Task<ActionResult<ApiResponse<CreateCODOnlineOrderResult>>> CreateCODOnlineOrderAsync(OrderCreateModel orderCreateModel)
         {
             var userId = User.GetRequiredUserId();
 
-            var serviceResult = await _orderService.CreateCODOnlineOrderAsync(userId, orderCreateModel);
+            var idempotencyKey = HttpContext.Request.Headers["Idempotency-Key"].FirstOrDefault();
+
+            if (idempotencyKey == null)
+            {
+                return BadRequest(new ApiResponse<PaymentDataForSnapshotModel> { Success = false, Message = "Idempotency-Key header is required" });
+            }
+
+            var serviceResult = await _orderService.CreateCODOnlineOrderAsync(userId, orderCreateModel, idempotencyKey);
 
             return serviceResult.ToActionResult(this);
         }

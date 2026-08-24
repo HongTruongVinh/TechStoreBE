@@ -760,7 +760,7 @@ namespace TechStore.Service.Implementations
             }
         }
 
-        public async Task<ServiceResult<CreateCODOnlineOrderResult>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel)
+        public async Task<ServiceResult<CreateCODOnlineOrderResult>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel orderCreateModel, string idempotencyKey)
         {
             var customer = await _uow.Users.GetByIdAsync(userId);
             if (customer == null)
@@ -773,10 +773,33 @@ namespace TechStore.Service.Implementations
                 return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
             }
 
+            var requestHash = ShareFunctions.ComputeHash(orderCreateModel);
+
             await using var transaction = await _uow.BeginTransactionAsync();
 
             try
             {
+                #region validate idempotency key
+                var existingIdempotencyKey = await _uow.IdempotencyKeys.TableNoTracking.FirstOrDefaultAsync(x =>
+                                                        x.UserId == customer.Id &&
+                                                        x.RequestKey == idempotencyKey);
+
+                if (existingIdempotencyKey != null)
+                {
+                    // Check body request hash to ensure the same request is being made
+                    if (existingIdempotencyKey.RequestHash == requestHash)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreateCODOnlineOrderResult>.Success(JsonSerializer.Deserialize<CreateCODOnlineOrderResult>(existingIdempotencyKey.ResponseBody));
+                    }
+                    else
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
+                    }
+                }
+                #endregion
+
                 var groupedItems = orderCreateModel.Items
                     .GroupBy(x => x.ProductVariantOptionId)
                     .OrderBy(x => x.Key, StringComparer.Ordinal)
@@ -794,53 +817,65 @@ namespace TechStore.Service.Implementations
                 }
 
                 var orderItems = new List<OrderItem>();
+                var productVariantOptionsDic = new Dictionary<ProductVariantOption, int>();
                 var orderId = Guid.NewGuid();
                 decimal subtotalAmount = 0;
                 var now = TimeZoneHelper.GetUtcNow();
 
                 foreach (var item in groupedItems)
                 {
-                    var pvo = await _uow.ProductVariantOptions
+                    var pVO = await _uow.ProductVariantOptions
                         .GetForUpdateAsync_PostgreSQL(item.ProductVariantOptionId);
 
-                    if (pvo == null)
+                    if (pVO == null)
                     {
                         await transaction.RollbackAsync();
                         return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.NoExitData);
                     }
 
                     var reservedStock = await _uow.StockReservations.TableNoTracking
-                        .Where(x => x.ProductVariantOptionId == pvo.Id &&
+                        .Where(x => x.ProductVariantOptionId == pVO.Id &&
                                     x.Status == StockReservationStatus.Reserved &&
                                     x.ExpiresAt > now)
                         .SumAsync(x => x.Quantity);
 
-                    if (item.Quantity > pvo.Stock - reservedStock)
+                    if (item.Quantity > pVO.Stock - reservedStock)
                     {
                         await transaction.RollbackAsync();
                         return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
                     }
 
-                    pvo.Stock -= item.Quantity;
-                    _uow.ProductVariantOptions.Update(pvo);
+                    var productVariant = await _uow.ProductVariants.TableNoTracking
+                        .Where(x => x.Id == pVO.ProductVariantId)
+                        .Include(x => x.Product)
+                        .ThenInclude(p => p.Category)
+                        .FirstOrDefaultAsync();
+
+                    if (productVariant == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                    }
 
                     orderItems.Add(new OrderItem
                     {
                         PublicId = $"{now:yyyyMMdd}{Random.Shared.Next(100000, 1000000):D6}",
-                        ProductVariantOptionId = pvo.Id,
-                        ProductVariantOptionPublicId = pvo.PublicId,
+                        ProductVariantOptionId = pVO.Id,
+                        ProductVariantOptionPublicId = pVO.PublicId,
                         OrderId = orderId,
-                        CategoryName = pvo.ProductVariant.Product.Category.Name,
-                        ProductName = pvo.ProductVariant.Product.Name + " " + pvo.ProductVariant.Name + " " + pvo.Name,
-                        ImageUrl = pvo.ImageUrl,
+                        CategoryName = productVariant.Product.Category.Name,
+                        ProductName = productVariant.Product.Name + " " + productVariant.Name + " " + pVO.Name,
+                        ImageUrl = pVO.ImageUrl,
                         Quantity = item.Quantity,
-                        PriceAtOrderTime = pvo.Price,
-                        TotalPrice = item.Quantity * pvo.Price,
+                        PriceAtOrderTime = pVO.Price,
+                        TotalPrice = item.Quantity * pVO.Price,
                         CreatedAt = now,
                         EntityStatus = EEntityStatus.Active,
                     });
 
-                    subtotalAmount += item.Quantity * pvo.Price;
+                    productVariantOptionsDic.Add(pVO, item.Quantity);
+
+                    subtotalAmount += item.Quantity * pVO.Price;
                 }
 
                 Voucher? voucher = null;
@@ -879,9 +914,6 @@ namespace TechStore.Service.Implementations
                     {
                         discountAmount = voucher.MaxDiscountAmount;
                     }
-
-                    voucher.ReservedCount++;
-                    _uow.Vouchers.Update(voucher);
                 }
 
                 var totalAmount = Math.Max(0, subtotalAmount - discountAmount);
@@ -911,10 +943,16 @@ namespace TechStore.Service.Implementations
 
                 await _uow.Orders.AddAsync(order);
 
+                foreach (var item in productVariantOptionsDic)
+                {
+                    item.Key.Stock -= item.Value;
+                    item.Key.SoldCount += item.Value;
+                    _uow.ProductVariantOptions.Update(item.Key);
+                }
+
                 if (voucher != null)
                 {
                     voucher.UsedCount++;
-                    voucher.ReservedCount--;
                     _uow.Vouchers.Update(voucher);
 
                     await _uow.VoucherUsages.AddAsync(new VoucherUsage
@@ -929,6 +967,30 @@ namespace TechStore.Service.Implementations
                     });
                 }
 
+                var createCODOnlineOrderResult = new CreateCODOnlineOrderResult { Id = order.PublicId };
+
+                if (existingIdempotencyKey == null)
+                {
+                    var idempotencyKeyId = Guid.NewGuid();
+
+                    var idempotencyKeyEntity = new IdempotencyKey
+                    {
+                        Id = idempotencyKeyId,
+                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        UserId = customer.Id,
+                        Endpoint = "/api/order/create-cod-order",
+                        StatusCode = 200,
+                        ExpiredAt = TimeZoneHelper.GetUtcNow().AddHours(24),
+                        RequestKey = idempotencyKey,
+                        RequestHash = requestHash,
+                        ResponseBody = JsonSerializer.Serialize(createCODOnlineOrderResult),
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        EntityStatus = EEntityStatus.Active,
+                    };
+
+                    await _uow.IdempotencyKeys.AddAsync(idempotencyKeyEntity);
+                }
+
                 var result = await _uow.CommitAsync();
                 if (result < 1)
                 {
@@ -938,9 +1000,7 @@ namespace TechStore.Service.Implementations
 
                 await transaction.CommitAsync();
 
-                var response = new CreateCODOnlineOrderResult { Id = order.PublicId };
-
-                return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                return ServiceResult<CreateCODOnlineOrderResult>.Success(createCODOnlineOrderResult);
             }
             catch
             {

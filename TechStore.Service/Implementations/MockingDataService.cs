@@ -362,9 +362,9 @@ namespace TechStore.Service.Implementations
                     FirstName = "Hoàng",
                     Password = password,
                     Email = "nguyenhuyhoang@gmail.com",
-                    City = "Hà Nội",
-                    District = "Hoàn Kiếm",
-                    Address = "123, Hoàn Kiếm, Hà Nội",
+                    City = "HCM",
+                    District = "Q1",
+                    Address = "123, HCM",
                     PhoneNumber = "0345600000",
                 };
 
@@ -426,6 +426,7 @@ namespace TechStore.Service.Implementations
                 };
 
                 var resultRegister4 = await _authenticationService.RegisterCustomer(user4);
+
 
                 if (resultRegister4.IsSuccess == false)
                 {
@@ -2388,7 +2389,7 @@ namespace TechStore.Service.Implementations
                             }
                         };
 
-                        var resultOrder = await _orderService.CreateCODOnlineOrderAsync(user.PublicId, order);
+                        var resultOrder = await _orderService.CreateCODOnlineOrderAsync(user.PublicId, order, Guid.NewGuid().ToString());
                     }
                 }
 
@@ -2449,6 +2450,11 @@ namespace TechStore.Service.Implementations
             try
             {
                 await _uow.VoucherUsages.DeleteAllAsync();
+                await _uow.IdempotencyKeys.DeleteAllAsync();
+                await _uow.StockReservations.DeleteAllAsync();
+                await _uow.PaymentSnapshotItems.DeleteAllAsync();
+                await _uow.PaymentSnapshots.DeleteAllAsync();
+                await _uow.PaymentTransactions.DeleteAllAsync();
                 await _uow.CartItems.DeleteAllAsync();
                 await _uow.OrderItems.DeleteAllAsync();
                 await _uow.Orders.DeleteAllAsync();
@@ -2457,11 +2463,13 @@ namespace TechStore.Service.Implementations
                 await _uow.ProductVariantOptions.DeleteAllAsync();
                 await _uow.ProductVariants.DeleteAllAsync();
                 await _uow.Products.DeleteAllAsync();
+                //await _uow.Comments.DeleteAllAsync();
+                //await _uow.Reports.DeleteAllAsync();
                 await _uow.Users.DeleteAllAsync();
+                await _uow.Comments.DeleteAllAsync();
                 await _uow.Vouchers.DeleteAllAsync();
                 await _uow.ShippingDetails.DeleteAllAsync();
                 await _uow.InvalidTokens.DeleteAllAsync();
-                //await _uow.QRCodes.DeleteAllAsync();
                 await _uow.Shippers.DeleteAllAsync();
                 await _uow.Sequences.DeleteAllAsync();
                 await _uow.Invoices.DeleteAllAsync();
