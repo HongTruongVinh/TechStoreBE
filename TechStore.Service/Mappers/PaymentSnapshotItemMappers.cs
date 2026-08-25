@@ -25,7 +25,6 @@ namespace TechStore.Service.Mappers
                 TotalPrice = snapshotItem.TotalPrice,
 
                 PublicId = ShareFunctions.GenarateRandomStringId(),
-                EntityStatus = snapshotItem.EntityStatus,
                 CreatedAt = snapshotItem.CreatedAt,
             };
         }

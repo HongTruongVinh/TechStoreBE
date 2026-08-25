@@ -162,7 +162,6 @@ namespace TechStore.Service.Implementations
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
                         UpdatedAt = TimeZoneHelper.GetUtcNow(),
                         CreatedBy = customer.Id,
-                        EntityStatus = EEntityStatus.Active,
                     });
 
                     productVariantOptionsDic.Add(pVO, item.Quantity);
@@ -282,7 +281,6 @@ namespace TechStore.Service.Implementations
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
                     UpdatedAt = TimeZoneHelper.GetUtcNow(),
                     CreatedBy = customer.Id,
-                    EntityStatus = EEntityStatus.Active,
                 };
 
                 await _uow.PaymentSnapshots.AddAsync(snapshot);
@@ -300,7 +298,6 @@ namespace TechStore.Service.Implementations
 
                         PublicId = ShareFunctions.GenarateRandomStringId(),
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active,
                     });
                 }
 
@@ -327,7 +324,6 @@ namespace TechStore.Service.Implementations
                         RequestHash = requestHash,
                         ResponseBody = JsonSerializer.Serialize(createPaymentSnapshotResult),
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active,
                     };
 
                     await _uow.IdempotencyKeys.AddAsync(idempotencyKeyEntity);
@@ -359,7 +355,6 @@ namespace TechStore.Service.Implementations
 
                         PublicId = await _sequenceService.GetNextOrderIdAsync(),
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active
                     };
 
                     var invoice = new Invoice
@@ -377,7 +372,6 @@ namespace TechStore.Service.Implementations
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
                         CreatedBy = customer.Id,
                         InvoiceStatus = EInvoiceStatus.Paid,
-                        EntityStatus = EEntityStatus.Active
                     };
 
                     Payment payment = new Payment
@@ -392,7 +386,6 @@ namespace TechStore.Service.Implementations
                         PaymentMethod = EPaymentMethod.VoucherOrFree,
                         PaymentStatus = EPaymentStatus.Paid,
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active,
                     };
 
                     invoice.Payments.Add(payment);
@@ -476,7 +469,6 @@ namespace TechStore.Service.Implementations
                 Status = EPaymentTransactionStatus.Received,
 
                 PublicId = ShareFunctions.GenarateRandomStringId(),
-                EntityStatus = EEntityStatus.Active,
                 CreatedAt = TimeZoneHelper.GetUtcNow()
             };
 
@@ -662,8 +654,7 @@ namespace TechStore.Service.Implementations
                     OrderItems = snapshotItems.Select(x => x.ToOrderItem(orderId)).ToList(),
 
                     PublicId = orderPublicId,
-                    CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = EEntityStatus.Active
+                    CreatedAt = TimeZoneHelper.GetUtcNow()
                 };
 
                 var invoice = new Invoice
@@ -680,8 +671,7 @@ namespace TechStore.Service.Implementations
 
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
                     CreatedBy = customer.Id,
-                    InvoiceStatus = EInvoiceStatus.Paid,
-                    EntityStatus = EEntityStatus.Active
+                    InvoiceStatus = EInvoiceStatus.Paid
                 };
 
                 Payment payment = new Payment
@@ -695,8 +685,7 @@ namespace TechStore.Service.Implementations
                     Amount = order.TotalAmount,
                     PaymentMethod = EPaymentMethod.DomesticBank,
                     PaymentStatus = EPaymentStatus.Paid,
-                    CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = EEntityStatus.Active,
+                    CreatedAt = TimeZoneHelper.GetUtcNow()
                 };
 
                 paymentTransaction.PaymentId = payment.Id;
@@ -869,8 +858,7 @@ namespace TechStore.Service.Implementations
                         Quantity = item.Quantity,
                         PriceAtOrderTime = pVO.Price,
                         TotalPrice = item.Quantity * pVO.Price,
-                        CreatedAt = now,
-                        EntityStatus = EEntityStatus.Active,
+                        CreatedAt = now
                     });
 
                     productVariantOptionsDic.Add(pVO, item.Quantity);
@@ -937,8 +925,7 @@ namespace TechStore.Service.Implementations
                     Note = orderCreateModel.Note,
                     CreatedAt = now,
                     UpdatedAt = now,
-                    CreatedBy = customer.Id,
-                    EntityStatus = EEntityStatus.Active,
+                    CreatedBy = customer.Id
                 };
 
                 await _uow.Orders.AddAsync(order);
@@ -962,8 +949,7 @@ namespace TechStore.Service.Implementations
                         UserId = customer.Id,
                         OrderId = order.Id,
                         UsedAt = now,
-                        CreatedAt = now,
-                        EntityStatus = EEntityStatus.Active,
+                        CreatedAt = now
                     });
                 }
 
@@ -984,8 +970,7 @@ namespace TechStore.Service.Implementations
                         RequestKey = idempotencyKey,
                         RequestHash = requestHash,
                         ResponseBody = JsonSerializer.Serialize(createCODOnlineOrderResult),
-                        CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active,
+                        CreatedAt = TimeZoneHelper.GetUtcNow()
                     };
 
                     await _uow.IdempotencyKeys.AddAsync(idempotencyKeyEntity);
@@ -1434,7 +1419,6 @@ namespace TechStore.Service.Implementations
                 PaidAmount = 0,
                 Payments = new List<Payment>(),
                 InvoiceStatus = EInvoiceStatus.Unpaid,
-                EntityStatus = EEntityStatus.Active,
             };
 
 
@@ -1492,7 +1476,6 @@ namespace TechStore.Service.Implementations
                 Status = EShippingStatus.Shipping,
                 EstimatedArrival = DateTime.UtcNow.AddDays(Random.Shared.Next(3, 8)),
                 FailureCount = 0,
-                EntityStatus = EEntityStatus.Active,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 

@@ -13,8 +13,6 @@ namespace TechStore.Data.Entities
         public required string PublicId { get; set; } // Public ID (display hoặc dùng cho API, không là khóa chính)
 
 
-        public EEntityStatus EntityStatus { get; set; } = EEntityStatus.Active;
-
         public required DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
@@ -22,5 +20,6 @@ namespace TechStore.Data.Entities
         public Guid? CreatedBy { get; set; }
 
         public Guid? UpdatedBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }

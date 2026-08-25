@@ -44,9 +44,9 @@ namespace TechStore.Model.DTOs.Product
 
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
-        public EEntityStatus? EntityStatus { get; set; }
 
         public required List<AdminProductVariantDetailModel> Variants { get; set; }
     }

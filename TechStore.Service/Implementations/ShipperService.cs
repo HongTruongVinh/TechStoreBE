@@ -1,6 +1,7 @@
 ﻿
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
+using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
 using TechStore.Data.UnitOfWork;
@@ -42,7 +43,6 @@ namespace TechStore.Service.Implementations
                 LogoUrl = model.LogoUrl,
                 IsActive = model.IsActive,
 
-                EntityStatus = EEntityStatus.Active,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -77,7 +77,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            shipper.EntityStatus = EEntityStatus.Deleted;
+            shipper.DeletedAt = TimeZoneHelper.GetUtcNow();
 
             _uow.Shippers.Update(shipper);
             var result = await _uow.CommitAsync();

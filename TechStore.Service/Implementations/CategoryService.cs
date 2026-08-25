@@ -49,7 +49,6 @@ namespace TechStore.Service.Implementations
                     IconImageUrl = model.IconImageUrl ?? CloudinaryFolders.DefaultImage,
 
                     CreatedAt = DateTime.UtcNow,
-                    EntityStatus = EEntityStatus.Active,
                 };
 
                 await _uow.Categories.AddAsync(category);
@@ -169,8 +168,6 @@ namespace TechStore.Service.Implementations
             {
                 return serviceResult;
             }
-
-            category.EntityStatus = EEntityStatus.Deleted;
 
             _uow.Categories.Update(category);
             var result = await _uow.CommitAsync();

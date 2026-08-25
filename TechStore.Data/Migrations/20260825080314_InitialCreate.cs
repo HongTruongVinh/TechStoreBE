@@ -22,11 +22,11 @@ namespace TechStore.Data.Migrations
                     Slug = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     IconImageUrl = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,11 +43,11 @@ namespace TechStore.Data.Migrations
                     Slug = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     IconImageUrl = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -89,11 +89,11 @@ namespace TechStore.Data.Migrations
                     Note = table.Column<string>(type: "text", nullable: true),
                     VoucherId = table.Column<Guid>(type: "uuid", nullable: true),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,11 +108,11 @@ namespace TechStore.Data.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Data = table.Column<string>(type: "text", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -135,11 +135,11 @@ namespace TechStore.Data.Migrations
                     IpAddress = table.Column<string>(type: "text", nullable: true),
                     IsSuccessful = table.Column<bool>(type: "boolean", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -170,11 +170,11 @@ namespace TechStore.Data.Migrations
                     LogoUrl = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -202,11 +202,11 @@ namespace TechStore.Data.Migrations
                     RoleId = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -231,11 +231,11 @@ namespace TechStore.Data.Migrations
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -275,11 +275,11 @@ namespace TechStore.Data.Migrations
                     MinPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     MaxPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -313,11 +313,11 @@ namespace TechStore.Data.Migrations
                     PriceAtOrderTime = table.Column<decimal>(type: "numeric", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -341,11 +341,11 @@ namespace TechStore.Data.Migrations
                     Discount = table.Column<decimal>(type: "numeric", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -371,11 +371,11 @@ namespace TechStore.Data.Migrations
                     ResponseBody = table.Column<string>(type: "text", nullable: false),
                     ExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -406,11 +406,11 @@ namespace TechStore.Data.Migrations
                     Note = table.Column<string>(type: "text", nullable: true),
                     OrderStatus = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -437,11 +437,11 @@ namespace TechStore.Data.Migrations
                     IsVerifiedPurchase = table.Column<bool>(type: "boolean", nullable: false),
                     IsApproved = table.Column<bool>(type: "boolean", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -472,11 +472,11 @@ namespace TechStore.Data.Migrations
                     ImportPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     SoldCount = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -503,11 +503,11 @@ namespace TechStore.Data.Migrations
                     InvoiceStatus = table.Column<int>(type: "integer", nullable: false),
                     CashierId = table.Column<Guid>(type: "uuid", nullable: true),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -539,11 +539,11 @@ namespace TechStore.Data.Migrations
                     ShippingNote = table.Column<string>(type: "text", nullable: true),
                     FailureCount = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -572,11 +572,11 @@ namespace TechStore.Data.Migrations
                     OrderId = table.Column<Guid>(type: "uuid", nullable: false),
                     UsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -614,11 +614,11 @@ namespace TechStore.Data.Migrations
                     ImportPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     SoldCount = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -642,11 +642,11 @@ namespace TechStore.Data.Migrations
                     PaymentMethod = table.Column<int>(type: "integer", nullable: false),
                     PaymentStatus = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -680,11 +680,11 @@ namespace TechStore.Data.Migrations
                     PriceAtOrderTime = table.Column<decimal>(type: "numeric", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -715,11 +715,11 @@ namespace TechStore.Data.Migrations
                     ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -756,11 +756,11 @@ namespace TechStore.Data.Migrations
                     Note = table.Column<string>(type: "text", nullable: true),
                     RawPayload = table.Column<string>(type: "text", nullable: true),
                     PublicId = table.Column<string>(type: "text", nullable: false),
-                    EntityStatus = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {

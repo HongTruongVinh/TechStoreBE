@@ -67,7 +67,6 @@ namespace TechStore.Service.Implementations
                     TotalPrice = model.Quantity * productVariantOption.Price,
                     Discount = 0,
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = Common.Enums.EEntityStatus.Active,
                 };
 
                 await _uow.CartItems.AddAsync(cartItem);

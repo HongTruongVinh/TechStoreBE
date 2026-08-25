@@ -196,7 +196,7 @@ namespace TechStore.Service.Mappers
 
                 IsOnSale = product.IsOnSale,
                 IsFeatured = product.IsFeatured,
-                EntityStatus = product.EntityStatus,
+                DeletedAt = product.DeletedAt,
 
                 PublishDate = product.PublishDate,
 

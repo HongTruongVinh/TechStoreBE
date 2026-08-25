@@ -46,7 +46,6 @@ namespace TechStore.Service.Implementations
                 Slug = model.Slug ?? CommonFuntion.GenerateSlug(model.Name),
                 IconImageUrl = model.IconImageUrl ?? CloudinaryFolders.DefaultImage,
 
-                EntityStatus = EEntityStatus.Active,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 
@@ -79,8 +78,6 @@ namespace TechStore.Service.Implementations
             {
                 return serviceResult;
             }
-
-            brand.EntityStatus = EEntityStatus.Deleted;
 
             _uow.Brands.Update(brand);
             var result = await _uow.CommitAsync();

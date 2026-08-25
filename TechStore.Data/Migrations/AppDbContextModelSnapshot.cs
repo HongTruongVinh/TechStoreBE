@@ -35,12 +35,12 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<string>("IconImageUrl")
                         .IsRequired()
@@ -90,11 +90,11 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<decimal>("Discount")
                         .HasColumnType("numeric");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<Guid>("ProductVariantOptionId")
                         .HasColumnType("uuid");
@@ -140,12 +140,12 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<string>("IconImageUrl")
                         .IsRequired()
@@ -199,10 +199,10 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Dislike")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("EntityStatus")
+                    b.Property<int>("Dislike")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsApproved")
@@ -257,12 +257,12 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Endpoint")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ExpiredAt")
                         .HasColumnType("timestamp with time zone");
@@ -346,11 +346,11 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("numeric");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<int>("InvoiceStatus")
                         .HasColumnType("integer");
@@ -421,11 +421,11 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("numeric");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
@@ -481,8 +481,8 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -548,8 +548,8 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uuid");
@@ -611,11 +611,11 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("numeric");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ExpiredAt")
                         .HasColumnType("timestamp with time zone");
@@ -679,8 +679,8 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("PaymentSnapshotId")
                         .HasColumnType("uuid");
@@ -744,8 +744,8 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Gateway")
                         .HasColumnType("text");
@@ -841,15 +841,15 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("EndSellingDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<List<string>>("GalleryImageUrls")
                         .IsRequired()
@@ -949,12 +949,12 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<decimal>("ImportPrice")
                         .HasColumnType("numeric");
@@ -1005,8 +1005,8 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -1068,8 +1068,8 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PublicId")
                         .IsRequired()
@@ -1108,10 +1108,10 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("DeviceType")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("EntityStatus")
+                    b.Property<int>("DeviceType")
                         .HasColumnType("integer");
 
                     b.Property<string>("IpAddress")
@@ -1183,11 +1183,11 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -1235,14 +1235,14 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DeliveryStaffName")
                         .HasColumnType("text");
 
                     b.Property<string>("DeliveryStaffPhoneNumber")
                         .HasColumnType("text");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("EstimatedArrival")
                         .HasColumnType("timestamp with time zone");
@@ -1316,8 +1316,8 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
@@ -1383,15 +1383,15 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("District")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -1461,6 +1461,9 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1473,9 +1476,6 @@ namespace TechStore.Data.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
 
                     b.Property<decimal>("MaxDiscountAmount")
                         .HasColumnType("numeric");
@@ -1534,8 +1534,8 @@ namespace TechStore.Data.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EntityStatus")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");

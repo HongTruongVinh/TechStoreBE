@@ -204,7 +204,6 @@ namespace TechStore.Service.Implementations
                 RoleId = ERole.Admin,
                 Birthday = TimeZoneHelper.ConvertGmt7ToUtc(registerModel.UserInformation.Birthday),
 
-                EntityStatus = EEntityStatus.Active,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 
@@ -386,7 +385,6 @@ namespace TechStore.Service.Implementations
                 Status = EUserStatus.Active,
                 RoleId = ERole.Customer,
 
-                EntityStatus = EEntityStatus.Active,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
             };
 

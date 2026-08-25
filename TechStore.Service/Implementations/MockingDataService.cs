@@ -276,7 +276,6 @@ namespace TechStore.Service.Implementations
                     StartDate = TimeZoneHelper.GetUtcNow(),
                     EndDate = TimeZoneHelper.GetUtcNow().AddMonths(1),
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = EEntityStatus.Active
                 };
 
                 var voucher2 = new Voucher
@@ -296,7 +295,6 @@ namespace TechStore.Service.Implementations
                     StartDate = TimeZoneHelper.GetUtcNow(),
                     EndDate = TimeZoneHelper.GetUtcNow().AddMonths(1),
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = EEntityStatus.Active
                 };
 
                 var voucher3 = new Voucher
@@ -316,7 +314,6 @@ namespace TechStore.Service.Implementations
                     StartDate = TimeZoneHelper.GetUtcNow(),
                     EndDate = TimeZoneHelper.GetUtcNow().AddMonths(1),
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = EEntityStatus.Active
                 };
 
                 await _uow.Vouchers.AddAsync(voucher1);
@@ -421,11 +418,31 @@ namespace TechStore.Service.Implementations
                     Email = "phamvanhieu@gmail.com",
                     City = "HCM",
                     District = "Q12",
-                    Address = "123 abc",
-                    PhoneNumber = "0345678999",
+                    Address = "123 Q12",
+                    PhoneNumber = "0345678900",
                 };
 
                 var resultRegister4 = await _authenticationService.RegisterCustomer(user4);
+
+
+                if (resultRegister4.IsSuccess == false)
+                {
+                    throw new Exception("Đã có lỗi xảy ra trong quá trình tạo tài khoản");
+                }
+
+                var user5 = new CustomerRegisterModel
+                {
+                    LastName = "Hồng Trường",
+                    FirstName = "Vinh",
+                    Password = password,
+                    Email = "hongtruongvinh@gmail.com",
+                    City = "HCM",
+                    District = "Thu Duc",
+                    Address = "123 Thu Duc",
+                    PhoneNumber = "0345678999",
+                };
+
+                var resultRegister5 = await _authenticationService.RegisterCustomer(user5);
 
 
                 if (resultRegister4.IsSuccess == false)

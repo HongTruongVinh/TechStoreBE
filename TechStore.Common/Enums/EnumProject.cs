@@ -96,12 +96,6 @@ namespace TechStore.Common.Enums
         Female
     }
 
-    public enum EEntityStatus
-    {
-        Active,
-        Deleted,
-    }
-
     public enum EPhotoType
     {
         Product,

@@ -228,8 +228,7 @@ namespace TechStore.Service.Implementations
                     EndSellingDate = model.EndSellingDate,
                     MinPrice = 0,
                     MaxPrice = 0,
-                    CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = EEntityStatus.Active
+                    CreatedAt = TimeZoneHelper.GetUtcNow()
                 };
 
                 foreach (var variantModel in model.Variants)
@@ -245,7 +244,6 @@ namespace TechStore.Service.Implementations
                         Price = variantModel.Price,
                         ImportPrice = variantModel.ImportPrice,
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
-                        EntityStatus = EEntityStatus.Active
                     };
 
                     if (variantModel.Options != null)
@@ -263,7 +261,6 @@ namespace TechStore.Service.Implementations
                                 Stock = optionModel.Stock,
                                 ImageUrl = optionModel.ImageUrl ?? CloudinaryFolders.DefaultImage,
                                 CreatedAt = TimeZoneHelper.GetUtcNow(),
-                                EntityStatus = EEntityStatus.Active
                             };
 
                             variant.Options.Add(option);
@@ -359,7 +356,7 @@ namespace TechStore.Service.Implementations
                 return serviceResult;
             }
 
-            product.EntityStatus = EEntityStatus.Deleted;
+            product.DeletedAt = TimeZoneHelper.GetUtcNow();
 
             _uow.Products.Update(product);
 
@@ -627,7 +624,6 @@ namespace TechStore.Service.Implementations
                 Price = pvModel.Price,
                 ImportPrice = pvModel.ImportPrice,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active
             };
 
             foreach (var pvoModel in pvModel.Options)
@@ -642,7 +638,6 @@ namespace TechStore.Service.Implementations
                     Stock = pvoModel.Stock,
                     ImageUrl = pvoModel.ImageUrl ?? CloudinaryFolders.DefaultImage,
                     CreatedAt = TimeZoneHelper.GetUtcNow(),
-                    EntityStatus = EEntityStatus.Active
                 });
             }
 
@@ -769,7 +764,6 @@ namespace TechStore.Service.Implementations
                 Stock = model.Stock,
                 ImageUrl = model.ImageUrl ?? CloudinaryFolders.DefaultImage,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active
             };
 
 

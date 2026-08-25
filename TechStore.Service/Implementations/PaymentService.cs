@@ -77,7 +77,6 @@ namespace TechStore.Service.Implementations
                 PaymentStatus = EPaymentStatus.Paid,
                
 
-                EntityStatus = EEntityStatus.Active,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
                 CreatedBy = cashier.Id
             };
@@ -160,7 +159,7 @@ namespace TechStore.Service.Implementations
 
             //_uow.Payments.Remove(payment);
 
-            payment.EntityStatus = EEntityStatus.Deleted;
+            payment.DeletedAt = TimeZoneHelper.GetUtcNow();
             _uow.Payments.Update(payment);
 
             var result = await _uow.CommitAsync();
@@ -265,7 +264,6 @@ namespace TechStore.Service.Implementations
                 Amount = model.Amount,
                 CreatedBy = cashier.Id,
                 CreatedAt = TimeZoneHelper.GetUtcNow(),
-                EntityStatus = EEntityStatus.Active
             };
             
 
