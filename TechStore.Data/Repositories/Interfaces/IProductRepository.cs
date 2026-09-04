@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
+using TechStore.Data.Repositories.QueryModels;
 
 namespace TechStore.Data.Repositories.Interfaces
 {
     public interface IProductRepository : IRepository<Product>
     {
-        Task<PagedResult<Product>> SearchAsync(ProductSearchQuery query);
+        Task<PagedResult<Product>> SearchAsync(ProductSearchQuery query); 
+        Task<List<AiProductContext>> SearchForAiAsync(ProductSearchCriteria criteria, CancellationToken cancellationToken = default);
 
         Task<List<Product>?> SearchByNameAsync(string keyword, int pageNumber, int pageSize);
         Task<List<Product>?> GetProductsByCategoryAsync(Guid categoryId, int pageNumber, int pageSize);

@@ -182,6 +182,18 @@ namespace TechStore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SystemConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsShowImportantNotification = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemConfigs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -468,6 +480,23 @@ namespace TechStore.Data.Migrations
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
+                    Cpu = table.Column<string>(type: "text", nullable: true),
+                    Gpu = table.Column<string>(type: "text", nullable: true),
+                    Ram = table.Column<int>(type: "integer", nullable: true),
+                    Storage = table.Column<int>(type: "integer", nullable: true),
+                    ScreenSize = table.Column<decimal>(type: "numeric", nullable: true),
+                    ScreenResolution = table.Column<string>(type: "text", nullable: true),
+                    RefreshRate = table.Column<int>(type: "integer", nullable: true),
+                    PanelType = table.Column<string>(type: "text", nullable: true),
+                    ScreenBrightness = table.Column<int>(type: "integer", nullable: true),
+                    BatteryCapacity = table.Column<int>(type: "integer", nullable: true),
+                    ChargingWattage = table.Column<int>(type: "integer", nullable: true),
+                    MainCamera = table.Column<string>(type: "text", nullable: true),
+                    FrontCamera = table.Column<string>(type: "text", nullable: true),
+                    Wifi = table.Column<string>(type: "text", nullable: true),
+                    Bluetooth = table.Column<string>(type: "text", nullable: true),
+                    Weight = table.Column<decimal>(type: "numeric", nullable: true),
+                    Dimensions = table.Column<string>(type: "text", nullable: true),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     ImportPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     SoldCount = table.Column<int>(type: "integer", nullable: false),
@@ -776,6 +805,11 @@ namespace TechStore.Data.Migrations
                         principalTable: "Payments",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.InsertData(
+                table: "SystemConfigs",
+                columns: new[] { "Id", "IsShowImportantNotification" },
+                values: new object[] { new Guid("39e69394-2ad0-484d-b946-34662ea1e946"), true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Brands_PublicId",
@@ -1113,6 +1147,9 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "StockReservations");
+
+            migrationBuilder.DropTable(
+                name: "SystemConfigs");
 
             migrationBuilder.DropTable(
                 name: "VoucherUsages");

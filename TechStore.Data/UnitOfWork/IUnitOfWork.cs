@@ -36,6 +36,7 @@ namespace TechStore.Data.UnitOfWork
         ISequenceRepository Sequences { get; }
         IInvalidTokenRepository InvalidTokens { get; }
         IIdempotencyKeyRepository IdempotencyKeys { get; }
+        ISystemConfigRepository SystemConfigs { get; }
 
         Task<int> CommitAsync(CancellationToken cancellationToken = default);
 

@@ -67,6 +67,11 @@ namespace TechStore.Common.Constants
         public const string NotFoundProductVariantOption = "ProductVariantOption not found: ";
     }
 
+    public static class AiMessenger
+    {
+        public const string NotFoundProduct = "Product not found";
+    }
+
     public static class AuthenticationMessenger
     {
         public const string RegisterSuccess = "Register successful";

@@ -41,6 +41,7 @@ namespace TechStore.Data.Context
         public DbSet<Voucher> Vouchers => Set<Voucher>();
         public DbSet<IdempotencyKey> IdempotencyKeys => Set<IdempotencyKey>();
         public DbSet<SearchKeyword> SearchKeywords => Set<SearchKeyword>();
+        public DbSet<SystemConfigs> SystemConfigs => Set<SystemConfigs>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -412,6 +413,17 @@ namespace TechStore.Data.Context
                     x.UserId,
                     x.RequestKey
                 }).IsUnique();
+            });
+            
+            modelBuilder.Entity<SystemConfigs>(entity =>
+            {
+                entity.HasData(
+                    new SystemConfigs
+                    {
+                        Id = Guid.NewGuid(),
+                        IsShowImportantNotification = false,
+                    }
+                );
             });
 
             #endregion

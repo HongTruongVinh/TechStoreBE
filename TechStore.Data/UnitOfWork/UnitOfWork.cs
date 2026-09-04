@@ -39,6 +39,7 @@ namespace TechStore.Data.UnitOfWork
         public IInvalidTokenRepository InvalidTokens { get; }
         public ISequenceRepository Sequences { get; }
         public IIdempotencyKeyRepository IdempotencyKeys { get; }
+        public ISystemConfigRepository SystemConfigs { get; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -69,6 +70,7 @@ namespace TechStore.Data.UnitOfWork
             InvalidTokens = new InvalidTokenRepository(_context);
             Sequences = new SequenceRepository(_context);
             IdempotencyKeys = new IdempotencyKeyRepository(_context);
+            SystemConfigs = new SystemConfigRepository(_context);
         }
 
         public Task<int> CommitAsync(CancellationToken cancellationToken = default)

@@ -13,7 +13,7 @@ using TechStore.Data.Context;
 namespace TechStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260825080314_InitialCreate")]
+    [Migration("20260904152257_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -946,6 +946,18 @@ namespace TechStore.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("BatteryCapacity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Bluetooth")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ChargingWattage")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Cpu")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -959,13 +971,28 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Dimensions")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FrontCamera")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Gpu")
+                        .HasColumnType("text");
+
                     b.Property<decimal>("ImportPrice")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("MainCamera")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<string>("PanelType")
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -977,7 +1004,25 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("Ram")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RefreshRate")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ScreenBrightness")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ScreenResolution")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("ScreenSize")
+                        .HasColumnType("numeric");
+
                     b.Property<int>("SoldCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Storage")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -985,6 +1030,12 @@ namespace TechStore.Data.Migrations
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Wifi")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1361,6 +1412,27 @@ namespace TechStore.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("StockReservations");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.SystemConfigs", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsShowImportantNotification")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemConfigs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("39e69394-2ad0-484d-b946-34662ea1e946"),
+                            IsShowImportantNotification = true
+                        });
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.User", b =>

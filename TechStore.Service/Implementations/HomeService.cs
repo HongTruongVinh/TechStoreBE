@@ -198,5 +198,24 @@ namespace TechStore.Service.Implementations
             serviceResult.Message = Messenger.GetDataSuccessful;
             return serviceResult;
         }
+
+        public async Task<ServiceResult<SystemConfigsModel>> GetSystemConfigs()
+        {
+            var systemConfig = await _uow.SystemConfigs.TableNoTracking.FirstOrDefaultAsync();
+            if (systemConfig != null)
+            {
+                return new ServiceResult<SystemConfigsModel>
+                {
+                    IsSuccess = true,
+                    Data = new SystemConfigsModel
+                    {
+                        IsShowImportantNotification = systemConfig.IsShowImportantNotification
+                    },
+                    Message = Messenger.GetDataSuccessful
+                };
+            }
+
+            return ServiceResult<SystemConfigsModel>.Fail(Common.Enums.EErrorType.Status500InternalServerError, Messenger.SystemError);
+        }
     }
 }

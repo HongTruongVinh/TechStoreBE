@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Techstore.API.Hubs;
@@ -28,6 +29,7 @@ namespace TechStoreAPI
             builder.Services.Configure<JWTConfig>(builder.Configuration.GetSection("JWT"));
             builder.Services.Configure<CloudinaryConfig>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.Configure<PaymentSettings>(builder.Configuration.GetSection("PaymentSettings"));
+            builder.Services.Configure<GeminiAIConfig>(builder.Configuration.GetSection("GeminiAISettings"));
             //builder.Services.Configure<VietQRConfig>(builder.Configuration.GetSection("VietQrSettings"));
 
             var jwtConfig = builder.Configuration.GetSection("JWT").Get<JWTConfig>() ?? new JWTConfig();
@@ -45,13 +47,13 @@ namespace TechStoreAPI
             #endregion
 
             #region Get sections in appsettings.json
-            builder.Services.Configure<ConnectionStringSetting>(builder.Configuration.GetSection("ConnectionStrings"));
+            builder.Services.Configure<ConnectionStringConfig>(builder.Configuration.GetSection("ConnectionStrings"));
             #endregion
 
             #region Database Setting
             var connectionSetting = builder.Configuration
                 .GetSection("ConnectionStrings")
-                .Get<ConnectionStringSetting>();
+                .Get<ConnectionStringConfig>();
 
             //builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionSetting!.DefaultConnection));
             builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionSetting!.PostgresConnection));
@@ -75,7 +77,9 @@ namespace TechStoreAPI
             builder.Services.AddScoped<IShipperService, ShipperService>();
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
             builder.Services.AddScoped<IUploadDataToCloudService, UploadDataToCloudService>();
-            builder.Services.AddHttpClient<VietQrService>();
+            builder.Services.AddHttpClient<VietQrService>(); 
+            builder.Services.AddScoped<IAiService, GeminiAiService>();
+            builder.Services.AddScoped<IAiProductRecommendationService, AiProductRecommendationService>();
             builder.Services.AddScoped<IVietQrService, VietQrService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IVoucherService, VoucherService>();

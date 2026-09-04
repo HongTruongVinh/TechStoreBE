@@ -9,6 +9,7 @@ using TechStore.Common.Models;
 using TechStore.Data.Context;
 using TechStore.Data.Entities;
 using TechStore.Data.Repositories.Interfaces;
+using TechStore.Data.Repositories.QueryModels;
 
 namespace TechStore.Data.Repositories.Implementations
 {
@@ -185,6 +186,98 @@ namespace TechStore.Data.Repositories.Implementations
                 .OrderByDescending(p => p.AverageRating)
                 .Take(count)
                 .ToListAsync();
+        }
+
+        public async Task<List<AiProductContext>> SearchForAiAsync(ProductSearchCriteria criteria, CancellationToken cancellationToken = default)
+        {
+            var query = _context.Products
+                .AsNoTracking()
+                .Include(x => x.Brand)
+                .Include(x => x.Category)
+                .Include(x => x.Variants)
+                .AsQueryable();
+
+            // Category
+            if (!string.IsNullOrWhiteSpace(criteria.Category))
+            {
+                query = query.Where(x =>
+                    x.Category.Name.ToLower()
+                        .Contains(criteria.Category.ToLower()));
+            }
+
+            // Brand
+            if (!string.IsNullOrWhiteSpace(criteria.Brand))
+            {
+                query = query.Where(x =>
+                    x.Brand.Name.ToLower()
+                        .Contains(criteria.Brand.ToLower()));
+            }
+
+            //// Minimum price
+            //if (criteria.MinPrice.HasValue)
+            //{
+            //    if (criteria.MinPrice.Value > 0)
+            //    {
+            //        query = query.Where(x =>
+            //        x.Variants.Any(v =>
+            //            v.Price >= criteria.MinPrice.Value));
+            //    }
+            //}
+
+            //// Maximum price
+            //if (criteria.MaxPrice.HasValue)
+            //{
+            //    if (criteria.MaxPrice.Value > 0)
+            //    {
+            //        query = query.Where(x =>
+            //        x.Variants.Any(v =>
+            //            v.Price <= criteria.MaxPrice.Value));
+            //    }
+            //}
+
+            // Minimum price
+            if (criteria.MinPrice.HasValue)
+            {
+                if (criteria.MinPrice.Value > 0)
+                {
+                    query = query.Where(x => x.MinPrice >= criteria.MinPrice.Value);
+                }
+            }
+
+            // Maximum price
+            if (criteria.MaxPrice.HasValue)
+            {
+                if (criteria.MaxPrice.Value > 0)
+                {
+                    query = query.Where(x => x.MaxPrice <= criteria.MaxPrice.Value);
+                }
+            }
+
+            var products = await query
+                .Take(20)
+                .ToListAsync(cancellationToken);
+
+            return products
+                .Select(product =>
+                {
+                    var variants = product.Variants;
+
+                    var price = variants
+                        .Select(x => x.Price)
+                        .OrderBy(x => x)
+                        .FirstOrDefault();
+
+                    return new AiProductContext
+                    {
+                        ProductId = product.PublicId,
+                        Slug = product.Slug,
+                        Name = product.Name,
+                        ImgUrl = product.MainImageUrl,
+                        Brand = product.Brand.Name,
+                        Price = price,
+                    };
+                })
+                .ToList();
         }
     }
 }

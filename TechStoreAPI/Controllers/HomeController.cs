@@ -41,5 +41,13 @@ namespace TechStoreAPI.Controllers
 
             return serviceResult.ToActionResult(this);
         }
+
+        [HttpGet("system-configs")]
+        public async Task<ActionResult<ApiResponse<SystemConfigsModel>>> GetSystemConfigs()
+        {
+            var serviceResult = await _homeService.GetSystemConfigs();
+
+            return serviceResult.ToActionResult(this);
+        }
     }
 }
