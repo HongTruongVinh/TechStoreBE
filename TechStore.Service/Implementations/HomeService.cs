@@ -209,7 +209,8 @@ namespace TechStore.Service.Implementations
                     IsSuccess = true,
                     Data = new SystemConfigsModel
                     {
-                        IsShowImportantNotification = systemConfig.IsShowImportantNotification
+                        IsShowImportantNotification = systemConfig.IsShowImportantNotification,
+                        isAiChatbotEnabled = systemConfig.isAiChatbotEnabled
                     },
                     Message = Messenger.GetDataSuccessful
                 };

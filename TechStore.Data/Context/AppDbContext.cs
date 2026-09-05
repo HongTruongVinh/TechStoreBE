@@ -421,7 +421,8 @@ namespace TechStore.Data.Context
                     new SystemConfigs
                     {
                         Id = Guid.NewGuid(),
-                        IsShowImportantNotification = false,
+                        IsShowImportantNotification = true,
+                        isAiChatbotEnabled = true,
                     }
                 );
             });

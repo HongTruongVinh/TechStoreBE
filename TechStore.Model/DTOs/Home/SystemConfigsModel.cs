@@ -9,5 +9,6 @@ namespace TechStore.Model.DTOs.Home
     public class SystemConfigsModel
     {
         public required bool IsShowImportantNotification { get; set; }
+        public required bool isAiChatbotEnabled { get; set; }
     }
 }

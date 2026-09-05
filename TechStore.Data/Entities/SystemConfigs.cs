@@ -10,5 +10,6 @@ namespace TechStore.Data.Entities
     {
         public Guid Id { get; set; }
         public required bool IsShowImportantNotification { get; set; }
+        public required bool isAiChatbotEnabled { get; set; }
     }
 }
