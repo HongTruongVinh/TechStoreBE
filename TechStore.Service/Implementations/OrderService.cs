@@ -146,7 +146,7 @@ namespace TechStore.Service.Implementations
                     snapshotItems.Add(new PaymentSnapshotItem
                     {
                         Id = Guid.NewGuid(),
-                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        PublicId = ShareFunctions.GenerateRandomStringId(),
                         PaymentSnapshotId = snapshotId,
                         ProductVariantOptionId = pVO.Id,
                         ProductVariantOptionPublicId = pVO.PublicId,
@@ -296,7 +296,7 @@ namespace TechStore.Service.Implementations
                         ReservedAt = TimeZoneHelper.GetUtcNow(),
                         ExpiresAt = snapshot.ExpiredAt,
 
-                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        PublicId = ShareFunctions.GenerateRandomStringId(),
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
                     });
                 }
@@ -315,7 +315,7 @@ namespace TechStore.Service.Implementations
                     var idempotencyKeyEntity = new IdempotencyKey
                     {
                         Id = idempotencyKeyId,
-                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        PublicId = ShareFunctions.GenerateRandomStringId(),
                         UserId = customer.Id,
                         Endpoint = "/api/order/create-snapshot",
                         StatusCode = 200,
@@ -468,7 +468,7 @@ namespace TechStore.Service.Implementations
                 TransferContent = request.Content,
                 Status = EPaymentTransactionStatus.Received,
 
-                PublicId = ShareFunctions.GenarateRandomStringId(),
+                PublicId = ShareFunctions.GenerateRandomStringId(),
                 CreatedAt = TimeZoneHelper.GetUtcNow()
             };
 
@@ -707,7 +707,7 @@ namespace TechStore.Service.Implementations
                     await _uow.VoucherUsages.AddAsync(
                         new VoucherUsage
                         {
-                            PublicId = ShareFunctions.GenarateRandomStringId(),
+                            PublicId = ShareFunctions.GenerateRandomStringId(),
                             VoucherId = voucher.Id,
                             UserId = customer.Id,
                             OrderId = order.Id,
@@ -944,7 +944,7 @@ namespace TechStore.Service.Implementations
 
                     await _uow.VoucherUsages.AddAsync(new VoucherUsage
                     {
-                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        PublicId = ShareFunctions.GenerateRandomStringId(),
                         VoucherId = voucher.Id,
                         UserId = customer.Id,
                         OrderId = order.Id,
@@ -962,7 +962,7 @@ namespace TechStore.Service.Implementations
                     var idempotencyKeyEntity = new IdempotencyKey
                     {
                         Id = idempotencyKeyId,
-                        PublicId = ShareFunctions.GenarateRandomStringId(),
+                        PublicId = ShareFunctions.GenerateRandomStringId(),
                         UserId = customer.Id,
                         Endpoint = "/api/order/create-cod-order",
                         StatusCode = 200,

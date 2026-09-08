@@ -24,7 +24,7 @@ namespace TechStore.Service.Mappers
                 PriceAtOrderTime = snapshotItem.PriceAtOrderTime,
                 TotalPrice = snapshotItem.TotalPrice,
 
-                PublicId = ShareFunctions.GenarateRandomStringId(),
+                PublicId = ShareFunctions.GenerateRandomStringId(),
                 CreatedAt = snapshotItem.CreatedAt,
             };
         }

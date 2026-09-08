@@ -8,7 +8,7 @@ namespace TechStore.Model.DTOs.Ai
 {
     public class ProductRecommendationResponse
     {
-        public string Summary { get; set; } = string.Empty;
+        public required string Summary { get; set; }
 
         public List<ProductRecommendation> Recommendations { get; set; } = [];
     }

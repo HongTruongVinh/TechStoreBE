@@ -13,6 +13,28 @@ namespace TechStore.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AiConversations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    UserPublicId = table.Column<string>(type: "text", nullable: true),
+                    GuestId = table.Column<string>(type: "text", nullable: true),
+                    LastInteractionId = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AiConversations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Brands",
                 columns: table => new
                 {
@@ -186,7 +208,8 @@ namespace TechStore.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsShowImportantNotification = table.Column<bool>(type: "boolean", nullable: false)
+                    IsShowImportantNotification = table.Column<bool>(type: "boolean", nullable: false),
+                    isAiChatbotEnabled = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,6 +276,67 @@ namespace TechStore.Data.Migrations
                 {
                     table.PrimaryKey("PK_Vouchers", x => x.Id);
                     table.CheckConstraint("CK_Voucher_Counts_Valid", "\"UsageLimit\" >= 0 AND \"UsedCount\" >= 0 AND \"ReservedCount\" >= 0 AND \"UsedCount\" + \"ReservedCount\" <= \"UsageLimit\"");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AiConversationContexts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConversationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConversationPublicId = table.Column<string>(type: "text", nullable: false),
+                    Category = table.Column<string>(type: "text", nullable: true),
+                    Brand = table.Column<string>(type: "text", nullable: true),
+                    MinPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    MaxPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    Usages = table.Column<List<string>>(type: "text[]", nullable: false),
+                    Games = table.Column<List<string>>(type: "text[]", nullable: false),
+                    LastRecommendedProductIds = table.Column<List<string>>(type: "text[]", nullable: false),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AiConversationContexts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AiConversationContexts_AiConversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "AiConversations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AiConversationMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConversationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    InteractionId = table.Column<string>(type: "text", nullable: true),
+                    InputTokens = table.Column<int>(type: "integer", nullable: true),
+                    OutputTokens = table.Column<int>(type: "integer", nullable: true),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AiConversationMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AiConversationMessages_AiConversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "AiConversations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -808,8 +892,36 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "SystemConfigs",
-                columns: new[] { "Id", "IsShowImportantNotification" },
-                values: new object[] { new Guid("39e69394-2ad0-484d-b946-34662ea1e946"), true });
+                columns: new[] { "Id", "IsShowImportantNotification", "isAiChatbotEnabled" },
+                values: new object[] { new Guid("91461d15-7c13-4693-931e-99b5453665f3"), true, true });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiConversationContexts_ConversationId",
+                table: "AiConversationContexts",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiConversationContexts_PublicId",
+                table: "AiConversationContexts",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiConversationMessages_ConversationId",
+                table: "AiConversationMessages",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiConversationMessages_PublicId",
+                table: "AiConversationMessages",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiConversations_PublicId",
+                table: "AiConversations",
+                column: "PublicId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Brands_PublicId",
@@ -1113,6 +1225,12 @@ namespace TechStore.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AiConversationContexts");
+
+            migrationBuilder.DropTable(
+                name: "AiConversationMessages");
+
+            migrationBuilder.DropTable(
                 name: "CartItems");
 
             migrationBuilder.DropTable(
@@ -1153,6 +1271,9 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "VoucherUsages");
+
+            migrationBuilder.DropTable(
+                name: "AiConversations");
 
             migrationBuilder.DropTable(
                 name: "Payments");

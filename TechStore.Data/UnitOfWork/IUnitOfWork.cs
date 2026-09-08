@@ -11,6 +11,9 @@ namespace TechStore.Data.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {
+        IAiConversationRepository AiConversations { get; }
+        IAiConversationContextRepository AiConversationContexts { get; }
+        IAiConversationMessageRepository AiConversationMessages { get; }
         IBrandRepository Brands { get; }
         ICategoryRepository Categories { get; }
         IProductRepository Products { get; }

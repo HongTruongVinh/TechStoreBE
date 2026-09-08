@@ -13,5 +13,12 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<ProductRecommendationResponse>> ProcessUserMessageAsync(
             string message,
             CancellationToken cancellationToken = default);
+
+        public Task<ServiceResult<AiChatResponse>> ProcessMessageAsync(
+            string? userId, 
+            string? guestId, 
+            string? conversationId,
+            string message, 
+            CancellationToken cancellationToken = default);
     }
 }

@@ -262,7 +262,7 @@ namespace TechStore.Service.Implementations
                 var voucher1 = new Voucher
                 {
                     Id = Guid.NewGuid(),
-                    PublicId = ShareFunctions.GenarateRandomStringId(),
+                    PublicId = ShareFunctions.GenerateRandomStringId(),
                     Code = "D99",
                     Description = "Giảm giá 99.99% cho đơn hàng đầu tiên. (Mục đích cho việc thử nghiệm chuyển khoản với số tiền thấp)",
                     DiscountType = EDiscountType.Percentage,
@@ -281,7 +281,7 @@ namespace TechStore.Service.Implementations
                 var voucher2 = new Voucher
                 {
                     Id = Guid.NewGuid(),
-                    PublicId = ShareFunctions.GenarateRandomStringId(),
+                    PublicId = ShareFunctions.GenerateRandomStringId(),
                     Code = "D10",
                     Description = "Giảm giá 10% cho đơn hàng đầu tiên",
                     DiscountType = EDiscountType.Percentage,
@@ -300,7 +300,7 @@ namespace TechStore.Service.Implementations
                 var voucher3 = new Voucher
                 {
                     Id = Guid.NewGuid(),
-                    PublicId = ShareFunctions.GenarateRandomStringId(),
+                    PublicId = ShareFunctions.GenerateRandomStringId(),
                     Code = "D1tr",
                     Description = "Giảm giá 1.000.000 đồng trong mùa hè não nhiệt",
                     DiscountType = EDiscountType.FixedAmount,

@@ -37,14 +37,13 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPost("recommend-products")]
-        public async Task<ActionResult<ApiResponse<ProductRecommendationResponse>>> RecommendProducts([FromBody] AiChatRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<AiChatResponse>>> RecommendProducts([FromBody] AiChatRequest request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.Message))
-            {
-                return BadRequest("Message is required.");
-            }
+            var userId = User.GetOptionalUserId();
 
-            var serviceResult = await _aiProductRecommendationService.ProcessUserMessageAsync(request.Message, cancellationToken);
+            var guestId = HttpContext.Request.Headers["guest-Id"].FirstOrDefault();
+
+            var serviceResult = await _aiProductRecommendationService.ProcessMessageAsync(userId, guestId, request.ConversationId, request.Message, cancellationToken);
 
             var result = serviceResult.ToActionResult(this);
 

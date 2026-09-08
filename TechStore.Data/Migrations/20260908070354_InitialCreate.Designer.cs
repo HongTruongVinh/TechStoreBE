@@ -13,8 +13,8 @@ using TechStore.Data.Context;
 namespace TechStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260905072804_Add_a_chatbot_on_off_switch")]
-    partial class Add_a_chatbot_on_off_switch
+    [Migration("20260908070354_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,175 @@ namespace TechStore.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("TechStore.Data.Entities.AiConversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GuestId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastInteractionId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserPublicId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("AiConversations");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.AiConversationContext", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Brand")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConversationPublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<List<string>>("Games")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<List<string>>("LastRecommendedProductIds")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<decimal?>("MaxPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("MinPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<List<string>>("Usages")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("AiConversationContexts");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.AiConversationMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("InputTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("InteractionId")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("OutputTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("AiConversationMessages");
+                });
 
             modelBuilder.Entity("TechStore.Data.Entities.Brand", b =>
                 {
@@ -1433,8 +1602,8 @@ namespace TechStore.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c37aa5ee-00e5-426d-9748-027787cc1a79"),
-                            IsShowImportantNotification = false,
+                            Id = new Guid("91461d15-7c13-4693-931e-99b5453665f3"),
+                            IsShowImportantNotification = true,
                             isAiChatbotEnabled = true
                         });
                 });
@@ -1651,6 +1820,28 @@ namespace TechStore.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("VoucherUsages");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.AiConversationContext", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.AiConversation", "Conversation")
+                        .WithMany()
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.AiConversationMessage", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.AiConversation", "Conversation")
+                        .WithMany()
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.CartItem", b =>

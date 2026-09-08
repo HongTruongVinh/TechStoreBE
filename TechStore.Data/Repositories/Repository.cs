@@ -20,9 +20,10 @@ namespace TechStore.Data.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public async Task<T?> GetByInternalIdAsync(Guid id) => await _dbSet.FindAsync(id);
-        public async Task<T?> GetByIdAsync(string publicId)
-            => await _dbSet.FirstOrDefaultAsync(e => EF.Property<string>(e, "PublicId") == publicId);
+        public async Task<T?> GetByInternalIdAsync(Guid id, CancellationToken cancellationToken = default) 
+            => await _dbSet.FindAsync(id, cancellationToken);
+        public async Task<T?> GetByIdAsync(string publicId, CancellationToken cancellationToken = default)
+            => await _dbSet.FirstOrDefaultAsync(e => EF.Property<string>(e, "PublicId") == publicId, cancellationToken);
 
         public async Task<List<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
@@ -33,10 +34,10 @@ namespace TechStore.Data.Repositories
             => await _dbSet.FirstOrDefaultAsync(predicate);
 
         
-        public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+        public async Task AddAsync(T entity, CancellationToken cancellationToken = default) => await _dbSet.AddAsync(entity, cancellationToken);
 
-        public async Task AddRangeAsync(IEnumerable<T> entities)
-            => await _dbSet.AddRangeAsync(entities);
+        public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+            => await _dbSet.AddRangeAsync(entities, cancellationToken);
 
         public void Update(T entity) => _dbSet.Update(entity);
 

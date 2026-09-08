@@ -17,5 +17,10 @@ namespace TechStoreAPI.Extensions
 
             return userId;
         }
+
+        public static string? GetOptionalUserId(this ClaimsPrincipal user)
+        {
+            return user.FindFirstValue(AppClaims.UserId);
+        }
     }
 }

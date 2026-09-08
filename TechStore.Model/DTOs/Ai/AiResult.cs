@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace TechStore.Model.DTOs.Ai
 {
-    public class AiResponse
+    public class AiResult
     {
-        public required string Content { get; set; }
-
         public required string InteractionId { get; set; }
 
         public int? InputTokens { get; set; }
 
         public int? OutputTokens { get; set; }
+
+        public required ProductRecommendationResponse Recommendation { get; set; }
     }
 }

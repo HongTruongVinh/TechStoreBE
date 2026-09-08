@@ -13,6 +13,9 @@ namespace TechStore.Data.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
+        public IAiConversationRepository AiConversations { get; }
+        public IAiConversationContextRepository AiConversationContexts { get; }
+        public IAiConversationMessageRepository AiConversationMessages { get; }
         public IBrandRepository Brands { get; }
         public ICategoryRepository Categories { get; }
         public IProductRepository Products { get; }
@@ -44,6 +47,9 @@ namespace TechStore.Data.UnitOfWork
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
+            AiConversations = new AiConversationRepository(_context);
+            AiConversationContexts = new AiConversationContextRepository(_context);
+            AiConversationMessages = new AiConversationMessageRepository(_context);
             Brands = new BrandRepository(_context);
             Categories = new CategoryRepository(_context);
             Products = new ProductRepository(_context);

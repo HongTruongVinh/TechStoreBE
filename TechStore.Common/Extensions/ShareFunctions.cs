@@ -21,9 +21,15 @@ namespace TechStore.Common.Extensions
             return Convert.ToHexString(hash);
         }
 
-        public static string GenarateRandomStringId()
+        private static long _counter = 0;
+
+        public static string GenerateRandomStringId()
         {
-            return $"{DateTime.UtcNow:yyyyMMdd}{(Random.Shared.Next(10000, 100000).ToString() + 1):D6}";
+            var now = DateTime.UtcNow;
+            var counter = Interlocked.Increment(ref _counter) % 1000;
+
+            return $"{now:yyyyMMddHHmmss}{counter:D3}";
+            // return $"{now:yyyyMMddHHmmssfff}{counter:D3}"; // Use milliseconds if you want more precision
         }
     }
 }

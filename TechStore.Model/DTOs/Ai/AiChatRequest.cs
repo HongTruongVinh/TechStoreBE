@@ -8,6 +8,8 @@ namespace TechStore.Model.DTOs.Ai
 {
     public class AiChatRequest
     {
-        public string Message { get; set; } = string.Empty;
+        public required string Message { get; set; }
+
+        public string? ConversationId { get; set; }
     }
 }

@@ -16,6 +16,9 @@ namespace TechStore.Data.Context
     // Drop-Database
     public class AppDbContext : DbContext
     {
+        public DbSet<AiConversation> AiConversations => Set<AiConversation>();
+        public DbSet<AiConversationContext> AiConversationContexts => Set<AiConversationContext>();
+        public DbSet<AiConversationMessage> AiConversationMessages => Set<AiConversationMessage>();
         public DbSet<Sequence> Sequences => Set<Sequence>();
         public DbSet<Brand> Brands => Set<Brand>();
         public DbSet<Category> Categories => Set<Category>();
@@ -50,6 +53,21 @@ namespace TechStore.Data.Context
             base.OnModelCreating(modelBuilder);
 
             #region Cấu hình DB
+
+            modelBuilder.Entity<AiConversation>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+            });
+
+            modelBuilder.Entity<AiConversationContext>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+            });
+
+            modelBuilder.Entity<AiConversationMessage>(entity =>
+            {
+                entity.HasIndex(p => p.PublicId).IsUnique();
+            });
 
             // Cấu hình Brand
             modelBuilder.Entity<Brand>(entity =>
@@ -426,6 +444,8 @@ namespace TechStore.Data.Context
                     }
                 );
             });
+
+
 
             #endregion
 
