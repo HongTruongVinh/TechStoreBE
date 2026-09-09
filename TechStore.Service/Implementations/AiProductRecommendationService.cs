@@ -373,7 +373,7 @@ namespace TechStore.Service.Implementations
                 return ServiceResult<AiChatResponse>.Success(new AiChatResponse
                 {
                     ConversationId = conversation.PublicId,
-                    Content = "Bạn vui lòng cung cấp thêm thông tin về nhu cầu của bạn, như giá sản phẩm, học tập hay chơi game ",
+                    Content = "Bạn vui lòng cung cấp thêm thông tin về nhu cầu của bạn, như giá sản phẩm, nhu cầu học tập hay chơi game gì.",
                     Recommendations = []
                 });
             }
@@ -385,7 +385,8 @@ namespace TechStore.Service.Implementations
                     ConversationId = conversation.PublicId,
                     Content =
                         "Xin lỗi, tôi chỉ có thể hỗ trợ bạn tìm kiếm " +
-                        "và tư vấn sản phẩm tại TechStore.",
+                        "và tư vấn sản phẩm tại TechStore. " +
+                        "Bạn vui lòng cung cấp thêm thông tin về nhu cầu của bạn, như giá sản phẩm, nhu cầu học tập hay chơi game gì.",
 
                     Recommendations = []
                 };
@@ -395,6 +396,34 @@ namespace TechStore.Service.Implementations
 
             // 2. Search products from database
             var products = await _uow.Products.SearchForAiAsync(criteria, cancellationToken);
+
+            if(products == null)
+            {
+                return ServiceResult<AiChatResponse>.Success(
+                    new AiChatResponse
+                    {
+                        ConversationId = conversation.PublicId,
+                        Content = "Xin lỗi, tôi không tìm thấy sản phẩm nào phù hợp với yêu cầu của bạn: " +
+                        $"{criteria.Category} {criteria.Brand} giá từ {criteria.MinPrice} - {criteria.MaxPrice}" +
+                        $"nhu cầu {string.Join(", ", criteria.Usages)}" +
+                        (criteria.Games.Count > 0 ? $" {string.Join(", ", criteria.Games)}" : ""),
+                        Recommendations = []
+                    });
+            }
+
+            if (products.Count < 1)
+            {
+                return ServiceResult<AiChatResponse>.Success(
+                    new AiChatResponse
+                    {
+                        ConversationId = conversation.PublicId,
+                        Content = "Xin lỗi, tôi không tìm thấy sản phẩm nào phù hợp với yêu cầu của bạn: " +
+                        $"{criteria.Category} {criteria.Brand} giá từ {ConvertData.ToStr(criteria.MinPrice??0)} - {ConvertData.ToStr(criteria.MaxPrice??0)} " +
+                        $"nhu cầu {string.Join(", ", criteria.Usages)}" +
+                        (criteria.Games.Count > 0 ? $" {string.Join(", ", criteria.Games)}" : ""),
+                        Recommendations = []
+                    });
+            }
 
 
             // 3. Ask Gemini to recommend from candidates

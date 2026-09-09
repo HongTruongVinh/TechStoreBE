@@ -455,16 +455,53 @@ namespace TechStore.Service.Implementations
         {message}
 
         Rules:
-        1. Use the previous conversation context only when the
-           current request is clearly a follow-up to that context.
+        1. First, determine whether the current customer request
+           introduces a new product category.
 
-        2. If the customer provides a new requirement, use the
-           new requirement.
+        2. If the current request explicitly mentions a product
+           category that is different from the previous context
+           category, DO NOT use the previous context.
 
-        3. Preserve previous requirements that are still relevant
-           when the customer modifies only part of the request.
+           Treat the current request as a NEW product search.
+           Ignore all previous requirements such as:
+           - previous category
+           - previous price range
+           - previous brand
+           - previous usages
+           - previous games
 
-        4. Example:
+           Example:
+           Previous context:
+           category = Laptop
+           maxPrice = 25000000
+           brand = ASUS
+
+           Customer:
+           "Tôi muốn tìm điện thoại Samsung khoảng 15 triệu"
+
+           Result:
+           category = Phone
+           minPrice = null
+           maxPrice = 15000000
+           brand = Samsung
+
+           DO NOT preserve:
+           category = Laptop
+           maxPrice = 25000000
+           brand = ASUS
+
+        3. If the current request does NOT introduce a new category
+           and is clearly a follow-up to the previous context,
+           use the previous context.
+
+        4. If the customer provides a new requirement while staying
+           in the same category, update that requirement and preserve
+           other previous requirements that are still relevant.
+
+        5. If the customer modifies only part of the previous request,
+           preserve the unchanged requirements.
+
+        6. Example:
            Previous context:
            category = Laptop
            maxPrice = 25000000
@@ -474,25 +511,29 @@ namespace TechStore.Service.Implementations
 
            Result:
            category = Laptop
-           maxPrice should be reduced based on the customer's
-           request, but DO NOT invent an exact price if none
-           can be determined.
+           maxPrice should be reduced based on the customer's request,
+           but DO NOT invent an exact price if none can be determined.
 
-        5. Convert Vietnamese currency to VND.
+        7. If the current request is ambiguous and does not clearly
+           indicate a new category, use the previous context only if
+           the request is clearly a follow-up.
 
-        6. If the customer says "20-25 triệu",
+        8. Convert Vietnamese currency to VND.
+
+        9. If the customer says "20-25 triệu",
            return:
            minPrice = 20000000
            maxPrice = 25000000
 
-        7. Do not invent requirements.
+        10. Do not invent requirements.
 
-        8. If a requirement is not specified and cannot be
-           determined from the previous context, return null.
+        11. If a requirement is not specified and cannot be determined
+            from the current request or valid previous context,
+            return null.
 
-        9. usages and games must always be arrays.
+        12. usages and games must always be arrays.
 
-        10. Return ONLY the structured JSON data.
+        13. Return ONLY the structured JSON data.
         Do not include explanations or additional text.
         """,
 
