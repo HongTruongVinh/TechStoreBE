@@ -16,10 +16,12 @@ namespace TechStore.Data.Entities
         public required string Description { get; set; }
 
         // Performance
+        public string? OperatingSystem { get; set; }
         public string? Cpu { get; set; }
         public string? Gpu { get; set; }
-        public int? Ram { get; set; }
-        public int? Storage { get; set; }
+        public string? Ram { get; set; }
+        public string? Storage { get; set; }
+        public string? AvailableStorage { get; set; }
 
         // Display
         public decimal? ScreenSize { get; set; }
@@ -29,8 +31,10 @@ namespace TechStore.Data.Entities
         public int? ScreenBrightness { get; set; }
 
         // Battery
-        public int? BatteryCapacity { get; set; }
-        public int? ChargingWattage { get; set; }
+        public string? BatteryCapacity { get; set; }
+        public string? BatteryType { get; set; }
+        public string? ChargingWattage { get; set; }
+        public string? BatteryEngine { get; set; }
 
         // Camera
         public string? MainCamera { get; set; }

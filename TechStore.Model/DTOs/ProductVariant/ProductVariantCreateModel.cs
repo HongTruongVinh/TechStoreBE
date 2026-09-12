@@ -15,6 +15,39 @@ namespace TechStore.Model.DTOs.ProductVariant
         public required decimal Price { get; set; }
         public required decimal ImportPrice { get; set; }
 
+        // Performance
+        public string? OperatingSystem { get; set; }
+        public string? Cpu { get; set; }
+        public string? Gpu { get; set; }
+        public string? Ram { get; set; }
+        public string? Storage { get; set; }
+        public string? AvailableStorage { get; set; }
+
+        // Display
+        public decimal? ScreenSize { get; set; }
+        public string? ScreenResolution { get; set; }
+        public int? RefreshRate { get; set; }
+        public string? PanelType { get; set; }
+        public int? ScreenBrightness { get; set; }
+
+        // Battery
+        public string? BatteryCapacity { get; set; }
+        public string? BatteryType { get; set; }
+        public string? ChargingWattage { get; set; }
+        public string? BetteryEngine { get; set; }
+
+        // Camera
+        public string? MainCamera { get; set; }
+        public string? FrontCamera { get; set; }
+
+        // Connectivity
+        public string? Wifi { get; set; }
+        public string? Bluetooth { get; set; }
+
+        // Physical
+        public decimal? Weight { get; set; }
+        public string? Dimensions { get; set; }
+
         public required List<ProductVariantOptionCreateModel> Options { get; set; }
 
     }

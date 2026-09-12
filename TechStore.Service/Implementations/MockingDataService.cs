@@ -1998,7 +1998,7 @@ namespace TechStore.Service.Implementations
                 }
 
                 //add sample apple product
-                var ipyear = 17;
+                var ipyear = 15;
                 for (int i = 11; i < ipyear; i++)
                 {
                     //normal
@@ -2374,6 +2374,2110 @@ namespace TechStore.Service.Implementations
                     });
                 }
 
+                var ip15promax = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 15 Pro Max",
+                    ShortDescription = "Iphone 15 Pro Max",
+                    Description = "Iphone 15 Pro Max",
+                    Warranty = 12,
+                    Slug = "iphone-15-pro-max",
+                    Tags = new List<string> { "iphone", "iphone-15-pro-max" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-15-pro-max/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 24590000m,
+                            Price = 26590000m,
+                            Ram = "8GB",
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A17 Pro 6 nhân",
+                            Gpu = "GPU 6 lõi mới + Neural Engine 16 lõi mới",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 28490000m,
+                            Price = 30490000m,
+                            Ram = "8GB",    
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A17 Pro 6 nhân",
+                            Gpu = "GPU 6 lõi mới + Neural Engine 16 lõi mới",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 32990000m,
+                            Price = 34990000m,
+                            Storage = "1TB",
+                            Ram = "8GB",
+                            AvailableStorage = "976GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A17 Pro 6 nhân",
+                            Gpu = "GPU 6 lõi mới + Neural Engine 16 lõi mới",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip15pro = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 15 Pro",
+                    ShortDescription = "Iphone 15 Pro",
+                    Description = "Iphone 15 Pro",
+                    Warranty = 12,
+                    Slug = "iphone-15-pro",
+                    Tags = new List<string> { "iphone", "iphone-15-pro" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-15-pro-max/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "128GB",
+                            Description= "Description",
+                            ImportPrice = 21590000m,
+                            Price = 23590000m,
+                            Storage = "128GB",
+                            Ram = "8GB",
+                            AvailableStorage = "113GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A17 Pro 6 nhân",
+                            Gpu = "GPU 6 lõi mới + Neural Engine 16 lõi mới",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 24299000m,
+                            Price = 26299000m,
+                            Storage = "256GB",
+                            Ram = "8GB",
+                            AvailableStorage = "241GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A17 Pro 6 nhân",
+                            Gpu = "GPU 6 lõi mới + Neural Engine 16 lõi mới",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 24799000m,
+                            Price = 26799000m,
+                            Storage = "512GB",
+                            Ram = "8GB",
+                            AvailableStorage = "497GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A17 Pro 6 nhân",
+                            Gpu = "GPU 6 lõi mới + Neural Engine 16 lõi mới",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 26990000m,
+                            Price = 28990000m,
+                            Storage = "1TB",
+                            Ram = "8GB",
+                            AvailableStorage = "976GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A17 Pro 6 nhân",
+                            Gpu = "GPU 6 lõi mới + Neural Engine 16 lõi mới",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip15plus = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 15 Plus",
+                    ShortDescription = "Iphone 15 Plus",
+                    Description = "Iphone 15 Plus",
+                    Warranty = 12,
+                    Slug = "iphone-15-plus",
+                    Tags = new List<string> { "iphone", "iphone-15-plus" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-15-plus/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-15-plus/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "128GB",
+                            Description= "Description",
+                            ImportPrice = 16490000m,
+                            Price = 18490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "113GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A16 Bionic 6 nhân",
+                            Gpu = "GPU 5 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/yellow.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh lá", 
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 18990000m,
+                            Price = 20999000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A16 Bionic 6 nhân",
+                            Gpu = "GPU 5 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/yellow.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh lá",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 21399000m,
+                            Price = 23399000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A16 Bionic 6 nhân",
+                            Gpu = "GPU 5 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/yellow.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh lá",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip15 = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 15",
+                    ShortDescription = "Iphone 15",
+                    Description = "Iphone 15",
+                    Warranty = 12,
+                    Slug = "iphone-15",
+                    Tags = new List<string> { "iphone", "iphone-15" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-15-plus/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-15-plus/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "128GB",
+                            Description= "Description",
+                            ImportPrice = 14490000m,
+                            Price = 16490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "113GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A16 Bionic 6 nhân",
+                            Gpu = "GPU 5 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/yellow.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh lá",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 16990000m,
+                            Price = 18999000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A16 Bionic 6 nhân",
+                            Gpu = "GPU 5 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/yellow.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh lá",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 20399000m,
+                            Price = 22399000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 17",
+                            Cpu = "Apple A16 Bionic 6 nhân",
+                            Gpu = "GPU 5 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/yellow.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh lá",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-15-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+
+                await _productService.AddProduct(ip15);
+                await _productService.AddProduct(ip15plus);
+                await _productService.AddProduct(ip15pro);
+                await _productService.AddProduct(ip15promax);
+
+                var ip16promax = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 16 Pro Max",
+                    ShortDescription = "Iphone 16 Pro Max",
+                    Description = "Iphone 16 Pro Max",
+                    Warranty = 12,
+                    Slug = "iphone-16-pro-max",
+                    Tags = new List<string> { "iphone", "iphone-16-pro-max" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-16-pro-max/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 27990000m,
+                            Price = 29990000m,
+                            Storage = "256GB",
+                            Ram = "8GB",
+                            AvailableStorage = "241GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 Pro (3 nm)",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xa Mạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 30490000m,
+                            Price = 32490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 Pro (3 nm)",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xa Mạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 39990000m,
+                            Price = 41990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "976GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 Pro (3 nm)",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xa Mạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip16pro = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 16 Pro",
+                    ShortDescription = "Iphone 16 Pro",
+                    Description = "Iphone 16 Pro",
+                    Warranty = 12,
+                    Slug = "iphone-16-pro",
+                    Tags = new List<string> { "iphone", "iphone-16-pro" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-16-pro-max/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "128GB",
+                            Description= "Description",
+                            ImportPrice = 27990000m,
+                            Price = 29990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "113GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 Pro (3 nm)",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xa Mạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 27990000m,
+                            Price = 29990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 Pro (3 nm)",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xa Mạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 30490000m,
+                            Price = 32490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 Pro (3 nm)",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xa Mạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 39990000m,
+                            Price = 41990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "976GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 Pro (3 nm)",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Tự Nhiên",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/titan.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Xa Mạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/desert.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Titan Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip16plus = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 16 Plus",
+                    ShortDescription = "Iphone 16 Plus",
+                    Description = "Iphone 16 Plus",
+                    Warranty = 12,
+                    Slug = "iphone-16-plus",
+                    Tags = new List<string> { "iphone", "iphone-16-plus" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-16/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-16/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "128GB",
+                            Description= "Description",
+                            ImportPrice = 20990000m,
+                            Price = 22990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "113GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 (3 nm)",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mòng Két",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lưu Ly",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 23990000m,
+                            Price = 25990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 (3 nm)",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mòng Két",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lưu Ly",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 27290000m,
+                            Price = 29290000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 (3 nm)",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mòng Két",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lưu Ly",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip16 = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 16",
+                    ShortDescription = "Iphone 16",
+                    Description = "Iphone 16",
+                    Warranty = 12,
+                    Slug = "iphone-16",
+                    Tags = new List<string> { "iphone", "iphone-16" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-16/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-16/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "128GB",
+                            Description= "Description",
+                            ImportPrice = 16990000m,
+                            Price = 18990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "113GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 (3 nm)",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mòng Két",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lưu Ly",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 20990000m,
+                            Price = 22990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 (3 nm)",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mòng Két",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lưu Ly",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 25290000m,
+                            Price = 27290000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "6GB",
+                            OperatingSystem = "iOS 18",
+                            Cpu = "Apple A18 (3 nm)",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mòng Két",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/green.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/white.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lưu Ly",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16/blue.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/pink.webp",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-16-pro-max/black.webp",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                await _productService.AddProduct(ip16);
+                await _productService.AddProduct(ip16plus);
+                await _productService.AddProduct(ip16pro);
+                await _productService.AddProduct(ip16promax);
+
+                var ip17promax = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 17 Pro Max",
+                    ShortDescription = "Iphone 17 Pro Max",
+                    Description = "Iphone 17 Pro Max",
+                    Warranty = 12,
+                    Slug = "iphone-17-pro-max",
+                    Tags = new List<string> { "iphone", "iphone-17-pro-max" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-17-pro-max/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g1.webp",
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g2.webp",
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g3.webp",
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g4.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 32590000m,
+                            Price = 34590000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 Pro 6 nhân",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Cam",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxOrange,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh đậm",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxDeepblue,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxSilver,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 39490000m,
+                            Price = 41490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 Pro 6 nhân",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Cam",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxOrange,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh đậm",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxDeepblue,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxSilver,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 45990000m,
+                            Price = 47990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "976GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 Pro 6 nhân",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Cam",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxOrange,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh đậm",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxDeepblue,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxSilver,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "2TB",
+                            Description= "Desciption",
+                            ImportPrice = 58990000m,
+                            Price = 60990000m,
+                            Storage = "2TB",
+                            AvailableStorage = "1952GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 Pro 6 nhân",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Cam",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxOrange,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh đậm",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxDeepblue,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxSilver,
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip17pro = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 17 Pro",
+                    ShortDescription = "Iphone 17 Pro",
+                    Description = "Iphone 17 Pro",
+                    Warranty = 12,
+                    Slug = "iphone-17-pro",
+                    Tags = new List<string> { "iphone", "iphone-17-pro" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-17-pro-max/g1.webp",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g1.webp",
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g2.webp",
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g3.webp",
+                        "TechShop/images/products/smartphone/iphone-17-pro-max/g4.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 30990000m,
+                            Price = 31900000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 Pro 6 nhân",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Cam",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxOrange,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh đậm",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxDeepblue,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxSilver,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 36490000m,
+                            Price = 38490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 Pro 6 nhân",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Cam",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxOrange,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh đậm",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxDeepblue,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxSilver,
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 42990000m,
+                            Price = 44990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "976GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 Pro 6 nhân",
+                            Gpu = "Apple GPU 6 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Cam",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxOrange,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh đậm",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxDeepblue,
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = DefaultImageLinks.Ip17promaxSilver,
+                                }
+                            },
+                        },
+                    }
+                };
+
+                var ip17 = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 17",
+                    ShortDescription = "Iphone 17",
+                    Description = "Iphone 17",
+                    Warranty = 12,
+                    Slug = "iphone-17",
+                    Tags = new List<string> { "iphone", "iphone-17" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-17/g1.jpg",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        "TechShop/images/products/smartphone/iphone-17/g1.jpg",
+                        "TechShop/images/products/smartphone/iphone-17/g2.jpg",
+                        "TechShop/images/products/smartphone/iphone-17/g3.jpg",
+                        "TechShop/images/products/smartphone/iphone-17/g4.jpg",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 22590000m,
+                            Price = 24590000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 6 nhân",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lam Khói",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/blue.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lá Xô Thơm",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/green.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/white.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Oải Hương",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/purple.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/black.jpg",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 28590000m,
+                            Price = 30590000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "8GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A19 6 nhân",
+                            Gpu = "Apple GPU 5 nhân",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lam Khói",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/blue.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lá Xô Thơm",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/green.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/white.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Oải Hương",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/purple.jpg",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-17/black.jpg",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                await _productService.AddProduct(ip17promax);
+                await _productService.AddProduct(ip17pro);
+                await _productService.AddProduct(ip17);
+
+                var ip18promax = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 18 Pro Max",
+                    ShortDescription = "Iphone 18 Pro Max",
+                    Description = "Iphone 18 Pro Max",
+                    Warranty = 12,
+                    Slug = "iphone-18-pro-max",
+                    Tags = new List<string> { "iphone", "iphone-18-pro-max" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        //"TechShop/images/products/smartphone/iphone-18-pro-max/g1.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 39990000m,
+                            Price = 41990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 46490000m,
+                            Price = 48490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 59490000m,
+                            Price = 61490000m,
+                            Storage = "1TB",
+                            AvailableStorage = "976GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "2TB",
+                            Description= "Desciption",
+                            ImportPrice = 78990000m,
+                            Price = 80990000m,
+                            Storage = "2TB",
+                            AvailableStorage = "1952GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        }
+                    }
+                };
+
+                var ip18pro = new ProductCreateModel
+                {
+                    CategoryId = resultCategoryMobilephone.Data,
+                    BrandId = resultBrandApple.Data,
+                    Name = "Iphone 18 Pro",
+                    ShortDescription = "Iphone 18 Pro",
+                    Description = "Iphone 18 Pro",
+                    Warranty = 12,
+                    Slug = "iphone-18-pro",
+                    Tags = new List<string> { "iphone", "iphone-18-pro" },
+                    IsFeatured = true,
+                    StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                    MainImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                    GalleryImageUrls = new List<string>()
+                    {
+                        //"TechShop/images/products/smartphone/iphone-18-pro-max/g1.webp",
+                        //"TechShop/images/products/smartphone/iphone-18-pro-max/g2.webp",
+                        //"TechShop/images/products/smartphone/iphone-18-pro-max/g3.webp",
+                        //"TechShop/images/products/smartphone/iphone-18-pro-max/g4.webp",
+                    },
+                    SalePrice = 0,
+                    PublishDate = TimeZoneHelper.GetUtcNow(),
+                    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "256GB",
+                            Description= "Description",
+                            ImportPrice = 36990000m,
+                            Price = 38990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "241GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "512GB",
+                            Description= "Desciption",
+                            ImportPrice = 43490000m,
+                            Price = 45490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "497GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "1TB",
+                            Description= "Desciption",
+                            ImportPrice = 56490000m,
+                            Price = 58490000m,
+                            Storage = "1TB",
+                            AvailableStorage = "976GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "2TB",
+                            Description= "Desciption",
+                            ImportPrice = 75990000m,
+                            Price = 77990000m,
+                            Storage = "2TB",
+                            AvailableStorage = "1952GB",
+                            Ram = "12GB",
+                            OperatingSystem = "iOS 26",
+                            Cpu = "Apple A20 Pro 6 lõi",
+                            Gpu = "GPU 7 lõi",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đỏ Burgundy",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/red-burgundy.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Băng Thanh",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/blue.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/silver.png",
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = "TechShop/images/products/smartphone/iphone-18-pro-max/black.png",
+                                }
+                            },
+                        }
+                    }
+                };
+
+
+                await _productService.AddProduct(ip18promax);
+                await _productService.AddProduct(ip18pro);
 
                 #endregion
 

@@ -236,6 +236,8 @@ namespace TechStore.Data.Context
             {
                 entity.HasIndex(p => p.PublicId).IsUnique();
 
+                //entity.HasIndex(p => p.Slug).IsUnique();
+
                 entity.Property(p => p.Name)
                 .IsRequired()
                 .HasMaxLength(150);

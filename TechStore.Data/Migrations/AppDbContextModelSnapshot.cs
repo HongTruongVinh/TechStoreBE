@@ -1112,14 +1112,23 @@ namespace TechStore.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("BatteryCapacity")
-                        .HasColumnType("integer");
+                    b.Property<string>("AvailableStorage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BatteryCapacity")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BatteryEngine")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BatteryType")
+                        .HasColumnType("text");
 
                     b.Property<string>("Bluetooth")
                         .HasColumnType("text");
 
-                    b.Property<int?>("ChargingWattage")
-                        .HasColumnType("integer");
+                    b.Property<string>("ChargingWattage")
+                        .HasColumnType("text");
 
                     b.Property<string>("Cpu")
                         .HasColumnType("text");
@@ -1157,6 +1166,9 @@ namespace TechStore.Data.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
+                    b.Property<string>("OperatingSystem")
+                        .HasColumnType("text");
+
                     b.Property<string>("PanelType")
                         .HasColumnType("text");
 
@@ -1170,8 +1182,8 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("Ram")
-                        .HasColumnType("integer");
+                    b.Property<string>("Ram")
+                        .HasColumnType("text");
 
                     b.Property<int?>("RefreshRate")
                         .HasColumnType("integer");
@@ -1188,8 +1200,8 @@ namespace TechStore.Data.Migrations
                     b.Property<int>("SoldCount")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("Storage")
-                        .HasColumnType("integer");
+                    b.Property<string>("Storage")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1599,7 +1611,7 @@ namespace TechStore.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("91461d15-7c13-4693-931e-99b5453665f3"),
+                            Id = new Guid("be8eed97-8171-4b30-8415-6febdaa582cb"),
                             IsShowImportantNotification = true,
                             isAiChatbotEnabled = true
                         });

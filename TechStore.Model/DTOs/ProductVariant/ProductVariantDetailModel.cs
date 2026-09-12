@@ -14,6 +14,14 @@ namespace TechStore.Model.DTOs.ProductVariant
         public required string Name { get; set; }
         public required string Description { get; set; }
 
+        // Performance
+        public string? OperatingSystem { get; set; }
+        public string? Cpu { get; set; }
+        public string? Gpu { get; set; }
+        public string? Ram { get; set; }
+        public string? Storage { get; set; }
+        public string? AvailableStorage { get; set; }
+
         public int? Stock { get; set; }
         public required decimal Price { get; set; }
         public required int SoldCount { get; set; }

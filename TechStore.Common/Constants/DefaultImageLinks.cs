@@ -43,6 +43,10 @@ namespace TechStore.Common.Constants
         public const string DefaultSamsungS26BlueImage = "TechShop/images/default/product/s26blue.png";
         public const string DefaultXiaomiImage = "TechShop/images/default/product/xiaomi.png";
 
+        public const string Ip17promaxDeepblue = "TechShop/images/products/smartphone/iphone-17-pro-max/deep-blue.webp";
+        public const string Ip17promaxSilver = "TechShop/images/products/smartphone/iphone-17-pro-max/silver.webp";
+        public const string Ip17promaxOrange = "TechShop/images/products/smartphone/iphone-17-pro-max/orange.webp";
+
         public const string DefaultAppleLogo = "TechShop/images/default/brand/apple_logo.png";
         public const string DefaultSamsungLogo = "TechShop/images/default/brand/samsung_logo.png";
         public const string DefaultXiaomiLogo = "TechShop/images/default/brand/xiaomi_logo.png";

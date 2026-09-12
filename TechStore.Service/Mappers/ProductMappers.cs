@@ -215,6 +215,13 @@ namespace TechStore.Service.Mappers
                 Price = variant.Price,
                 SoldCount = variant.SoldCount,
                 Options = variant.Options.Select(o => o.ToProductVariantOptionResponseModel()).ToList(),
+
+                OperatingSystem = variant.OperatingSystem,
+                Cpu = variant.Cpu,
+                Gpu = variant.Gpu,
+                Ram = variant.Ram,
+                Storage = variant.Storage,
+                AvailableStorage = variant.AvailableStorage,
             };
         }
 

@@ -243,6 +243,12 @@ namespace TechStore.Service.Implementations
                         Description = variantModel.Description,
                         Price = variantModel.Price,
                         ImportPrice = variantModel.ImportPrice,
+                        Storage = variantModel.Storage,
+                        AvailableStorage = variantModel.AvailableStorage,
+                        Ram = variantModel.Ram,
+                        OperatingSystem = variantModel.OperatingSystem,
+                        Cpu = variantModel.Cpu,
+                        Gpu = variantModel.Gpu,
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
                     };
 

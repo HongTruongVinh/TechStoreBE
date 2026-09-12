@@ -564,17 +564,21 @@ namespace TechStore.Data.Migrations
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
+                    OperatingSystem = table.Column<string>(type: "text", nullable: true),
                     Cpu = table.Column<string>(type: "text", nullable: true),
                     Gpu = table.Column<string>(type: "text", nullable: true),
-                    Ram = table.Column<int>(type: "integer", nullable: true),
-                    Storage = table.Column<int>(type: "integer", nullable: true),
+                    Ram = table.Column<string>(type: "text", nullable: true),
+                    Storage = table.Column<string>(type: "text", nullable: true),
+                    AvailableStorage = table.Column<string>(type: "text", nullable: true),
                     ScreenSize = table.Column<decimal>(type: "numeric", nullable: true),
                     ScreenResolution = table.Column<string>(type: "text", nullable: true),
                     RefreshRate = table.Column<int>(type: "integer", nullable: true),
                     PanelType = table.Column<string>(type: "text", nullable: true),
                     ScreenBrightness = table.Column<int>(type: "integer", nullable: true),
-                    BatteryCapacity = table.Column<int>(type: "integer", nullable: true),
-                    ChargingWattage = table.Column<int>(type: "integer", nullable: true),
+                    BatteryCapacity = table.Column<string>(type: "text", nullable: true),
+                    BatteryType = table.Column<string>(type: "text", nullable: true),
+                    ChargingWattage = table.Column<string>(type: "text", nullable: true),
+                    BatteryEngine = table.Column<string>(type: "text", nullable: true),
                     MainCamera = table.Column<string>(type: "text", nullable: true),
                     FrontCamera = table.Column<string>(type: "text", nullable: true),
                     Wifi = table.Column<string>(type: "text", nullable: true),
@@ -893,7 +897,7 @@ namespace TechStore.Data.Migrations
             migrationBuilder.InsertData(
                 table: "SystemConfigs",
                 columns: new[] { "Id", "IsShowImportantNotification", "isAiChatbotEnabled" },
-                values: new object[] { new Guid("91461d15-7c13-4693-931e-99b5453665f3"), true, true });
+                values: new object[] { new Guid("be8eed97-8171-4b30-8415-6febdaa582cb"), true, true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AiConversationContexts_ConversationId",
