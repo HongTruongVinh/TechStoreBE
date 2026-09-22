@@ -64,7 +64,7 @@ namespace TechStore.Service.Implementations
 
             if (product == null)
             {
-                return ServiceResult<ProductDetailModel>.Fail(EErrorType.NotFound, Messenger.NoExitData);
+                return ServiceResult<ProductDetailModel>.Failure(EErrorType.NotFound, Messenger.NoExitData);
             }
 
             return ServiceResult<ProductDetailModel>.Success(product.ToProductDetail());

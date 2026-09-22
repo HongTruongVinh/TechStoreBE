@@ -51,7 +51,7 @@ namespace TechStore.Service.Implementations
 
             if (customer == null)
             {
-                return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+                return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
             var requestHash = ShareFunctions.ComputeHash(orderCreateModel);
@@ -74,7 +74,7 @@ namespace TechStore.Service.Implementations
                     else
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
                     }
                 }
                 #endregion
@@ -107,13 +107,13 @@ namespace TechStore.Service.Implementations
                     if (pVO == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.NotFound, Messenger.NoExitData + " " + item.ProductVariantOptionId);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.NotFound, Messenger.NoExitData + " " + item.ProductVariantOptionId);
                     }
 
                     if (item.Quantity <= 0)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.BadRequest, Messenger.BadRequest);
                     }
 
                     var reservedStock = await _uow.StockReservations
@@ -127,7 +127,7 @@ namespace TechStore.Service.Implementations
                     if (item.Quantity > pVO.Stock - reservedStock)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
                     }
 
                     var productVariant = await _uow.ProductVariants
@@ -140,7 +140,7 @@ namespace TechStore.Service.Implementations
                     if (productVariant == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.Status500InternalServerError, Messenger.SystemError);
                     }
 
                     snapshotItems.Add(new PaymentSnapshotItem
@@ -173,7 +173,7 @@ namespace TechStore.Service.Implementations
                 if (snapshotItems.Count < 1)
                 {
                     transaction.Rollback();
-                    return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+                    return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.BadRequest, Messenger.BadRequest);
                 }
 
                 #endregion
@@ -189,31 +189,31 @@ namespace TechStore.Service.Implementations
                     if (voucher == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
                     }
 
                     if (voucher.EndDate < DateTime.UtcNow)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
                     }
 
                     if (voucher.StartDate > DateTime.UtcNow)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
                     }
 
                     if (voucher.Status != EVoucherStatus.Active)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
                     }
 
                     if (voucher.Available <= 0)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
                     }
 
                     var usageCount = await _uow.VoucherUsages.CountAsync(x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
@@ -221,13 +221,13 @@ namespace TechStore.Service.Implementations
                     if (usageCount >= voucher.UsageLimit)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
                     }
 
                     if (subtotalAmount < voucher.MinOrderPrice)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.ConfictData, VoucherMessenger.MinOrderPriceNotMet);
+                        return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.ConfictData, VoucherMessenger.MinOrderPriceNotMet);
                     }
 
                     if (voucher.DiscountType == EDiscountType.Percentage)
@@ -403,7 +403,7 @@ namespace TechStore.Service.Implementations
                 if (result < 1)
                 {
                     await transaction.RollbackAsync();
-                    return ServiceResult<CreatePaymentSnapshotResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
+                    return ServiceResult<CreatePaymentSnapshotResult>.Failure(EErrorType.SystemError, Messenger.SystemError);
                 }
 
                 await transaction.CommitAsync();
@@ -433,7 +433,7 @@ namespace TechStore.Service.Implementations
 
                 if (existingIdempotencyKey.RequestHash != requestHash)
                 {
-                    return ServiceResult<CreatePaymentSnapshotResult>.Fail(
+                    return ServiceResult<CreatePaymentSnapshotResult>.Failure(
                         EErrorType.IdempotencyKeyConflict,
                         Messenger.IdempotencyKeyConflict);
                 }
@@ -483,7 +483,7 @@ namespace TechStore.Service.Implementations
                 if (existingTransaction != null)
                 {
                     await transaction.RollbackAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.PaymentAlreadyProcessed);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, PaymentMessenger.PaymentAlreadyProcessed);
                 }
 
                 var snapshot = await _uow.PaymentSnapshots.GetForUpdateAsync_PostgreSQL(request.Code);
@@ -494,7 +494,7 @@ namespace TechStore.Service.Implementations
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
                     await transaction.CommitAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.SystemError);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.NotFound, Messenger.SystemError);
                 }
 
                 if (snapshot.Status != EPaymentSnapshotStatus.PendingPayment || snapshot.ExpiredAt <= TimeZoneHelper.GetUtcNow())
@@ -503,7 +503,7 @@ namespace TechStore.Service.Implementations
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
                     await transaction.CommitAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.PaymentSnapshotExpired);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, PaymentMessenger.PaymentSnapshotExpired);
                 }
 
                 var customer = await _uow.Users.GetByInternalIdAsync(snapshot.CustomerId);
@@ -516,7 +516,7 @@ namespace TechStore.Service.Implementations
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
                     await transaction.CommitAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.SystemError);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.NotFound, Messenger.SystemError);
                 }
 
                 if (request.TransferAmount < snapshot.TotalAmount)
@@ -527,7 +527,7 @@ namespace TechStore.Service.Implementations
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
                     await transaction.CommitAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
                 }
 
                 if (snapshot.TotalAmount < request.TransferAmount)
@@ -543,7 +543,7 @@ namespace TechStore.Service.Implementations
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
                     await transaction.CommitAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, PaymentMessenger.IncorrectAmount);
                 }
 
                 var snapshotItems = await _uow.PaymentSnapshotItems.FindManyAsync(i => i.PaymentSnapshotId == snapshot.Id);
@@ -561,7 +561,7 @@ namespace TechStore.Service.Implementations
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
                     await transaction.CommitAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
                 }
 
                 var reservationQuantities = reservations
@@ -578,7 +578,7 @@ namespace TechStore.Service.Implementations
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
                     await transaction.CommitAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, Messenger.SystemError);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, Messenger.SystemError);
                 }
 
                 foreach (var item in snapshotItems)
@@ -591,7 +591,7 @@ namespace TechStore.Service.Implementations
                         await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                         await _uow.CommitAsync();
                         await transaction.CommitAsync();
-                        return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                        return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
                     }
 
                     pvo.Stock -= item.Quantity;
@@ -623,7 +623,7 @@ namespace TechStore.Service.Implementations
                         await _uow.CommitAsync();
                         await transaction.CommitAsync();
 
-                        return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
+                        return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.SystemError, Messenger.SystemError);
                     }
                 }
 
@@ -726,7 +726,7 @@ namespace TechStore.Service.Implementations
                 if (result < 1)
                 {
                     await transaction.RollbackAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Fail(EErrorType.SystemError, Messenger.SystemError);
+                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.SystemError, Messenger.SystemError);
                 }
 
                 #endregion
@@ -754,12 +754,12 @@ namespace TechStore.Service.Implementations
             var customer = await _uow.Users.GetByIdAsync(userId);
             if (customer == null)
             {
-                return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+                return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
             if (orderCreateModel.Items == null || orderCreateModel.Items.Count == 0)
             {
-                return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+                return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.BadRequest, Messenger.BadRequest);
             }
 
             var requestHash = ShareFunctions.ComputeHash(orderCreateModel);
@@ -784,7 +784,7 @@ namespace TechStore.Service.Implementations
                     else
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
+                        return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.IdempotencyKeyConflict, Messenger.IdempotencyKeyConflict);
                     }
                 }
                 #endregion
@@ -802,7 +802,7 @@ namespace TechStore.Service.Implementations
                 if (groupedItems.Any(x => string.IsNullOrWhiteSpace(x.ProductVariantOptionId) || x.Quantity <= 0))
                 {
                     await transaction.RollbackAsync();
-                    return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.BadRequest, Messenger.BadRequest);
+                    return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.BadRequest, Messenger.BadRequest);
                 }
 
                 var orderItems = new List<OrderItem>();
@@ -819,7 +819,7 @@ namespace TechStore.Service.Implementations
                     if (pVO == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.NotFound, Messenger.NoExitData);
+                        return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.NotFound, Messenger.NoExitData);
                     }
 
                     var reservedStock = await _uow.StockReservations.TableNoTracking
@@ -831,7 +831,7 @@ namespace TechStore.Service.Implementations
                     if (item.Quantity > pVO.Stock - reservedStock)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
+                        return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.ConfictData, OrderMessenger.NotEnoughQuantity);
                     }
 
                     var productVariant = await _uow.ProductVariants.TableNoTracking
@@ -843,7 +843,7 @@ namespace TechStore.Service.Implementations
                     if (productVariant == null)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                        return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.Status500InternalServerError, Messenger.SystemError);
                     }
 
                     orderItems.Add(new OrderItem
@@ -882,7 +882,7 @@ namespace TechStore.Service.Implementations
                         subtotalAmount < voucher.MinOrderPrice)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                        return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
                     }
 
                     var usageCount = await _uow.VoucherUsages.CountAsync(
@@ -891,7 +891,7 @@ namespace TechStore.Service.Implementations
                     if (usageCount >= voucher.UsageLimit)
                     {
                         await transaction.RollbackAsync();
-                        return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                        return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
                     }
 
                     discountAmount = voucher.DiscountType == EDiscountType.Percentage
@@ -980,7 +980,7 @@ namespace TechStore.Service.Implementations
                 if (result < 1)
                 {
                     await transaction.RollbackAsync();
-                    return ServiceResult<CreateCODOnlineOrderResult>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                    return ServiceResult<CreateCODOnlineOrderResult>.Failure(EErrorType.Status500InternalServerError, Messenger.SystemError);
                 }
 
                 await transaction.CommitAsync();

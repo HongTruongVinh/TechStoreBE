@@ -40,6 +40,7 @@ namespace TechStore.Data.UnitOfWork
         public IVoucherUsageRepository VoucherUsages { get; }
         public ISearchKeywordRepository SearchKeywords { get; }
         public IInvalidTokenRepository InvalidTokens { get; }
+        public IRefreshTokenRepository RefreshTokens { get; }
         public ISequenceRepository Sequences { get; }
         public IIdempotencyKeyRepository IdempotencyKeys { get; }
         public ISystemConfigRepository SystemConfigs { get; }
@@ -77,6 +78,7 @@ namespace TechStore.Data.UnitOfWork
             Sequences = new SequenceRepository(_context);
             IdempotencyKeys = new IdempotencyKeyRepository(_context);
             SystemConfigs = new SystemConfigRepository(_context);
+            RefreshTokens = new RefreshTokenRepository(_context);
         }
 
         public Task<int> CommitAsync(CancellationToken cancellationToken = default)

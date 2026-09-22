@@ -227,7 +227,7 @@ namespace TechStore.Service.Implementations
 
             if (user == null)
             {
-                return ServiceResult<List<CartItemResponseModel>>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+                return ServiceResult<List<CartItemResponseModel>>.Failure(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
             var cartItems = await _uow.CartItems.FindManyWithNumberAsync(c => c.UserId == user.Id, pageNumber, pageSize);

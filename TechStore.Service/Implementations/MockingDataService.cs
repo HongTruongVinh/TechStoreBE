@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -495,193 +495,9 @@ namespace TechStore.Service.Implementations
 
                 #endregion
 
-                #region create products
-                string productDescripotions = "Thông tin sản phẩm đang được cập nhật";
-                //const string iphone16ImageUrl = "https://www.apple.com/newsroom/images/2024/09/get-ready-to-upgrade-to-the-new-iphone-16-apple-watch-and-airpods-lineups/article/Apple-iPhone-16_inline.jpg.large.jpg";
-                //const string iphone16ProImageUrl = "https://www.apple.com/newsroom/images/2024/09/get-ready-to-upgrade-to-the-new-iphone-16-apple-watch-and-airpods-lineups/article/Apple-iPhone-16-Pro_inline.jpg.large.jpg";
-                //const string galaxyS25ImageUrl = "https://image-us.samsung.com/us/smartphones/galaxy-s25/images/galaxy-s25-features-kv.jpg?imbypass=true";
-                //const string galaxyS25UltraImageUrl = "https://image-us.samsung.com/us/smartphones/galaxy-s25-ultra/images/galaxy-s25-ultra-features-kv.jpg?imbypass=true";
+                #region add products
 
-                //var productModel1 = new ProductCreateModel
-                //{
-                //    CategoryId = resultCategoryMobilephone.Data,
-                //    Name = "iPhone 16",
-                //    BrandId = resultBrandApple.Data,
-                //    ShortDescription = "iPhone 16 với chip A18, Camera Control và camera Fusion 48MP.",
-                //    Description = "iPhone 16 sở hữu màn hình Super Retina XDR OLED 6,1 inch, chip A18 mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera Fusion 48MP hỗ trợ chụp ảnh độ phân giải cao, zoom quang học 2x cùng camera Ultra Wide có khả năng chụp macro. Nút Action và Camera Control giúp truy cập nhanh các tính năng thường dùng, trong khi thiết kế nhôm bền bỉ đạt chuẩn kháng nước, bụi IP68.",
-                //    Warranty = 12,
-                //    Slug = "iphone-16",
-                //    Tags = new List<string> { "apple", "iphone", "iphone-16", "smartphone" },
-                //    IsFeatured = true,
-                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                //    PublishDate = TimeZoneHelper.GetUtcNow(),
-                //    MainImageUrl = iphone16ImageUrl,
-                //    GalleryImageUrls = new List<string> { iphone16ImageUrl },
-                //    SalePrice = 1000000,
-                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
-                //    {
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "128GB",
-                //            Description = "Phiên bản bộ nhớ 128GB, phù hợp nhu cầu sử dụng hằng ngày.",
-                //            ImportPrice = 18000000,
-                //            Price = 22990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Ultramarine", Stock = 30, ImageUrl = iphone16ImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Black", Stock = 25, ImageUrl = iphone16ImageUrl },
-                //            },
-                //        },
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "256GB",
-                //            Description = "Phiên bản bộ nhớ 256GB cho nhu cầu lưu trữ ảnh, video và ứng dụng lớn.",
-                //            ImportPrice = 21000000,
-                //            Price = 25990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Ultramarine", Stock = 20, ImageUrl = iphone16ImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "White", Stock = 20, ImageUrl = iphone16ImageUrl },
-                //            },
-                //        },
-                //    },
-                //};
-
-                //var productModel2 = new ProductCreateModel
-                //{
-                //    CategoryId = resultCategoryMobilephone.Data,
-                //    Name = "iPhone 16 Pro",
-                //    BrandId = resultBrandApple.Data,
-                //    ShortDescription = "iPhone cao cấp với chip A18 Pro, khung titan và camera chuyên nghiệp.",
-                //    Description = "iPhone 16 Pro trang bị màn hình Super Retina XDR 6,3 inch với ProMotion, khung titan nhẹ và bền cùng chip A18 Pro. Cụm camera gồm camera Fusion 48MP, Ultra Wide 48MP và Telephoto 5x, hỗ trợ quay video 4K Dolby Vision ở tốc độ 120 fps. Camera Control giúp thao tác chụp nhanh, còn thời lượng pin được cải thiện để đáp ứng công việc, sáng tạo nội dung và chơi game cường độ cao.",
-                //    Warranty = 12,
-                //    Slug = "iphone-16-pro",
-                //    Tags = new List<string> { "apple", "iphone", "iphone-16-pro", "smartphone", "flagship" },
-                //    IsFeatured = true,
-                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                //    PublishDate = TimeZoneHelper.GetUtcNow(),
-                //    MainImageUrl = iphone16ProImageUrl,
-                //    GalleryImageUrls = new List<string> { iphone16ProImageUrl },
-                //    SalePrice = 1500000,
-                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
-                //    {
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "256GB",
-                //            Description = "Bộ nhớ 256GB cân bằng giữa hiệu năng và khả năng lưu trữ.",
-                //            ImportPrice = 27000000,
-                //            Price = 31990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Desert Titanium", Stock = 25, ImageUrl = iphone16ProImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Black Titanium", Stock = 20, ImageUrl = iphone16ProImageUrl },
-                //            },
-                //        },
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "512GB",
-                //            Description = "Bộ nhớ 512GB dành cho quay video chất lượng cao và lưu trữ chuyên nghiệp.",
-                //            ImportPrice = 33000000,
-                //            Price = 37990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Desert Titanium", Stock = 15, ImageUrl = iphone16ProImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Natural Titanium", Stock = 15, ImageUrl = iphone16ProImageUrl },
-                //            },
-                //        },
-                //    },
-                //};
-
-                //var productModel8 = new ProductCreateModel
-                //{
-                //    CategoryId = resultCategoryMobilephone.Data,
-                //    Name = "Samsung Galaxy S25",
-                //    BrandId = resultBrandSamsung.Data,
-                //    ShortDescription = "Galaxy S25 nhỏ gọn với Galaxy AI và Snapdragon 8 Elite for Galaxy.",
-                //    Description = "Samsung Galaxy S25 kết hợp thiết kế nhỏ gọn, khung Armor Aluminum và màn hình Dynamic AMOLED 2X mượt mà. Vi xử lý Snapdragon 8 Elite for Galaxy cùng 12GB RAM mang lại hiệu năng nhanh cho công việc và giải trí. Camera chính 50MP được hỗ trợ bởi AI ProVisual Engine, pin 4.000mAh đáp ứng thời gian sử dụng dài và chuẩn IP68 tăng khả năng bảo vệ trong điều kiện hằng ngày.",
-                //    Warranty = 12,
-                //    Slug = "samsung-galaxy-s25",
-                //    Tags = new List<string> { "samsung", "galaxy", "galaxy-s25", "smartphone", "galaxy-ai" },
-                //    IsFeatured = true,
-                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                //    PublishDate = TimeZoneHelper.GetUtcNow(),
-                //    MainImageUrl = galaxyS25ImageUrl,
-                //    GalleryImageUrls = new List<string> { galaxyS25ImageUrl },
-                //    SalePrice = 1500000,
-                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
-                //    {
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "12GB 256GB",
-                //            Description = "RAM 12GB và bộ nhớ 256GB cho đa nhiệm mượt mà.",
-                //            ImportPrice = 17000000,
-                //            Price = 22990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Icyblue", Stock = 30, ImageUrl = galaxyS25ImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Navy", Stock = 25, ImageUrl = galaxyS25ImageUrl },
-                //            },
-                //        },
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "12GB 512GB",
-                //            Description = "RAM 12GB và bộ nhớ lớn 512GB cho ảnh, video và ứng dụng.",
-                //            ImportPrice = 21000000,
-                //            Price = 26990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Silver Shadow", Stock = 20, ImageUrl = galaxyS25ImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Mint", Stock = 20, ImageUrl = galaxyS25ImageUrl },
-                //            },
-                //        },
-                //    },
-                //};
-
-                //var productModel9 = new ProductCreateModel
-                //{
-                //    CategoryId = resultCategoryMobilephone.Data,
-                //    Name = "Samsung Galaxy S25 Ultra",
-                //    BrandId = resultBrandSamsung.Data,
-                //    ShortDescription = "Flagship Galaxy với camera 200MP, S Pen và khung titan.",
-                //    Description = "Samsung Galaxy S25 Ultra sở hữu khung titan, kính Gorilla Armor 2 và khả năng kháng nước, bụi IP68. Màn hình lớn sắc nét đi cùng Snapdragon 8 Elite for Galaxy, RAM 12GB và pin 5.000mAh. Camera chính 200MP kết hợp AI ProVisual Engine hỗ trợ chụp ảnh, quay video chi tiết trong nhiều điều kiện; S Pen tích hợp giúp ghi chú, phác thảo và xử lý công việc chính xác hơn.",
-                //    Warranty = 12,
-                //    Slug = "samsung-galaxy-s25-ultra",
-                //    Tags = new List<string> { "samsung", "galaxy", "galaxy-s25-ultra", "smartphone", "flagship", "s-pen" },
-                //    IsFeatured = true,
-                //    StartSellingDate = TimeZoneHelper.GetUtcNow(),
-                //    PublishDate = TimeZoneHelper.GetUtcNow(),
-                //    MainImageUrl = galaxyS25UltraImageUrl,
-                //    GalleryImageUrls = new List<string> { galaxyS25UltraImageUrl },
-                //    SalePrice = 2000000,
-                //    Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
-                //    {
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "12GB 256GB",
-                //            Description = "Phiên bản 256GB dành cho nhu cầu cao cấp hằng ngày.",
-                //            ImportPrice = 27000000,
-                //            Price = 33990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Silverblue", Stock = 25, ImageUrl = galaxyS25UltraImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Black", Stock = 25, ImageUrl = galaxyS25UltraImageUrl },
-                //            },
-                //        },
-                //        new Model.DTOs.ProductVariant.ProductVariantCreateModel
-                //        {
-                //            Name = "12GB 512GB",
-                //            Description = "Phiên bản 512GB phù hợp sáng tạo nội dung và lưu trữ dung lượng lớn.",
-                //            ImportPrice = 32000000,
-                //            Price = 38990000,
-                //            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
-                //            {
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Gray", Stock = 15, ImageUrl = galaxyS25UltraImageUrl },
-                //                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel { Name = "Titanium Whitesilver", Stock = 15, ImageUrl = galaxyS25UltraImageUrl },
-                //            },
-                //        },
-                //    },
-                //};
-
+                #region add many products
                 var productModel3 = new ProductCreateModel
                 {
                     CategoryId = resultCategoryLaptop.Data,
@@ -692,7 +508,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "dell-xps-13",
                     Tags = new List<string> { "dell", "dell-xps" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = DefaultImageLinks.DefaultLaptopImage,
                     GalleryImageUrls = new List<string>(),
@@ -728,7 +544,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "macbook-pro-m5-pro-16-inch",
                     Tags = new List<string> { "mac", "macbook" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = DefaultImageLinks.DefaultMacbookImage,
                     GalleryImageUrls = new List<string>(),
@@ -792,7 +608,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "ipad-12-pro",
                     Tags = new List<string> { "ipad", "ipad-pro" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = DefaultImageLinks.DefaultTabletImage,
                     GalleryImageUrls = new List<string>(),
@@ -828,7 +644,7 @@ namespace TechStore.Service.Implementations
                     Description = "Máy tính bảng",
                     Slug = "samsung-galaxy-tab-s8",
                     Tags = new List<string> { "samsung", "samsung-tab" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     Warranty = 12,  
                     SalePrice = 0,
@@ -864,7 +680,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "xiaomi-mi-8",
                     Tags = new List<string> { "xiaomi", "xiaomi-mi8" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     SalePrice = 0,
                     Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
@@ -932,7 +748,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "macbook-air-m2",
                     Tags = new List<string> { "macbook", "apple" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = DefaultImageLinks.DefaultMacbookImage,
                     GalleryImageUrls = new List<string>(),
@@ -1043,7 +859,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "asus-rog-phone-7", 
                     Tags = new List<string> { "asus", "rog" }, 
-                    IsFeatured = true, 
+                    IsFeatured = false, 
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = DefaultImageLinks.DefaultSmartphoneImage,
                     GalleryImageUrls = new List<string>(),
@@ -1084,7 +900,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "lenovo-legion-5-pro",
                     Tags = new List<string> { "lenovo", "gaming" }, 
-                    IsFeatured = true, StartSellingDate = TimeZoneHelper.GetUtcNow(), 
+                    IsFeatured = false, StartSellingDate = TimeZoneHelper.GetUtcNow(), 
                     MainImageUrl = DefaultImageLinks.DefaultLaptopImage,
                     GalleryImageUrls = new List<string>(),
                     SalePrice = 0,
@@ -1187,7 +1003,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "oppo-a56",
                     Tags = new List<string> { "oppo", "a56" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = DefaultImageLinks.DefaultSmartphoneImage,
                     GalleryImageUrls = new List<string>(),
@@ -1598,15 +1414,11 @@ namespace TechStore.Service.Implementations
                     }
                 };
 
-                //var resultProduct1 = await _productService.AddProduct(productModel1);
-                //var resultProduct2 = await _productService.AddProduct(productModel2);
                 var resultProduct3 = await _productService.AddProduct(productModel3);
                 var resultProduct4 = await _productService.AddProduct(productModel4);
                 var resultProduct5 = await _productService.AddProduct(productModel5);
                 var resultProduct6 = await _productService.AddProduct(productModel6);
                 var resultProduct7 = await _productService.AddProduct(productModel7);
-                //var resultProduct8 = await _productService.AddProduct(productModel8);
-                //var resultProduct9 = await _productService.AddProduct(productModel9);
                 var resultProduct10 = await _productService.AddProduct(productModel10);
                 var resultProduct11 = await _productService.AddProduct(productModel11);
                 var resultProduct12 = await _productService.AddProduct(productModel12);
@@ -1623,8 +1435,12 @@ namespace TechStore.Service.Implementations
                 var resultProduct23 = await _productService.AddProduct(productModel23);
                 var resultProduct24 = await _productService.AddProduct(productModel24);
 
-                var samsungyear = 26;
+                #endregion
+
+
+                #region add sample product
                 //add sample samsung product
+                var samsungyear = 26;
                 for (int i = 20; i <= samsungyear; i++)
                 {
                     //normal
@@ -1638,7 +1454,7 @@ namespace TechStore.Service.Implementations
                         Warranty = 12,
                         Slug = "samsung-galaxy-s" + i,
                         Tags = new List<string> { "samsung", "S" + i },
-                        IsFeatured = true,
+                        IsFeatured = false,
                         StartSellingDate = TimeZoneHelper.GetUtcNow(),
                         MainImageUrl = DefaultImageLinks.DefaultSamsungS26PurpleImage,
                         GalleryImageUrls = new List<string>(),
@@ -1761,7 +1577,7 @@ namespace TechStore.Service.Implementations
                         Warranty = 12,
                         Slug = "samsung-galaxy-s" + i + "-plus",
                         Tags = new List<string> { "samsung", "S" + i + "Plus" },
-                        IsFeatured = true,
+                        IsFeatured = false,
                         StartSellingDate = TimeZoneHelper.GetUtcNow(),
                         MainImageUrl = DefaultImageLinks.DefaultSamsungS26BlueImage,
                         GalleryImageUrls = new List<string>(),
@@ -1884,7 +1700,7 @@ namespace TechStore.Service.Implementations
                         Warranty = 12,
                         Slug = "samsung-galaxy-s" + i + "-ultra",
                         Tags = new List<string> { "samsung", "S" + i + "Ultra" },
-                        IsFeatured = true,
+                        IsFeatured = false,
                         StartSellingDate = TimeZoneHelper.GetUtcNow(),
                         MainImageUrl = DefaultImageLinks.DefaultSamsungS26WhiteImage,
                         GalleryImageUrls = new List<string>(),
@@ -2012,7 +1828,7 @@ namespace TechStore.Service.Implementations
                         Warranty = 12,
                         Slug = "iphone-" + i,
                         Tags = new List<string> { "iphone", "iphone" + i },
-                        IsFeatured = true,
+                        IsFeatured = false,
                         StartSellingDate = TimeZoneHelper.GetUtcNow(),
                         MainImageUrl = DefaultImageLinks.DefaultIphone14PurpleImage,
                         GalleryImageUrls = new List<string>(),
@@ -2136,7 +1952,7 @@ namespace TechStore.Service.Implementations
                         Warranty = 12,
                         Slug = "iphone-" + i + "-pro",
                         Tags = new List<string> { "iphone", "iphone" + i + "pro" },
-                        IsFeatured = true,
+                        IsFeatured = false,
                         StartSellingDate = TimeZoneHelper.GetUtcNow(),
                         MainImageUrl = DefaultImageLinks.DefaultIphone14GoldImage,
                         GalleryImageUrls = new List<string>(),
@@ -2260,7 +2076,7 @@ namespace TechStore.Service.Implementations
                         Warranty = 12,
                         Slug = "iphone-" + i + "-pro-max",
                         Tags = new List<string> { "iphone", "iphone" + i + "pro-max" },
-                        IsFeatured = true,
+                        IsFeatured = false,
                         StartSellingDate = TimeZoneHelper.GetUtcNow(),
                         MainImageUrl = DefaultImageLinks.DefaultIphone14SilverImage,
                         GalleryImageUrls = new List<string>(),
@@ -2373,7 +2189,10 @@ namespace TechStore.Service.Implementations
                     }
                     });
                 }
+                #endregion
 
+
+                #region Add Iphone 15 -> 18 Series
                 var ip15promax = new ProductCreateModel
                 {
                     CategoryId = resultCategoryMobilephone.Data,
@@ -2874,7 +2693,7 @@ namespace TechStore.Service.Implementations
                     Warranty = 12,
                     Slug = "iphone-15",
                     Tags = new List<string> { "iphone", "iphone-15" },
-                    IsFeatured = true,
+                    IsFeatured = false,
                     StartSellingDate = TimeZoneHelper.GetUtcNow(),
                     MainImageUrl = "TechShop/images/products/smartphone/iphone-15-plus/g1.webp",
                     GalleryImageUrls = new List<string>()
@@ -4100,9 +3919,9 @@ namespace TechStore.Service.Implementations
                     }
                 };
 
-                await _productService.AddProduct(ip17promax);
-                await _productService.AddProduct(ip17pro);
                 await _productService.AddProduct(ip17);
+                await _productService.AddProduct(ip17pro);
+                await _productService.AddProduct(ip17promax);
 
                 var ip18promax = new ProductCreateModel
                 {
@@ -4475,15 +4294,4116 @@ namespace TechStore.Service.Implementations
                     }
                 };
 
-
-                await _productService.AddProduct(ip18promax);
                 await _productService.AddProduct(ip18pro);
-
+                await _productService.AddProduct(ip18promax);
                 #endregion
+
+                int abcd = 1;
+                if (abcd == 1)
+                {
+                    #region Xiaomi Phones (2M - 10M VND)
+
+                    // 1. Xiaomi Redmi A3 (~2.29 triệu)
+                    var xiaomiRedmiA3 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi A3",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-a3",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-a3", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "3GB/64GB",
+                            Description = "",
+                            ImportPrice = 1990000m,
+                            Price = 2290000m,
+                            Storage = "64GB",
+                            AvailableStorage = "52GB",
+                            Ram = "3GB",
+                            OperatingSystem = "Android 14 (Go Edition)",
+                            Cpu = "MediaTek Helio G36 8 nhân",
+                            Gpu = "PowerVR GE8320",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Băng Giá",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ánh Sao",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Rừng Sâu",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 2. Xiaomi Redmi 13C (~2.89 triệu)
+                    var xiaomiRedmi13C = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi 13C",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-13c",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-13c", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "4GB/128GB",
+                            Description = "",
+                            ImportPrice = 2590000m,
+                            Price = 2890000m,
+                            Storage = "128GB",
+                            AvailableStorage = "110GB",
+                            Ram = "4GB",
+                            OperatingSystem = "MIUI 14, Android 13",
+                            Cpu = "MediaTek Helio G85 8 nhân",
+                            Gpu = "Mali-G52 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bóng Đêm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Navy",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Cỏ Ba Lá",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 3. Xiaomi Redmi 14C (~3.29 triệu)
+                    var xiaomiRedmi14C = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi 14C",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-14c",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-14c", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "4GB/128GB",
+                            Description = "",
+                            ImportPrice = 2890000m,
+                            Price = 3290000m,
+                            Storage = "128GB",
+                            AvailableStorage = "110GB",
+                            Ram = "4GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Helio G81-Ultra 8 nhân",
+                            Gpu = "Mali-G52 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Màn Đêm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Xô Thơm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Mộng Mơ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 4. Xiaomi Redmi 12 (~3.79 triệu)
+                    var xiaomiRedmi12 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi 12",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-12",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-12", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 3390000m,
+                            Price = 3790000m,
+                            Storage = "128GB",
+                            AvailableStorage = "112GB",
+                            Ram = "8GB",
+                            OperatingSystem = "MIUI 14, Android 13",
+                            Cpu = "MediaTek Helio G88 8 nhân",
+                            Gpu = "Mali-G52 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bạc Cực Quang",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Bầu Trời",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Ánh Cực Quang",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 5. Xiaomi Redmi 13 (~4.29 triệu)
+                    var xiaomiRedmi13 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi 13",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-13",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-13", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "6GB/128GB",
+                            Description = "",
+                            ImportPrice = 3890000m,
+                            Price = 4290000m,
+                            Storage = "128GB",
+                            AvailableStorage = "112GB",
+                            Ram = "6GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Helio G91-Ultra 8 nhân",
+                            Gpu = "Mali-G52 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Huyền Bí",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Sóng Nước",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng Ngọc Trai",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 6. Xiaomi Redmi Note 13 (~4.79 triệu)
+                    var xiaomiRedmiNote13 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi Note 13",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-note-13",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-note-13", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "6GB/128GB",
+                            Description = "",
+                            ImportPrice = 4390000m,
+                            Price = 4790000m,
+                            Storage = "128GB",
+                            AvailableStorage = "110GB",
+                            Ram = "6GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 685 8 nhân",
+                            Gpu = "Adreno 610",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Huyền Bí",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Băng Tuyết",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Hoàng Hôn",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 7. Xiaomi POCO M6 Pro (~5.69 triệu)
+                    var xiaomiPocoM6Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi POCO M6 Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-poco-m6-pro",
+                        Tags = new List<string> { "xiaomi", "poco", "poco-m6-pro", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 5190000m,
+                            Price = 5690000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Helio G99-Ultra 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Tối Thượng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lam",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Huyền Ảo",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 8. Xiaomi Redmi Note 13 5G (~6.39 triệu)
+                    var xiaomiRedmiNote135G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi Note 13 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-note-13-5g",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-note-13-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 5890000m,
+                            Price = 6390000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Dimensity 6080 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Graphite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Băng Giá",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lục Bảo",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 9. Xiaomi Redmi Note 13 Pro (~7.19 triệu)
+                    var xiaomiRedmiNote13Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi Note 13 Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-note-13-pro",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-note-13-pro", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 6690000m,
+                            Price = 7190000m,
+                            Storage = "128GB",
+                            AvailableStorage = "110GB",
+                            Ram = "8GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Helio G99-Ultra 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bóng Đêm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Lavender",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Rừng Xanh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 10. Xiaomi Redmi Note 13 Pro 5G (~8.99 triệu)
+                    var xiaomiRedmiNote13Pro5G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi Note 13 Pro 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-note-13-pro-5g",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-note-13-pro-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 8490000m,
+                            Price = 8990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Snapdragon 7s Gen 2 8 nhân",
+                            Gpu = "Adreno 710",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bán Dạ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Đại Dương",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Cực Quang",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    await _productService.AddProduct(xiaomiRedmiA3);
+                    await _productService.AddProduct(xiaomiRedmi13C);
+                    await _productService.AddProduct(xiaomiRedmi14C);
+                    await _productService.AddProduct(xiaomiRedmi12);
+                    await _productService.AddProduct(xiaomiRedmi13);
+                    await _productService.AddProduct(xiaomiRedmiNote13);
+                    await _productService.AddProduct(xiaomiPocoM6Pro);
+                    await _productService.AddProduct(xiaomiRedmiNote135G);
+                    await _productService.AddProduct(xiaomiRedmiNote13Pro);
+                    await _productService.AddProduct(xiaomiRedmiNote13Pro5G);
+
+                    #endregion
+
+                    #region Xiaomi Phones (10M - 20M VND)
+
+                    // 1. Xiaomi Redmi Note 13 Pro+ 5G (~10.49 triệu)
+                    var xiaomiRedmiNote13ProPlus5G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi Redmi Note 13 Pro+ 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-redmi-note-13-pro-plus-5g",
+                        Tags = new List<string> { "xiaomi", "redmi", "redmi-note-13-pro-plus", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 9690000m,
+                            Price = 10490000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Dimensity 7200-Ultra 8 nhân",
+                            Gpu = "Mali-G610 MC4",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bán Dạ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Ánh Trăng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Cực Quang",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 2. Xiaomi POCO X6 Pro 5G (~10.99 triệu)
+                    var xiaomiPocoX6Pro5G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi POCO X6 Pro 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-poco-x6-pro-5g",
+                        Tags = new List<string> { "xiaomi", "poco", "poco-x6-pro", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 10190000m,
+                            Price = 10990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Dimensity 8300-Ultra 8 nhân",
+                            Gpu = "Mali-G615 MC6",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng POCO",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 3. Xiaomi 13 Lite (~11.49 triệu)
+                    var xiaomi13Lite = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 13 Lite",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-13-lite",
+                        Tags = new List<string> { "xiaomi", "xiaomi-13-lite", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 10690000m,
+                            Price = 11490000m,
+                            Storage = "256GB",
+                            AvailableStorage = "238GB",
+                            Ram = "8GB",
+                            OperatingSystem = "MIUI 14, Android 13",
+                            Cpu = "Qualcomm Snapdragon 7 Gen 1 8 nhân",
+                            Gpu = "Adreno 644",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Dương",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 4. Xiaomi POCO F6 (~12.49 triệu)
+                    var xiaomiPocoF6 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi POCO F6",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-poco-f6",
+                        Tags = new List<string> { "xiaomi", "poco", "poco-f6", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 11490000m,
+                            Price = 12490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8s Gen 3 8 nhân",
+                            Gpu = "Adreno 735",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lục",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 5. Xiaomi 13T (~12.99 triệu)
+                    var xiaomi13T = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 13T",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-13t",
+                        Tags = new List<string> { "xiaomi", "xiaomi-13t", "leica", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/256GB",
+                            Description = "",
+                            ImportPrice = 11990000m,
+                            Price = 12990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "236GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Dimensity 8200-Ultra 8 nhân",
+                            Gpu = "Mali-G610 MC6",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Tuyết Tùng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Đồng Cỏ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 6. Xiaomi 14T (~13.99 triệu)
+                    var xiaomi14T = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 14T",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-14t",
+                        Tags = new List<string> { "xiaomi", "xiaomi-14t", "leica", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 12990000m,
+                            Price = 13990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Dimensity 8300-Ultra 8 nhân",
+                            Gpu = "Mali-G615 MC6",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 7. Xiaomi POCO F6 Pro (~15.49 triệu)
+                    var xiaomiPocoF6Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi POCO F6 Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-poco-f6-pro",
+                        Tags = new List<string> { "xiaomi", "poco", "poco-f6-pro", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 14290000m,
+                            Price = 15490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 2 8 nhân",
+                            Gpu = "Adreno 740",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Huyền Ảo",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Tinh Khôi",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 8. Xiaomi 13T Pro (~16.49 triệu)
+                    var xiaomi13TPro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 13T Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-13t-pro",
+                        Tags = new List<string> { "xiaomi", "xiaomi-13t-pro", "leica", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 15190000m,
+                            Price = 16490000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Dimensity 9200+ 8 nhân",
+                            Gpu = "Immortalis-G715 MC11",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Tuyết Tùng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Đồng Cỏ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 9. Xiaomi 14T Pro (~17.99 triệu)
+                    var xiaomi14TPro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 14T Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-14t-pro",
+                        Tags = new List<string> { "xiaomi", "xiaomi-14t-pro", "leica", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 16490000m,
+                            Price = 17990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "MediaTek Dimensity 9300+ 8 nhân",
+                            Gpu = "Immortalis-G720 MC12",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 10. Xiaomi 14 (~19.99 triệu)
+                    var xiaomi14 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 14",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-14",
+                        Tags = new List<string> { "xiaomi", "xiaomi-14", "leica", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/256GB",
+                            Description = "",
+                            ImportPrice = 18490000m,
+                            Price = 19990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 3 8 nhân",
+                            Gpu = "Adreno 750",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Cổ Điển",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Tuyết",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ngọc Bích",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    await _productService.AddProduct(xiaomiRedmiNote13ProPlus5G);
+                    await _productService.AddProduct(xiaomiPocoX6Pro5G);
+                    await _productService.AddProduct(xiaomi13Lite);
+                    await _productService.AddProduct(xiaomiPocoF6);
+                    await _productService.AddProduct(xiaomi13T);
+                    await _productService.AddProduct(xiaomi14T);
+                    await _productService.AddProduct(xiaomiPocoF6Pro);
+                    await _productService.AddProduct(xiaomi13TPro);
+                    await _productService.AddProduct(xiaomi14TPro);
+                    await _productService.AddProduct(xiaomi14);
+
+                    #endregion
+
+                    #region Xiaomi Phones (Flagship > 20M VND)
+
+                    // 1. Xiaomi 14 Pro (~21.99 triệu)
+                    var xiaomi14Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 14 Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-14-pro",
+                        Tags = new List<string> { "xiaomi", "xiaomi-14-pro", "leica", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 19990000m,
+                            Price = 21990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 3 8 nhân",
+                            Gpu = "Adreno 750",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ngọc Bích",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 2. Xiaomi 14 Ultra (~29.99 triệu)
+                    var xiaomi14Ultra = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 14 Ultra",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-14-ultra",
+                        Tags = new List<string> { "xiaomi", "xiaomi-14-ultra", "leica", "flagship", "camera" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "16GB/512GB",
+                            Description = "",
+                            ImportPrice = 27490000m,
+                            Price = 29990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "480GB",
+                            Ram = "16GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 3 8 nhân",
+                            Gpu = "Adreno 750",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Da Nano",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Da Nano",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 3. Xiaomi 15 (~22.49 triệu)
+                    var xiaomi15 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 15",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-15",
+                        Tags = new List<string> { "xiaomi", "xiaomi-15", "leica", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/256GB",
+                            Description = "",
+                            ImportPrice = 20490000m,
+                            Price = 22490000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS 2, Android 15",
+                            Cpu = "Snapdragon 8 Elite 8 nhân",
+                            Gpu = "Adreno 830",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lục Nhạt",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Ánh Trăng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 4. Xiaomi 15 Pro (~27.99 triệu)
+                    var xiaomi15Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 15 Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-15-pro",
+                        Tags = new List<string> { "xiaomi", "xiaomi-15-pro", "leica", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "16GB/512GB",
+                            Description = "",
+                            ImportPrice = 25490000m,
+                            Price = 27990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "480GB",
+                            Ram = "16GB",
+                            OperatingSystem = "Xiaomi HyperOS 2, Android 15",
+                            Cpu = "Snapdragon 8 Elite 8 nhân",
+                            Gpu = "Adreno 830",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Vân Đá",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 5. Xiaomi 15 Ultra (~34.99 triệu)
+                    var xiaomi15Ultra = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 15 Ultra",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-15-ultra",
+                        Tags = new List<string> { "xiaomi", "xiaomi-15-ultra", "leica", "flagship", "camera" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "16GB/1TB",
+                            Description = "",
+                            ImportPrice = 31990000m,
+                            Price = 34990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "960GB",
+                            Ram = "16GB",
+                            OperatingSystem = "Xiaomi HyperOS 2, Android 15",
+                            Cpu = "Snapdragon 8 Elite 8 nhân",
+                            Gpu = "Adreno 830",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Da Cao Cấp",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Titan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Đậm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 6. Xiaomi MIX Flip (~24.99 triệu)
+                    var xiaomiMixFlip = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi MIX Flip",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-mix-flip",
+                        Tags = new List<string> { "xiaomi", "mix-flip", "foldable", "leica", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/512GB",
+                            Description = "",
+                            ImportPrice = 22990000m,
+                            Price = 24990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "485GB",
+                            Ram = "12GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 3 8 nhân",
+                            Gpu = "Adreno 750",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Huyền Ảo",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 7. Xiaomi MIX Fold 3 (~28.99 triệu)
+                    var xiaomiMixFold3 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi MIX Fold 3",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-mix-fold-3",
+                        Tags = new List<string> { "xiaomi", "mix-fold-3", "foldable", "leica", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "16GB/512GB",
+                            Description = "",
+                            ImportPrice = 26490000m,
+                            Price = 28990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "480GB",
+                            Ram = "16GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 13",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 2 Leading Version 8 nhân",
+                            Gpu = "Adreno 740",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Sợi Carbon",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Ánh Kim",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 8. Xiaomi MIX Fold 4 (~36.99 triệu)
+                    var xiaomiMixFold4 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi MIX Fold 4",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-mix-fold-4",
+                        Tags = new List<string> { "xiaomi", "mix-fold-4", "foldable", "leica", "flagship" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "16GB/1TB",
+                            Description = "",
+                            ImportPrice = 33990000m,
+                            Price = 36990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "960GB",
+                            Ram = "16GB",
+                            OperatingSystem = "Xiaomi HyperOS, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 3 8 nhân",
+                            Gpu = "Adreno 750",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Composite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Tinh Khiết",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lam",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 9. Xiaomi 13 Pro (~20.99 triệu)
+                    var xiaomi13Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 13 Pro",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-13-pro",
+                        Tags = new List<string> { "xiaomi", "xiaomi-13-pro", "leica", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "12GB/256GB",
+                            Description = "",
+                            ImportPrice = 18990000m,
+                            Price = 20990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "12GB",
+                            OperatingSystem = "MIUI 14, Android 13",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 2 8 nhân",
+                            Gpu = "Adreno 740",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Gốm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Gốm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Cỏ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 10. Xiaomi 13 Ultra (~25.99 triệu)
+                    var xiaomi13Ultra = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandXiaomi.Data,
+                        Name = "Xiaomi 13 Ultra",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "xiaomi-13-ultra",
+                        Tags = new List<string> { "xiaomi", "xiaomi-13-ultra", "leica", "flagship", "camera" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "16GB/512GB",
+                            Description = "",
+                            ImportPrice = 23490000m,
+                            Price = 25990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "480GB",
+                            Ram = "16GB",
+                            OperatingSystem = "MIUI 14, Android 13",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 2 8 nhân",
+                            Gpu = "Adreno 740",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Da Nano",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ô Liu",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Da Nano",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    await _productService.AddProduct(xiaomi14Pro);
+                    await _productService.AddProduct(xiaomi14Ultra);
+                    await _productService.AddProduct(xiaomi15);
+                    await _productService.AddProduct(xiaomi15Pro);
+                    await _productService.AddProduct(xiaomi15Ultra);
+                    await _productService.AddProduct(xiaomiMixFlip);
+                    await _productService.AddProduct(xiaomiMixFold3);
+                    await _productService.AddProduct(xiaomiMixFold4);
+                    await _productService.AddProduct(xiaomi13Pro);
+                    await _productService.AddProduct(xiaomi13Ultra);
+
+                    #endregion
+
+                    #region Samsung Phones (3M - 10M VND)
+
+                    // 1. Samsung Galaxy A05 (~3.09 triệu)
+                    var samsungGalaxyA05 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A05",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a05",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a05", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "4GB/128GB",
+                            Description = "",
+                            ImportPrice = 2690000m,
+                            Price = 3090000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "4GB",
+                            OperatingSystem = "One UI Core 5.1, Android 13",
+                            Cpu = "MediaTek Helio G85 8 nhân",
+                            Gpu = "Mali-G52 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Tuyền",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Matcha",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Xỉu",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 2. Samsung Galaxy A05s (~3.59 triệu)
+                    var samsungGalaxyA05s = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A05s",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a05s",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a05s", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "4GB/128GB",
+                            Description = "",
+                            ImportPrice = 3190000m,
+                            Price = 3590000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "4GB",
+                            OperatingSystem = "One UI Core 5.1, Android 13",
+                            Cpu = "Qualcomm Snapdragon 680 8 nhân",
+                            Gpu = "Adreno 610",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Đá",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Matcha",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Xỉu",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 3. Samsung Galaxy A06 (~3.49 triệu)
+                    var samsungGalaxyA06 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A06",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a06",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a06", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "4GB/128GB",
+                            Description = "",
+                            ImportPrice = 3090000m,
+                            Price = 3490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "4GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "MediaTek Helio G85 8 nhân",
+                            Gpu = "Mali-G52 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lam",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 4. Samsung Galaxy M14 5G (~3.99 triệu)
+                    var samsungGalaxyM145G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy M14 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-m14-5g",
+                        Tags = new List<string> { "samsung", "galaxy-m", "galaxy-m14-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "4GB/128GB",
+                            Description = "",
+                            ImportPrice = 3490000m,
+                            Price = 3990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "4GB",
+                            OperatingSystem = "One UI Core 5.1, Android 13",
+                            Cpu = "Exynos 1330 8 nhân",
+                            Gpu = "Mali-G68 MP2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Hải Quân",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ánh Băng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 5. Samsung Galaxy A15 (~4.59 triệu)
+                    var samsungGalaxyA15 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A15",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a15",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a15", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 4090000m,
+                            Price = 4590000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "MediaTek Helio G99 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bản Lĩnh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lạc Quan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Cá Tính",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 6. Samsung Galaxy A15 5G (~5.29 triệu)
+                    var samsungGalaxyA155G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A15 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a15-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a15-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 4690000m,
+                            Price = 5290000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "MediaTek Dimensity 6100+ 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Dương Thẫm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lơ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Tươi",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 7. Samsung Galaxy M15 5G (~4.99 triệu)
+                    var samsungGalaxyM155G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy M15 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-m15-5g",
+                        Tags = new List<string> { "samsung", "galaxy-m", "galaxy-m15-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "6GB/128GB",
+                            Description = "",
+                            ImportPrice = 4390000m,
+                            Price = 4990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "6GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "MediaTek Dimensity 6100+ 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Thạch Anh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ngọc",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Đậm Tối Giản",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 8. Samsung Galaxy A16 5G (~5.79 triệu)
+                    var samsungGalaxyA165G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A16 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a16-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a16-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 5190000m,
+                            Price = 5790000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "MediaTek Dimensity 6300 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Tinh Quái",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Bạc Hà",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Rực Rỡ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 9. Samsung Galaxy A25 5G (~6.19 triệu)
+                    var samsungGalaxyA255G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A25 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a25-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a25-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 5490000m,
+                            Price = 6190000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "Exynos 1280 8 nhân",
+                            Gpu = "Mali-G68",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bản Lĩnh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lạc Quan",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Cá Tính",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 10. Samsung Galaxy M34 5G (~6.69 triệu)
+                    var samsungGalaxyM345G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy M34 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-m34-5g",
+                        Tags = new List<string> { "samsung", "galaxy-m", "galaxy-m34-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 5990000m,
+                            Price = 6690000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 5.1, Android 13",
+                            Cpu = "Exynos 1280 8 nhân",
+                            Gpu = "Mali-G68",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Thác Nước",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ánh Băng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Ánh Sao",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 11. Samsung Galaxy A34 5G (~7.19 triệu)
+                    var samsungGalaxyA345G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A34 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a34-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a34-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 6390000m,
+                            Price = 7190000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "MediaTek Dimensity 1080 8 nhân",
+                            Gpu = "Mali-G68 MC4",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Bất Phàm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Dũng Mãnh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Chiến Binh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 12. Samsung Galaxy A35 5G (~7.79 triệu)
+                    var samsungGalaxyA355G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A35 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a35-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a35-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 6990000m,
+                            Price = 7790000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Exynos 1380 8 nhân",
+                            Gpu = "Mali-G68 MP5",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Iceblue",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Navy",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Lemon",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 13. Samsung Galaxy M54 5G (~8.49 triệu)
+                    var samsungGalaxyM545G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy M54 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-m54-5g",
+                        Tags = new List<string> { "samsung", "galaxy-m", "galaxy-m54-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 7590000m,
+                            Price = 8490000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 5.1, Android 13",
+                            Cpu = "Exynos 1380 8 nhân",
+                            Gpu = "Mali-G68 MP5",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc Ánh Sao",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Đậm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 14. Samsung Galaxy A54 5G (~8.99 triệu)
+                    var samsungGalaxyA545G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A54 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a54-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a54-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 7990000m,
+                            Price = 8990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "Exynos 1380 8 nhân",
+                            Gpu = "Mali-G68 MP5",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Dũng Mãnh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Chiến Binh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Oải Hương",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 15. Samsung Galaxy A55 5G (~9.69 triệu)
+                    var samsungGalaxyA555G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A55 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a55-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a55-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 8690000m,
+                            Price = 9690000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Exynos 1480 8 nhân",
+                            Gpu = "Xclipse 530",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Iceblue",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Navy",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Lilac",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    await _productService.AddProduct(samsungGalaxyA05);
+                    await _productService.AddProduct(samsungGalaxyA05s);
+                    await _productService.AddProduct(samsungGalaxyA06);
+                    await _productService.AddProduct(samsungGalaxyM145G);
+                    await _productService.AddProduct(samsungGalaxyA15);
+                    await _productService.AddProduct(samsungGalaxyA155G);
+                    await _productService.AddProduct(samsungGalaxyM155G);
+                    await _productService.AddProduct(samsungGalaxyA165G);
+                    await _productService.AddProduct(samsungGalaxyA255G);
+                    await _productService.AddProduct(samsungGalaxyM345G);
+                    await _productService.AddProduct(samsungGalaxyA345G);
+                    await _productService.AddProduct(samsungGalaxyA355G);
+                    await _productService.AddProduct(samsungGalaxyM545G);
+                    await _productService.AddProduct(samsungGalaxyA545G);
+                    await _productService.AddProduct(samsungGalaxyA555G);
+
+                    #endregion
+
+                    #region Samsung Phones (10M - 20M VND)
+
+                    // 1. Samsung Galaxy A55 5G (8GB/256GB) (~10.49 triệu)
+                    var samsungGalaxyA55256GB = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A55 5G (8GB/256GB)",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a55-5g-256gb",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a55", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 9690000m,
+                            Price = 10490000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Exynos 1480 8 nhân",
+                            Gpu = "Xclipse 530",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Iceblue",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Navy",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Lilac",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 2. Samsung Galaxy M55 5G (~10.99 triệu)
+                    var samsungGalaxyM555G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy M55 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-m55-5g",
+                        Tags = new List<string> { "samsung", "galaxy-m", "galaxy-m55-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 10190000m,
+                            Price = 10990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Qualcomm Snapdragon 7 Gen 1 8 nhân",
+                            Gpu = "Adreno 644",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Bóng Đêm",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lam Nhẹ",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 3. Samsung Galaxy A73 5G (~11.49 triệu)
+                    var samsungGalaxyA735G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy A73 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-a73-5g",
+                        Tags = new List<string> { "samsung", "galaxy-a", "galaxy-a73-5g", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 10590000m,
+                            Price = 11490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "108GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "Qualcomm Snapdragon 778G 5G 8 nhân",
+                            Gpu = "Adreno 642L",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Tinh Tế",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Thời Thượng",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Tinh Khôi",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 4. Samsung Galaxy S21 FE 5G (~11.99 triệu)
+                    var samsungGalaxyS21FE5G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S21 FE 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s21-fe-5g",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s21-fe", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 11090000m,
+                            Price = 11990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Exynos 2100 8 nhân",
+                            Gpu = "Mali-G78 MP14",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Olive",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Lavender",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Tinh Khiết",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Graphite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 5. Samsung Galaxy XCover 7 (~12.49 triệu)
+                    var samsungGalaxyXCover7 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy XCover 7",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-xcover-7",
+                        Tags = new List<string> { "samsung", "xcover", "rugged", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "6GB/128GB",
+                            Description = "",
+                            ImportPrice = 11490000m,
+                            Price = 12490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "106GB",
+                            Ram = "6GB",
+                            OperatingSystem = "One UI 6.0, Android 14",
+                            Cpu = "MediaTek Dimensity 6100+ 8 nhân",
+                            Gpu = "Mali-G57 MC2",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Siêu Bền",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 6. Samsung Galaxy S23 FE (8GB/128GB) (~12.99 triệu)
+                    var samsungGalaxyS23FE = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S23 FE",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s23-fe",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s23-fe", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 11990000m,
+                            Price = 12990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Exynos 2200 8 nhân",
+                            Gpu = "Xclipse 920",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mint",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Purple",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Graphite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Cream",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 7. Samsung Galaxy S23 FE (8GB/256GB) (~13.99 triệu)
+                    var samsungGalaxyS23FE256GB = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S23 FE (8GB/256GB)",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s23-fe-256gb",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s23-fe", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 12890000m,
+                            Price = 13990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "233GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Exynos 2200 8 nhân",
+                            Gpu = "Xclipse 920",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mint",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Graphite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Purple",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 8. Samsung Galaxy S22 5G (~13.49 triệu)
+                    var samsungGalaxyS225G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S22 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s22-5g",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s22", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 12490000m,
+                            Price = 13490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 1 8 nhân",
+                            Gpu = "Adreno 730",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Phantom",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Phantom",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Zeta",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng Blossom",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 9. Samsung Galaxy Z Flip4 5G (~14.49 triệu)
+                    var samsungGalaxyZFlip45G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy Z Flip4 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-z-flip-4-5g",
+                        Tags = new List<string> { "samsung", "galaxy-z", "z-flip-4", "foldable", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 13290000m,
+                            Price = 14490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8+ Gen 1 8 nhân",
+                            Gpu = "Adreno 730",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Bora",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Graphite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Hồng Champagne",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Lovebird",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 10. Samsung Galaxy S24 FE (8GB/128GB) (~15.49 triệu)
+                    var samsungGalaxyS24FE = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S24 FE",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s24-fe",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s24-fe", "galaxy-ai", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 14290000m,
+                            Price = 15490000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1.1, Android 14",
+                            Cpu = "Exynos 2400e 10 nhân",
+                            Gpu = "Xclipse 940",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Topaz",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Graphite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Chanh",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ngọc Hera",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 11. Samsung Galaxy S22+ 5G (~15.99 triệu)
+                    var samsungGalaxyS22Plus5G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S22+ 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s22-plus-5g",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s22-plus", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 14790000m,
+                            Price = 15990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Qualcomm Snapdragon 8 Gen 1 8 nhân",
+                            Gpu = "Adreno 730",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Phantom",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Trắng Phantom",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Zeta",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 12. Samsung Galaxy S24 FE (8GB/256GB) (~16.49 triệu)
+                    var samsungGalaxyS24FE256GB = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S24 FE (8GB/256GB)",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s24-fe-256gb",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s24-fe", "galaxy-ai", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 15190000m,
+                            Price = 16490000m,
+                            Storage = "256GB",
+                            AvailableStorage = "233GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1.1, Android 14",
+                            Cpu = "Exynos 2400e 10 nhân",
+                            Gpu = "Xclipse 940",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Topaz",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Graphite",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Ngọc Hera",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 13. Samsung Galaxy S23 5G (8GB/128GB) (~16.99 triệu)
+                    var samsungGalaxyS235G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S23 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s23-5g",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s23", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/128GB",
+                            Description = "",
+                            ImportPrice = 15690000m,
+                            Price = 16990000m,
+                            Storage = "128GB",
+                            AvailableStorage = "105GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Snapdragon 8 Gen 2 for Galaxy 8 nhân",
+                            Gpu = "Adreno 740",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Phantom",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Kem Cotton",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Botanic",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Lavender",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 14. Samsung Galaxy Z Flip5 5G (~17.99 triệu)
+                    var samsungGalaxyZFlip55G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy Z Flip5 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-z-flip-5-5g",
+                        Tags = new List<string> { "samsung", "galaxy-z", "z-flip-5", "foldable", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 16590000m,
+                            Price = 17990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "235GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Snapdragon 8 Gen 2 for Galaxy 8 nhân",
+                            Gpu = "Adreno 740",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Mint",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Indie",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Kem Latte",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Tím Fancy",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    // 15. Samsung Galaxy S23+ 5G (~19.49 triệu)
+                    var samsungGalaxyS23Plus5G = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryMobilephone.Data,
+                        BrandId = resultBrandSamsung.Data,
+                        Name = "Samsung Galaxy S23+ 5G",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "samsung-galaxy-s23-plus-5g",
+                        Tags = new List<string> { "samsung", "galaxy-s", "galaxy-s23-plus", "flagship", "smartphone" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 17990000m,
+                            Price = 19490000m,
+                            Storage = "256GB",
+                            AvailableStorage = "233GB",
+                            Ram = "8GB",
+                            OperatingSystem = "One UI 6.1, Android 14",
+                            Cpu = "Snapdragon 8 Gen 2 for Galaxy 8 nhân",
+                            Gpu = "Adreno 740",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Phantom",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Kem Cotton",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Botanic",
+                                    Stock = 50,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    await _productService.AddProduct(samsungGalaxyA55256GB);
+                    await _productService.AddProduct(samsungGalaxyM555G);
+                    await _productService.AddProduct(samsungGalaxyA735G);
+                    await _productService.AddProduct(samsungGalaxyS21FE5G);
+                    await _productService.AddProduct(samsungGalaxyXCover7);
+                    await _productService.AddProduct(samsungGalaxyS23FE);
+                    await _productService.AddProduct(samsungGalaxyS23FE256GB);
+                    await _productService.AddProduct(samsungGalaxyS225G);
+                    await _productService.AddProduct(samsungGalaxyZFlip45G);
+                    await _productService.AddProduct(samsungGalaxyS24FE);
+                    await _productService.AddProduct(samsungGalaxyS22Plus5G);
+                    await _productService.AddProduct(samsungGalaxyS24FE256GB);
+                    await _productService.AddProduct(samsungGalaxyS235G);
+                    await _productService.AddProduct(samsungGalaxyZFlip55G);
+                    await _productService.AddProduct(samsungGalaxyS23Plus5G);
+
+                    #endregion
+
+                    #region Apple MacBook Laptops
+
+                    var macbookAirM1 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Air 13\" M1 8GB 256GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-air-13-m1-8gb-256gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-air", "m1", "laptop" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 20000000m,
+                            Price = 22990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "240GB",
+                            Ram = "8GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M1 8 nhân",
+                            Gpu = "Apple M1 7 nhân GPU",
+                            ScreenSize = "13.3 inch",
+                            RefreshRate = "60Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Vàng Ánh Kim",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Xịt",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookAirM2 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Air 13\" M2 8GB 256GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-air-13-m2-8gb-256gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-air", "m2", "laptop" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 25000000m,
+                            Price = 27990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "240GB",
+                            Ram = "8GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M2 8 nhân",
+                            Gpu = "Apple M2 8 nhân GPU",
+                            ScreenSize = "13.6 inch",
+                            RefreshRate = "60Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Bầu Trời",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Ánh Sao",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xám Xịt",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                }
+                            }
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/512GB",
+                            Description = "",
+                            ImportPrice = 29000000m,
+                            Price = 32990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "490GB",
+                            Ram = "8GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M2 8 nhân",
+                            Gpu = "Apple M2 10 nhân GPU",
+                            ScreenSize = "13.6 inch",
+                            RefreshRate = "60Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Bầu Trời",
+                                    Stock = 20,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Ánh Sao",
+                                    Stock = 20,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookAirM2_15 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Air 15\" M2 8GB 256GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-air-15-m2-8gb-256gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-air", "m2", "laptop", "15-inch" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 29000000m,
+                            Price = 31990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "240GB",
+                            Ram = "8GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M2 8 nhân",
+                            Gpu = "Apple M2 10 nhân GPU",
+                            ScreenSize = "15.3 inch",
+                            RefreshRate = "60Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Ánh Sao",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đêm Tối",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookAirM3 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Air 13\" M3 8GB 256GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-air-13-m3-8gb-256gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-air", "m3", "laptop" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 27500000m,
+                            Price = 29990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "240GB",
+                            Ram = "8GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 8 nhân",
+                            Gpu = "Apple M3 10 nhân GPU",
+                            ScreenSize = "13.6 inch",
+                            RefreshRate = "60Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Ánh Sao",
+                                    Stock = 40,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đêm Tối",
+                                    Stock = 40,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Xanh Bầu Trời",
+                                    Stock = 40,
+                                    ImageUrl = ""
+                                }
+                            }
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "16GB/512GB",
+                            Description = "",
+                            ImportPrice = 33000000m,
+                            Price = 36990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "490GB",
+                            Ram = "16GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 8 nhân",
+                            Gpu = "Apple M3 10 nhân GPU",
+                            ScreenSize = "13.6 inch",
+                            RefreshRate = "60Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Ánh Sao",
+                                    Stock = 20,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đêm Tối",
+                                    Stock = 20,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookAirM3_15 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Air 15\" M3 8GB 256GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-air-15-m3-8gb-256gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-air", "m3", "laptop", "15-inch" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/256GB",
+                            Description = "",
+                            ImportPrice = 31000000m,
+                            Price = 34990000m,
+                            Storage = "256GB",
+                            AvailableStorage = "240GB",
+                            Ram = "8GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 8 nhân",
+                            Gpu = "Apple M3 10 nhân GPU",
+                            ScreenSize = "15.3 inch",
+                            RefreshRate = "60Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Ánh Sao",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đêm Tối",
+                                    Stock = 30,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookPro14M3 = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Pro 14\" M3 8GB 512GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-pro-14-m3-8gb-512gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-pro", "m3", "laptop", "14-inch" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "8GB/512GB",
+                            Description = "",
+                            ImportPrice = 37000000m,
+                            Price = 41990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "490GB",
+                            Ram = "8GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 8 nhân",
+                            Gpu = "Apple M3 10 nhân GPU",
+                            ScreenSize = "14.2 inch",
+                            RefreshRate = "120Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 25,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Vũ Trụ",
+                                    Stock = 25,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookPro14M3Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Pro 14\" M3 Pro 18GB 512GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-pro-14-m3-pro-18gb-512gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-pro", "m3-pro", "laptop", "14-inch" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "18GB/512GB",
+                            Description = "",
+                            ImportPrice = 51000000m,
+                            Price = 57990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "490GB",
+                            Ram = "18GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 Pro 11 nhân",
+                            Gpu = "Apple M3 Pro 14 nhân GPU",
+                            ScreenSize = "14.2 inch",
+                            RefreshRate = "120Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 20,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Vũ Trụ",
+                                    Stock = 20,
+                                    ImageUrl = ""
+                                }
+                            }
+                        },
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "18GB/1TB",
+                            Description = "",
+                            ImportPrice = 59000000m,
+                            Price = 65990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "950GB",
+                            Ram = "18GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 Pro 11 nhân",
+                            Gpu = "Apple M3 Pro 14 nhân GPU",
+                            ScreenSize = "14.2 inch",
+                            RefreshRate = "120Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 15,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Vũ Trụ",
+                                    Stock = 15,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookPro14M3Max = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Pro 14\" M3 Max 36GB 1TB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-pro-14-m3-max-36gb-1tb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-pro", "m3-max", "laptop", "14-inch" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "36GB/1TB",
+                            Description = "",
+                            ImportPrice = 75000000m,
+                            Price = 84990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "950GB",
+                            Ram = "36GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 Max 14 nhân",
+                            Gpu = "Apple M3 Max 30 nhân GPU",
+                            ScreenSize = "14.2 inch",
+                            RefreshRate = "120Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 10,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Vũ Trụ",
+                                    Stock = 10,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookPro16M3Pro = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Pro 16\" M3 Pro 18GB 512GB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-pro-16-m3-pro-18gb-512gb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-pro", "m3-pro", "laptop", "16-inch" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "18GB/512GB",
+                            Description = "",
+                            ImportPrice = 60000000m,
+                            Price = 67990000m,
+                            Storage = "512GB",
+                            AvailableStorage = "490GB",
+                            Ram = "18GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 Pro 12 nhân",
+                            Gpu = "Apple M3 Pro 18 nhân GPU",
+                            ScreenSize = "16.2 inch",
+                            RefreshRate = "120Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 15,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Vũ Trụ",
+                                    Stock = 15,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    var macbookPro16M3Max = new ProductCreateModel
+                    {
+                        CategoryId = resultCategoryLaptop.Data,
+                        BrandId = resultBrandApple.Data,
+                        Name = "MacBook Pro 16\" M3 Max 48GB 1TB",
+                        ShortDescription = "",
+                        Description = "",
+                        Warranty = 12,
+                        Slug = "macbook-pro-16-m3-max-48gb-1tb",
+                        Tags = new List<string> { "apple", "macbook", "macbook-pro", "m3-max", "laptop", "16-inch" },
+                        IsFeatured = false,
+                        StartSellingDate = TimeZoneHelper.GetUtcNow(),
+                        MainImageUrl = "",
+                        GalleryImageUrls = new List<string>(),
+                        SalePrice = 0,
+                        PublishDate = TimeZoneHelper.GetUtcNow(),
+                        Variants = new List<Model.DTOs.ProductVariant.ProductVariantCreateModel>
+                    {
+                        new Model.DTOs.ProductVariant.ProductVariantCreateModel
+                        {
+                            Name = "48GB/1TB",
+                            Description = "",
+                            ImportPrice = 84000000m,
+                            Price = 94990000m,
+                            Storage = "1TB",
+                            AvailableStorage = "950GB",
+                            Ram = "48GB",
+                            OperatingSystem = "macOS",
+                            Cpu = "Apple M3 Max 16 nhân",
+                            Gpu = "Apple M3 Max 40 nhân GPU",
+                            ScreenSize = "16.2 inch",
+                            RefreshRate = "120Hz",
+                            Options = new List<Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel>
+                            {
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Bạc",
+                                    Stock = 8,
+                                    ImageUrl = ""
+                                },
+                                new Model.DTOs.ProductVariantOption.ProductVariantOptionCreateModel
+                                {
+                                    Name = "Đen Vũ Trụ",
+                                    Stock = 8,
+                                    ImageUrl = ""
+                                }
+                            }
+                        }
+                    }
+                    };
+
+                    await _productService.AddProduct(macbookAirM1);
+                    await _productService.AddProduct(macbookAirM2);
+                    await _productService.AddProduct(macbookAirM2_15);
+                    await _productService.AddProduct(macbookAirM3);
+                    await _productService.AddProduct(macbookAirM3_15);
+                    await _productService.AddProduct(macbookPro14M3);
+                    await _productService.AddProduct(macbookPro14M3Pro);
+                    await _productService.AddProduct(macbookPro14M3Max);
+                    await _productService.AddProduct(macbookPro16M3Pro);
+                    await _productService.AddProduct(macbookPro16M3Max);
+
+                    #endregion
+
+                }
+                #endregion
+
 
                 #region add orders
                 var productVariantOptions = await _uow.ProductVariantOptions.GetAllAsync();
-                    var users = await _uow.Users.FindManyAsync(u => u.LastName.Contains("User"));
+                var users = await _uow.Users.FindManyAsync(u => u.LastName.Contains("User"));
 
                 if (productVariantOptions != null && users != null)
                 {
@@ -4514,7 +8434,7 @@ namespace TechStore.Service.Implementations
                     }
                 }
 
-               
+
 
 
                 #endregion

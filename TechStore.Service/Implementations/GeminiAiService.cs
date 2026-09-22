@@ -70,7 +70,7 @@ namespace TechStore.Service.Implementations
                     {
                         if (text.GetString() == null)
                         {
-                            return ServiceResult<AiResponse>.Fail(EErrorType.Status500InternalServerError, string.Empty);
+                            return ServiceResult<AiResponse>.Failure(EErrorType.Status500InternalServerError, string.Empty);
                         }
 
                         var chatResponse = new AiResponse { Content = text.GetString()!, InteractionId = ShareFunctions.GenerateRandomStringId() };
@@ -80,7 +80,7 @@ namespace TechStore.Service.Implementations
                 }
             }
 
-            return ServiceResult<AiResponse>.Fail(EErrorType.Status500InternalServerError, string.Empty);
+            return ServiceResult<AiResponse>.Failure(EErrorType.Status500InternalServerError, string.Empty);
         }
 
 
@@ -131,7 +131,7 @@ namespace TechStore.Service.Implementations
                     "steps",
                     out var steps))
             {
-                return ServiceResult<AiResponse>.Fail(EErrorType.Status500InternalServerError, string.Empty);
+                return ServiceResult<AiResponse>.Failure(EErrorType.Status500InternalServerError, string.Empty);
             }
 
             foreach (var step in steps.EnumerateArray())
@@ -161,7 +161,7 @@ namespace TechStore.Service.Implementations
                     {
                         if (text.GetString() == null)
                         {
-                            return ServiceResult<AiResponse>.Fail(EErrorType.Status500InternalServerError, string.Empty);
+                            return ServiceResult<AiResponse>.Failure(EErrorType.Status500InternalServerError, string.Empty);
                         }
 
                         var chatResponse = new AiResponse { Content = text.GetString()!, InteractionId = ShareFunctions.GenerateRandomStringId() };
@@ -171,7 +171,7 @@ namespace TechStore.Service.Implementations
                 }
             }
 
-            return ServiceResult<AiResponse>.Fail(EErrorType.Status500InternalServerError, string.Empty);
+            return ServiceResult<AiResponse>.Failure(EErrorType.Status500InternalServerError, string.Empty);
         }
 
         public async Task<ProductSearchCriteria> ExtractProductSearchCriteriaAsync_backup(string message, CancellationToken cancellationToken = default)

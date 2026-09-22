@@ -35,41 +35,41 @@ namespace TechStore.Service.Implementations
 
             if (customer == null)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
             var voucher = await _uow.Vouchers.TableNoTracking.Where(v => v.Code == voucherCode).FirstOrDefaultAsync();
 
             if (voucher == null)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.NotFound, VoucherMessenger.VoucherNotFound);
             }
 
             if (voucher.EndDate < DateTime.UtcNow)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
             }
 
             if (voucher.StartDate > DateTime.UtcNow)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
             }
 
             if (voucher.Status != EVoucherStatus.Active)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherExpired);
             }
 
             if (voucher.Available <= 0)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
             }
 
             var usageCount = await _uow.VoucherUsages.CountAsync(x => x.UserId == customer.Id && x.VoucherId == voucher.Id);
 
             if (usageCount >= voucher.UsageLimit)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.ConfictData, VoucherMessenger.VoucherUsageExceeded);
             }
 
             decimal totalPrice = 0;
@@ -79,12 +79,12 @@ namespace TechStore.Service.Implementations
 
                 if (pVO == null)
                 {
-                    return ServiceResult<VoucherResponseModel>.Fail(EErrorType.NotFound, Messenger.NoExitData + " " + item.ProductVariantOptionId);
+                    return ServiceResult<VoucherResponseModel>.Failure(EErrorType.NotFound, Messenger.NoExitData + " " + item.ProductVariantOptionId);
                 }
 
                 if (pVO.Stock < item.Quantity)
                 {
-                    return ServiceResult<VoucherResponseModel>.Fail(EErrorType.BadRequest, Messenger.NoExitData + " " + item.ProductVariantOptionId);
+                    return ServiceResult<VoucherResponseModel>.Failure(EErrorType.BadRequest, Messenger.NoExitData + " " + item.ProductVariantOptionId);
                 }
 
                 decimal itemTotal = item.Quantity * pVO.Price;
@@ -93,7 +93,7 @@ namespace TechStore.Service.Implementations
 
             if(totalPrice < voucher.MinOrderPrice)
             {
-                return ServiceResult<VoucherResponseModel>.Fail(EErrorType.BadRequest, VoucherMessenger.MinOrderPriceNotMet);
+                return ServiceResult<VoucherResponseModel>.Failure(EErrorType.BadRequest, VoucherMessenger.MinOrderPriceNotMet);
             }
 
             var model = voucher.ToVoucherResponseModel();

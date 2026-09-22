@@ -14,6 +14,7 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> RegisterCustomer(CustomerRegisterModel registerModel);
         Task<ServiceResult<LoginResponseModel>> LoginCustomer(LoginRequestModel loginModel);
         Task<ServiceResult<LoginResponseModel>> LoginAdmin(LoginRequestModel loginModel);
+        Task<ServiceResult<RefreshTokenRotationResult>> GenerateNewAccessTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default);
 
 
         Task<ServiceResult<string>> RegisterAdminByEmail(RegisterModel registerModel);

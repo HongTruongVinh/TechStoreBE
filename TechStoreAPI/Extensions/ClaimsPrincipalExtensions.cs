@@ -22,5 +22,10 @@ namespace TechStoreAPI.Extensions
         {
             return user.FindFirstValue(AppClaims.UserId);
         }
+
+        public static string? GetOptionalUserRole(this ClaimsPrincipal user)
+        {
+            return user.FindFirstValue(AppClaims.Role);
+        }
     }
 }

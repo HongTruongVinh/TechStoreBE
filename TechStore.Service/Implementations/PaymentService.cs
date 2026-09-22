@@ -372,7 +372,7 @@ namespace TechStore.Service.Implementations
 
             if (customer == null)
             {
-                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NotFoundUser);
+                return ServiceResult<PaymentDataForSnapshotModel>.Failure(EErrorType.NotFound, Messenger.NotFoundUser);
             }
 
             var snapshot = await _uow.PaymentSnapshots.TableNoTracking
@@ -391,14 +391,14 @@ namespace TechStore.Service.Implementations
 
             if (snapshot == null)
             {
-                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.NotFound, Messenger.NoExitData);
+                return ServiceResult<PaymentDataForSnapshotModel>.Failure(EErrorType.NotFound, Messenger.NoExitData);
             }
 
             var paymentQrUrl = await _vietQrService.GenerateQrAsync(snapshot.TotalAmount, snapshot.PublicId);
 
             if (paymentQrUrl == null)
             {
-                return ServiceResult<PaymentDataForSnapshotModel>.Fail(EErrorType.Status500InternalServerError, Messenger.SystemError);
+                return ServiceResult<PaymentDataForSnapshotModel>.Failure(EErrorType.Status500InternalServerError, Messenger.SystemError);
             }
 
             var paymentData = new PaymentDataForSnapshotModel()

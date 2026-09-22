@@ -37,7 +37,7 @@ namespace TechStore.Service.Implementations
 
             if (criteria == null)
             {
-                return ServiceResult<ProductRecommendationResponse>.Fail(EErrorType.NotFound, AiMessenger.NotFoundProduct);
+                return ServiceResult<ProductRecommendationResponse>.Failure(EErrorType.NotFound, AiMessenger.NotFoundProduct);
             }
 
             if (!criteria.IsProductRelated)
@@ -474,7 +474,7 @@ namespace TechStore.Service.Implementations
 
             if(commitResult < 1)
             {
-                return ServiceResult<AiChatResponse>.Fail(EErrorType.Status500InternalServerError, "Failed to save conversation messages.");
+                return ServiceResult<AiChatResponse>.Failure(EErrorType.Status500InternalServerError, "Failed to save conversation messages.");
             }
 
             // =========================================================

@@ -520,6 +520,30 @@ namespace TechStore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TokenHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RevokedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReplacedByTokenHash = table.Column<string>(type: "text", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
@@ -897,7 +921,7 @@ namespace TechStore.Data.Migrations
             migrationBuilder.InsertData(
                 table: "SystemConfigs",
                 columns: new[] { "Id", "IsShowImportantNotification", "isAiChatbotEnabled" },
-                values: new object[] { new Guid("be8eed97-8171-4b30-8415-6febdaa582cb"), true, true });
+                values: new object[] { new Guid("74a9f06a-8cc0-4d61-bfc6-aa75dc7be6f4"), true, true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AiConversationContexts_ConversationId",
@@ -1133,6 +1157,17 @@ namespace TechStore.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_TokenHash",
+                table: "RefreshTokens",
+                column: "TokenHash",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reports_PublicId",
                 table: "Reports",
                 column: "PublicId",
@@ -1254,6 +1289,9 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "PaymentTransactions");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "Reports");

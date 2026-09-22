@@ -38,6 +38,7 @@ namespace TechStore.Data.UnitOfWork
         ISearchKeywordRepository SearchKeywords { get; }
         ISequenceRepository Sequences { get; }
         IInvalidTokenRepository InvalidTokens { get; }
+        IRefreshTokenRepository RefreshTokens { get; }
         IIdempotencyKeyRepository IdempotencyKeys { get; }
         ISystemConfigRepository SystemConfigs { get; }
 

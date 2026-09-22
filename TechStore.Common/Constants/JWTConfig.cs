@@ -11,6 +11,7 @@ namespace TechStore.Common.Constants
         public string SigningKey { get; set; } = null!;
         public string Issuer { get; set; } = null!;
         public string Audience { get; set; } = null!;
-        public int ExpireMinutes { get; set; } = 60;
+        public int AccessTokenExpireMinutes { get; set; } = 15;
+        public int RefreshTokenExpireDays { get; set; } = 7;
     }
 }

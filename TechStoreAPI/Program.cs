@@ -17,6 +17,9 @@ using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
 using TechStoreAPI.Hubs;
 
+// dotnet run --project 
+// dotnet run --project TechStoreAPI --launch-profile https
+
 namespace TechStoreAPI
 {
     public class Program
@@ -148,11 +151,13 @@ namespace TechStoreAPI
                     ValidateAudience = true,
                     ValidAudience = jwtConfig.Audience,
                     ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         System.Text.Encoding.UTF8.GetBytes(jwtConfig.SigningKey)
                     ),
 
-                    // Đây là dòng bạn cần thêm để ASP.NET biết lấy Role từ claim "Role" thay vì "role"
+                    // Đây là dòng bạn cần thêm để ASP.NET biết lấy Role từ claim (lấy "Role" thay vì "role")
                     RoleClaimType = AppClaims.Role, // hoặc "Role" nếu bạn hardcode
                     NameClaimType = AppClaims.UserId, // Nếu không set NameClaimType và RoleClaimType, thì ASP.NET Core mặc định sẽ đọc sub cho User.Identity.Name và role cho quyền, nên AppClaims.UserId sẽ bị bỏ qua
                 };
@@ -160,17 +165,29 @@ namespace TechStoreAPI
                 // Bắt sự kiện thất bại
                 options.Events = new JwtBearerEvents
                 {
+                    // Đọc JWT từ HttpOnly Cookie
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["access_token"];
+                        return Task.CompletedTask;
+                    },
+
+                    // Bắt sự kiện thất bại
                     OnAuthenticationFailed = context =>
                     {
                         Console.WriteLine("Token authentication failed:");
-                        Console.WriteLine(context.Exception.ToString()); // Thêm dòng này để xem lỗi thật sự
+                        Console.WriteLine(context.Exception.ToString());
                         return Task.CompletedTask;
                     },
+
+                     //JWT xác thực thành công
                     OnTokenValidated = context =>
                     {
                         Console.WriteLine("Token validated successfully.");
                         return Task.CompletedTask;
                     },
+
+                    //JWT challenge
                     OnChallenge = context =>
                     {
                         Console.WriteLine("Token challenge triggered:");
@@ -220,12 +237,12 @@ namespace TechStoreAPI
             }
 
             //auto migratetion database if database is not exsist
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                dbContext.Database.Migrate();
-            }
+            //    dbContext.Database.Migrate();
+            //}
 
             //app.UseHttpsRedirection();
 

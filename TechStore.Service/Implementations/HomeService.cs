@@ -216,7 +216,7 @@ namespace TechStore.Service.Implementations
                 };
             }
 
-            return ServiceResult<SystemConfigsModel>.Fail(Common.Enums.EErrorType.Status500InternalServerError, Messenger.SystemError);
+            return ServiceResult<SystemConfigsModel>.Failure(Common.Enums.EErrorType.Status500InternalServerError, Messenger.SystemError);
         }
     }
 }

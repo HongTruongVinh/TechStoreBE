@@ -29,6 +29,7 @@ namespace TechStore.Data.Context
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<InvalidToken> InvalidTokens => Set<InvalidToken>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
@@ -447,7 +448,20 @@ namespace TechStore.Data.Context
                 );
             });
 
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.Property(x => x.TokenHash)
+                    .IsRequired()
+                    .HasMaxLength(128);
 
+                entity.HasIndex(x => x.TokenHash)
+                    .IsUnique();
+
+                entity.HasOne(x => x.User)
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
             #endregion
 

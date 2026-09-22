@@ -29,7 +29,7 @@ namespace TechStore.Common.Models
             };
         }
 
-        public static ServiceResult<T> Fail(EErrorType errorType, string message)
+        public static ServiceResult<T> Failure(EErrorType errorType, string message)
         {
             return new ServiceResult<T>
             {

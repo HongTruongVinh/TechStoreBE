@@ -1284,6 +1284,45 @@ namespace TechStore.Data.Migrations
                     b.ToTable("ProductVariantOptions");
                 });
 
+            modelBuilder.Entity("TechStore.Data.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReplacedByTokenHash")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("TechStore.Data.Entities.Report", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1611,7 +1650,7 @@ namespace TechStore.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("be8eed97-8171-4b30-8415-6febdaa582cb"),
+                            Id = new Guid("74a9f06a-8cc0-4d61-bfc6-aa75dc7be6f4"),
                             IsShowImportantNotification = true,
                             isAiChatbotEnabled = true
                         });
@@ -2019,6 +2058,17 @@ namespace TechStore.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductVariant");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.ShippingDetail", b =>

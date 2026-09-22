@@ -10,6 +10,6 @@ namespace TechStore.Model.DTOs.Authentication
     public class LoginResponseModel
     {
         public required UserResponseModel User { get; set; }
-        public required string Token { get; set; }
+        public required RefreshTokenRotationResult RefreshTokenRotationResult { get; set; }
     }
 }

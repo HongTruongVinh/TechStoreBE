@@ -24,11 +24,11 @@ namespace TechStore.Model.DTOs.ProductVariant
         public string? AvailableStorage { get; set; }
 
         // Display
-        public decimal? ScreenSize { get; set; }
+        public string? ScreenSize { get; set; }
         public string? ScreenResolution { get; set; }
-        public int? RefreshRate { get; set; }
+        public string? RefreshRate { get; set; }
         public string? PanelType { get; set; }
-        public int? ScreenBrightness { get; set; }
+        public string? ScreenBrightness { get; set; }
 
         // Battery
         public string? BatteryCapacity { get; set; }
