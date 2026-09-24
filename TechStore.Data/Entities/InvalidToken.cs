@@ -14,8 +14,8 @@ namespace TechStore.Data.Entities
 
         public string Token { get; set; } = null!;
 
-        public DateTime ExpiryDate { get; set; }
+        public DateTimeOffset ExpiryDate { get; set; }
 
-        public DateTime InvalidatedAt { get; set; }
+        public DateTimeOffset InvalidatedAt { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TechStore.Common.Constants;
 using TechStore.Common.Models;
+using TechStore.Data.Entities;
 using TechStore.Model.DTOs.Authentication;
 using TechStore.Model.DTOs.Payment;
 using TechStore.Model.DTOs.User;
@@ -107,9 +108,22 @@ namespace TechStoreAPI.Controllers
         [HttpPost("logout")]
         public async Task<ActionResult<ApiResponse<bool>>> Logout()
         {
-            var userId = User.GetRequiredUserId();
+            //var userId = User.GetRequiredUserId();
 
-            var serviceResult = await _authenticationService.LogoutAsync(Request.Headers["Authorization"].FirstOrDefault()!);
+            var accessToken = Request.Cookies[AuthConstants.AccessTokenCookie];
+            var refreshToken = Request.Cookies[AuthConstants.RefreshTokenCookie];
+
+            if (string.IsNullOrWhiteSpace(accessToken) || string.IsNullOrWhiteSpace(refreshToken))
+            {
+                return Unauthorized(new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "Không tìm thấy access token hoặc refresh token.",
+                    Data = false
+                });
+            }
+
+            var serviceResult = await _authenticationService.LogoutAsync(accessToken, refreshToken);
 
             return serviceResult.ToActionResult(this);
         }

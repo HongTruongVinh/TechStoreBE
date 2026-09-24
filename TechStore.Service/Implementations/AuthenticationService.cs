@@ -78,7 +78,7 @@ namespace TechStore.Service.Implementations
             {
                 UserId = user.Id,
                 TokenHash = HashRefreshToken(loginResponse.RefreshTokenRotationResult.RefreshToken),
-                ExpiresAt = TimeZoneHelper.GetUtcNow().AddDays(_jwtConfig.RefreshTokenExpireDays),
+                ExpiresAt = loginResponse.RefreshTokenRotationResult.RefreshTokenExpiresAt,
                 CreatedAt = TimeZoneHelper.GetUtcNow()
             };
 
@@ -301,57 +301,57 @@ namespace TechStore.Service.Implementations
         }
 
 
-        public async Task<ServiceResult<bool>> LogoutAsync(string token)
+        public async Task<ServiceResult<bool>> LogoutAsync(string accesstoken, string refreshToken)
         {
-            var serviceResult = new ServiceResult<bool>()
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.SystemError
-            };
+            var refreshtokenHash = HashRefreshToken(refreshToken);
 
-            var principal = ValidateJwtToken(token);
+            var existRefreshtoken = await _uow.RefreshTokens.FindOneAsync(x => x.TokenHash == refreshtokenHash);
+
+            if (existRefreshtoken == null)
+            {
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
+            }
+
+            var principal = ValidateJwtToken(accesstoken);
             if (principal == null)
             {
-                serviceResult.Message = "Invalid token.";
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, AuthMessenger.InvalidAccessToken);
             }
 
             var jti = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
             if (string.IsNullOrEmpty(jti))
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, AuthMessenger.InvalidAccessToken);
             }
 
             var expiryDate = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Exp)?.Value;
             if (!long.TryParse(expiryDate, out var expUnix))
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, AuthMessenger.InvalidAccessToken);
             }
             var expiryDateTime = DateTimeOffset.FromUnixTimeSeconds(expUnix).UtcDateTime;
 
             var invalidToken = new InvalidToken
             {
                 Jti = jti,
-                Token = token,
+                Token = accesstoken,
                 ExpiryDate = expiryDateTime,
-                InvalidatedAt = DateTime.UtcNow
+                InvalidatedAt = TimeZoneHelper.GetUtcNow()
             };
 
+            existRefreshtoken.RevokedAt = TimeZoneHelper.GetUtcNow();
+
             await _uow.InvalidTokens.AddAsync(invalidToken);
+
+            _uow.RefreshTokens.Update(existRefreshtoken);
             var result = await _uow.CommitAsync();
 
-            if (result < 0)
+            if (result < 1)
             {
-                serviceResult.Message = Messenger.SystemError;
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.Data = true;
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.UpdateSuccessFull;
-
-            return serviceResult;
+            return ServiceResult<bool>.Success(true);
         }
 
         // Hàm validate token
@@ -386,39 +386,39 @@ namespace TechStore.Service.Implementations
         {
             if (!Validator.IsValidPassword(model.Password))
             {
-                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthenticationMessenger.InvalidPasswordFormat);
+                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthMessenger.InvalidPasswordFormat);
             }
 
             if (!Validator.IsValidVietnamPhone(model.PhoneNumber))
             {
-                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthenticationMessenger.InvalidPhoneFormat);
+                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthMessenger.InvalidPhoneFormat);
             }
 
             if (!String.IsNullOrEmpty(model.Email))
             {
                 if (!Validator.IsValidEmail(model.Email))
                 {
-                    return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthenticationMessenger.InvalidEmailFormat);
+                    return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthMessenger.InvalidEmailFormat);
                 }
 
                 var isExistEmail = await _uow.Users.FindOneAsync(u => u.Email == model.Email);
 
                 if (isExistEmail != null)
                 {
-                    return ServiceResult<bool>.Failure(EErrorType.ConfictData, AuthenticationMessenger.EmailAlreadyExist);
+                    return ServiceResult<bool>.Failure(EErrorType.ConfictData, AuthMessenger.EmailAlreadyExist);
                 }
             }
 
             if (String.IsNullOrEmpty(model.Address))
             {
-                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthenticationMessenger.AddressRequired);
+                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthMessenger.AddressRequired);
             }
 
             var isExistPhoneNumber = await _uow.Users.FindOneAsync(u => u.PhoneNumber == model.PhoneNumber);
 
             if (isExistPhoneNumber != null)
             {
-                return ServiceResult<bool>.Failure(EErrorType.ConfictData, AuthenticationMessenger.PhonenNumberAlreadyExist);
+                return ServiceResult<bool>.Failure(EErrorType.ConfictData, AuthMessenger.PhonenNumberAlreadyExist);
             }
 
             var userId = await _sequenceService.GetNextUserIdAsync();
@@ -450,7 +450,7 @@ namespace TechStore.Service.Implementations
                 return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            return ServiceResult<bool>.Success(true, AuthenticationMessenger.RegisterSuccess);
+            return ServiceResult<bool>.Success(true, AuthMessenger.RegisterSuccess);
         }
 
         public async Task<ServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordModel changePasswordModel)
@@ -459,19 +459,19 @@ namespace TechStore.Service.Implementations
 
             if (user == null)
             {
-                return ServiceResult<bool>.Failure(EErrorType.NotFound, AuthenticationMessenger.NotFoundUser);
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, AuthMessenger.NotFoundUser);
             }
 
             if (!Validator.IsValidPassword(changePasswordModel.NewPassword))
             {
-                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthenticationMessenger.InvalidPasswordFormat);
+                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthMessenger.InvalidPasswordFormat);
             }
 
             bool isValid = _passwordService.VerifyPassword(user, changePasswordModel.OldPassword, user.PasswordHash);
 
             if (!isValid)
             {
-                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthenticationMessenger.InvalidPasswordFormat);
+                return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthMessenger.InvalidPasswordFormat);
             }
 
             user.PasswordHash = _passwordService.HashPassword(user, changePasswordModel.NewPassword);
@@ -484,7 +484,7 @@ namespace TechStore.Service.Implementations
                 return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            return ServiceResult<bool>.Success(true, AuthenticationMessenger.UpdateSuccessFull);
+            return ServiceResult<bool>.Success(true, AuthMessenger.UpdateSuccessFull);
         }
 
         /// <summary>
@@ -502,7 +502,7 @@ namespace TechStore.Service.Implementations
             {
                 return ServiceResult<RefreshTokenRotationResult>.Failure(
                     EErrorType.Unauthorized,
-                    "Refresh token không hợp lệ."
+                    AuthMessenger.InvalidRefreshToken
                     );
             }
 
@@ -526,7 +526,7 @@ namespace TechStore.Service.Implementations
 
                     return ServiceResult<RefreshTokenRotationResult>.Failure(
                         EErrorType.Unauthorized,
-                        "Refresh token không tồn tại.");
+                        AuthMessenger.NotFoundRefreshToken);
                 }
 
 
@@ -555,11 +555,19 @@ namespace TechStore.Service.Implementations
 
                 if (oldRefreshToken.RevokedAt.HasValue)
                 {
+                    //if(oldRefreshToken.ReplacedByTokenHash != null)
+                    //{
+                    //    // nếu RefreshToken này đã được dùng để cấp 1 Accesstoken mới
+                    //    // thì rất có thể RefreshToken này đã bị hacker đánh cắp
+                    //    // lúc này nên thu hồi accesstoken để mọi thiết bị bị logout 
+                    //    // và để user đăng nhập lại cho an toàn 
+                    //}
+
                     await transaction.RollbackAsync(cancellationToken);
 
                     return ServiceResult<RefreshTokenRotationResult>.Failure(
                         EErrorType.Unauthorized,
-                        "Refresh token đã bị thu hồi.");
+                        AuthMessenger.RevokedRefreshToken);
                 }
 
                 if (oldRefreshToken.ExpiresAt <= DateTime.UtcNow)
@@ -568,7 +576,7 @@ namespace TechStore.Service.Implementations
 
                     return ServiceResult<RefreshTokenRotationResult>.Failure(
                         EErrorType.Unauthorized,
-                        "Refresh token đã hết hạn.");
+                        AuthMessenger.ExpiredRefreshToken);
                 }
 
                 var user = await _uow.Users.TableNoTracking
@@ -580,7 +588,7 @@ namespace TechStore.Service.Implementations
 
                     return ServiceResult<RefreshTokenRotationResult>.Failure(
                         EErrorType.Unauthorized,
-                        "Người dùng không tồn tại.");
+                        AuthMessenger.NotFoundUser);
                 }
 
                 /*
@@ -621,7 +629,7 @@ namespace TechStore.Service.Implementations
                     AccessToken = newAccessToken,
                     RefreshToken = newRefreshToken,
                     AccessTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(_jwtConfig.AccessTokenExpireMinutes),
-                    RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(_jwtConfig.RefreshTokenExpireDays),
+                    RefreshTokenExpiresAt = newRefreshTokenEntity.ExpiresAt,
                 };
 
                 if (existingIdempotencyKey == null)
@@ -636,7 +644,10 @@ namespace TechStore.Service.Implementations
                         Endpoint = "/api/authentication/refresh",
                         StatusCode = 200,
                         ExpiredAt = TimeZoneHelper.GetUtcNow().AddMinutes(1),
-                        RequestKey = request.IdempotencyKey,
+                        RequestKey = request.IdempotencyKey, // thực tế là lưu token vào db không an toàn. nhưng ở đây vẫn chọn lưu
+                                                             // để dễ dàng trả lại cho user nếu trùng idempotencykey và chọn cách khắc 
+                                                             // phục là sẽ cho idempotencykey có tuổi thọ sống rất ngắn bằng cách tạo
+                                                             // background job chạy liên tục mỗi phút để xóa idempotencykey
                         RequestHash = requestHash,
                         ResponseBody = JsonSerializer.Serialize(response),
                         CreatedAt = TimeZoneHelper.GetUtcNow(),
@@ -656,7 +667,7 @@ namespace TechStore.Service.Implementations
                     await transaction.RollbackAsync(cancellationToken);
                     return ServiceResult<RefreshTokenRotationResult>.Failure(
                         EErrorType.SystemError,
-                        "Lỗi hệ thống khi lưu Refresh Token mới.");
+                        Messenger.SystemError);
                 }
 
                 /*
@@ -671,6 +682,18 @@ namespace TechStore.Service.Implementations
                 await transaction.RollbackAsync(cancellationToken);
                 throw;
             }
+        }
+
+        public async Task<bool> IsInvalidAsync(string jti)
+        {
+            var invalidToken = await _uow.InvalidTokens.TableNoTracking.Where(x => x.Jti == jti).FirstOrDefaultAsync();
+
+            if (invalidToken == null)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

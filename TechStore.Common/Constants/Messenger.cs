@@ -72,7 +72,7 @@ namespace TechStore.Common.Constants
         public const string NotFoundProduct = "Product not found";
     }
 
-    public static class AuthenticationMessenger
+    public static class AuthMessenger
     {
         public const string RegisterSuccess = "Register successful";
         public const string LoginError = "Login to system error";
@@ -92,5 +92,15 @@ namespace TechStore.Common.Constants
         public const string InvalidPhoneFormat = "Invalid phone number format";
         public const string InvalidPasswordFormat = "Password is not valid";
         public const string UpdateSuccessFull = "Update successful";
+
+        public const string NotFoundAccessToken = "NotFoundAccessToken"; // "Access token không tồn tại."
+        public const string InvalidAccessToken = "InvalidAccessToken"; // "Access token không hợp lệ."
+        public const string RevokedAccessToken = "RevokedAccessToken"; //"Access token đã bị thu hồi."
+        public const string ExpiredAccessToken = "ExpiredAccessToken"; //"Access token đã hết hạn."
+
+        public const string NotFoundRefreshToken = "NotFoundRefreshToken"; // "Refresh token không tồn tại."
+        public const string InvalidRefreshToken = "InvalidRefreshToken"; // "Refresh token không hợp lệ."
+        public const string RevokedRefreshToken = "RevokedRefreshToken"; //"Refresh token đã bị thu hồi."
+        public const string ExpiredRefreshToken = "UpdateExpiredRefreshToken"; //"Refresh token đã hết hạn."
     }
 }

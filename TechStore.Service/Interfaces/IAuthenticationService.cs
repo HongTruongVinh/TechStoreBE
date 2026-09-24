@@ -21,7 +21,8 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> IsUserExist(string identifier);
         Task<ServiceResult<bool>> UpdateUserRole(UserRoleUpdateModel model);
 
-        Task<ServiceResult<bool>> LogoutAsync(string token);
+        Task<ServiceResult<bool>> LogoutAsync(string accesstoken, string refreshToken);
         Task<ServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordModel model);
+        Task<bool> IsInvalidAsync(string jti); 
     }
 }

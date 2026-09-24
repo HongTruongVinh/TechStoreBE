@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
 using Techstore.API.Hubs;
 using TechStore.Common.Constants;
 using TechStore.Data.Context;
@@ -80,7 +81,7 @@ namespace TechStoreAPI
             builder.Services.AddScoped<IShipperService, ShipperService>();
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
             builder.Services.AddScoped<IUploadDataToCloudService, UploadDataToCloudService>();
-            builder.Services.AddHttpClient<VietQrService>(); 
+            builder.Services.AddHttpClient<VietQrService>();
             builder.Services.AddScoped<IAiService, GeminiAiService>();
             builder.Services.AddScoped<IAiProductRecommendationService, AiProductRecommendationService>();
             builder.Services.AddScoped<IVietQrService, VietQrService>();
@@ -168,7 +169,7 @@ namespace TechStoreAPI
                     // Đọc JWT từ HttpOnly Cookie
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies["access_token"];
+                        context.Token = context.Request.Cookies[AuthConstants.AccessTokenCookie];
                         return Task.CompletedTask;
                     },
 
@@ -180,11 +181,32 @@ namespace TechStoreAPI
                         return Task.CompletedTask;
                     },
 
-                     //JWT xác thực thành công
-                    OnTokenValidated = context =>
+                    //JWT xác thực thành công
+                    OnTokenValidated = async context =>
                     {
                         Console.WriteLine("Token validated successfully.");
-                        return Task.CompletedTask;
+
+                        var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+
+                        if (string.IsNullOrEmpty(jti))
+                        {
+                            context.Fail("Access token is missing.");
+                            return;
+                        }
+
+                        // Nếu access token hợp lệ thì cần kiểm tra thêm là nó có bị đưa vào bảng InvalidToken chưa
+                        // khi user loguot thì jti sẽ bị đưa vào bảng InvalidToken
+                        var invalidTokenService =
+                            context.HttpContext.RequestServices
+                                .GetRequiredService<TechStore.Service.Interfaces.IAuthenticationService>();
+
+                        var isInvalid = await invalidTokenService.IsInvalidAsync(jti);
+
+                        if (isInvalid)
+                        {
+                            context.Fail("Access token has been revoked.");
+                            return;
+                        }
                     },
 
                     //JWT challenge
