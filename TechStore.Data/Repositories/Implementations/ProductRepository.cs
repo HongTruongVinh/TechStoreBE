@@ -188,7 +188,7 @@ namespace TechStore.Data.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<List<AiProductContext>> SearchForAiAsync(ProductSearchCriteria criteria, CancellationToken cancellationToken = default)
+        public async Task<List<AiProductContext>?> SearchForAiAsync(ProductSearchCriteria criteria, CancellationToken cancellationToken = default)
         {
             var query = _context.Products
                 .AsNoTracking()
@@ -200,6 +200,11 @@ namespace TechStore.Data.Repositories.Implementations
             // Category
             if (!string.IsNullOrWhiteSpace(criteria.Category))
             {
+                if (criteria.Category == "null")
+                {
+                    return null;
+                }
+
                 query = query.Where(x =>
                     x.Category.Name.ToLower()
                         .Contains(criteria.Category.ToLower()));
@@ -208,9 +213,12 @@ namespace TechStore.Data.Repositories.Implementations
             // Brand
             if (!string.IsNullOrWhiteSpace(criteria.Brand))
             {
-                query = query.Where(x =>
+                if (criteria.Brand != "null")
+                {
+                    query = query.Where(x =>
                     x.Brand.Name.ToLower()
                         .Contains(criteria.Brand.ToLower()));
+                }
             }
 
             //// Minimum price
