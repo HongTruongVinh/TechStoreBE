@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TechStore.Common.Constants;
 using TechStore.Common.Models;
 using TechStore.Model.DTOs.Cart;
 using TechStore.Service.Interfaces;
@@ -18,7 +19,7 @@ namespace TechStoreAPI.Controllers
             _cartService = cartService;
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpGet]
         public async Task<ActionResult<ApiResponse<List<CartItemResponseModel>>>> GetCartItems(int pageNumber = 1, int pageSize = 100)
         {
@@ -29,7 +30,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<CartItemResponseModel>>> AddProductToCart(CartItemUpdateModel model)
         {
@@ -40,7 +41,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpPut("clear")]
         public async Task<ActionResult<ApiResponse<bool>>> ClearCart()
         {
@@ -51,7 +52,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpPut("remove")]
         public async Task<ActionResult<ApiResponse<List<CartItemResponseModel>>>> RemoveCartItems(List<string> listProductId)
         {
@@ -62,7 +63,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpPut]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateCart(CartItemUpdateModel model)
         {

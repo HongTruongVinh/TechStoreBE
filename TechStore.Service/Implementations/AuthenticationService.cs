@@ -474,6 +474,9 @@ namespace TechStore.Service.Implementations
                 return ServiceResult<bool>.Failure(EErrorType.BadRequest, AuthMessenger.InvalidPasswordFormat);
             }
 
+            //TODO: logout account,
+            //khóa 30p nếu sai mật khẩu 5 lần để tránh dò mật khẩu 
+
             user.PasswordHash = _passwordService.HashPassword(user, changePasswordModel.NewPassword);
 
             _uow.Users.Update(user);
@@ -590,6 +593,9 @@ namespace TechStore.Service.Implementations
                         EErrorType.Unauthorized,
                         AuthMessenger.NotFoundUser);
                 }
+
+                // TODO: Cần kiểm tra thêm rằng user này đã bị banned chưa
+
 
                 /*
                  * 1. Tạo Access Token mới

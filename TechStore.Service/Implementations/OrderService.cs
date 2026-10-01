@@ -1390,20 +1390,13 @@ namespace TechStore.Service.Implementations
         #region Update Online Order Status
         public async Task<ServiceResult<bool>> UpdateOrderStatusToProcessingAsync(string updateByUserId, string orderId)
         {
-            var serviceResult = new ServiceResult<bool>
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.UpdateDataError
-            };
-
             var order = await _uow.Orders.GetByIdAsync(orderId);
 
             var userUpdating = await _uow.Users.GetByIdAsync(updateByUserId);
 
             if (order == null || userUpdating == null)
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, Messenger.NoExitData);
             }
 
             var invoice = new Invoice
@@ -1432,31 +1425,22 @@ namespace TechStore.Service.Implementations
             var result = await _uow.CommitAsync();
             if (result < 1)
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = true;
-            serviceResult.Message = Messenger.UpdateSuccessFull;
-            return serviceResult;
+            return ServiceResult<bool>.Success(true, Messenger.UpdateSuccessFull);
         }
 
         public async Task<ServiceResult<bool>> UpdateOrderStatusToDeliveringAsync(string updateByUserId, string orderId, UpdateOrderToDeliveringModel model)
         {
-            var serviceResult = new ServiceResult<bool>
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.UpdateDataError
-            };
-
+            
             var order = await _uow.Orders.GetByIdAsync(orderId);
             var userUpdating = await _uow.Users.GetByIdAsync(updateByUserId);
             var shipper = await _uow.Shippers.GetByIdAsync(model.ShipperId);
 
             if (order == null || userUpdating == null || shipper == null)
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, Messenger.NoExitData);
             }
 
             var shippingId = _uow.ShippingDetails.CountAsync();
@@ -1491,31 +1475,20 @@ namespace TechStore.Service.Implementations
 
             if (result < 1)
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = true;
-            serviceResult.Message = Messenger.SuccessFull;
-
-            return serviceResult;
+            return ServiceResult<bool>.Success(true, Messenger.UpdateSuccessFull);
         }
 
         public async Task<ServiceResult<bool>> UpdateOrderStatusToCompletedAsync(string updateByUserId, string orderId)
         {
-            var serviceResult = new ServiceResult<bool>
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.UpdateDataError
-            };
-
             var order = await _uow.Orders.Table.Where(o => o.PublicId == orderId).Include(o => o.OrderItems).FirstOrDefaultAsync();
             var userUpdating = await _uow.Users.GetByIdAsync(updateByUserId);
 
             if (order == null || userUpdating == null)
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, Messenger.NoExitData);
             }
 
             var invoice = await _uow.Invoices.FindOneAsync(i => i.OrderId == order.Id);
@@ -1523,8 +1496,7 @@ namespace TechStore.Service.Implementations
             {
                 if (invoice.InvoiceStatus != EInvoiceStatus.Paid)
                 {
-                    serviceResult.Message = Messenger.InvoiceUnpaid;
-                    return serviceResult;
+                    return ServiceResult<bool>.Failure(EErrorType.ConfictData, Messenger.InvoiceUnpaid);
                 }
             }
 
@@ -1552,13 +1524,10 @@ namespace TechStore.Service.Implementations
 
             if (result < 1)
             {
-                return serviceResult;
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
             }
 
-            serviceResult.IsSuccess = true;
-            serviceResult.Data = true;
-            serviceResult.Message = Messenger.UpdateSuccessFull;
-            return serviceResult;
+            return ServiceResult<bool>.Success(true, Messenger.UpdateSuccessFull);
         }
 
         public async Task<ServiceResult<bool>> CancelOrderByAdminAsync(string adminId, string orderId, CancelOrderModel orderUpdateStatusModel)

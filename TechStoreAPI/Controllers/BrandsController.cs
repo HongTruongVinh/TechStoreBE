@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TechStore.Common.Constants;
 using TechStore.Common.Models;
 using TechStore.Model.DTOs.Brand;
 using TechStore.Service.Interfaces;
@@ -34,6 +36,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<string>>> Post(BrandCreateModel model)
         {
             var serviceResult = await _brandService.AddBrand(model);
@@ -42,6 +45,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<bool>>> Put(string id, BrandUpdateModel model)
         {
             var serviceResult = await _brandService.UpdateBrand(id, model);
@@ -50,6 +54,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<bool>>> Delete(string id)
         {
             var serviceResult = await _brandService.DeleteBrand(id);

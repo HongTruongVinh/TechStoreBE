@@ -21,6 +21,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<PagedResult<ListItemOrderModel>>>> GetOrders([FromQuery] OrderSearchQuery query)
         {
             var serviceResult = await _orderService.GetOrdersAsync(query);
@@ -29,6 +30,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpGet("status")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<PagedResult<OrderDetailResponseModel>>>> GetListOrderByStatusId(
             [FromQuery] EOrderStatus status,
             [FromQuery] int page = 1,
@@ -39,7 +41,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<OrderDetailResponseModel>>> GetOrderById(string id)
         {
@@ -50,7 +52,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("cancel/{id}")]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToCanceled(string id, CancelOrderModel model)
         {
@@ -73,6 +75,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [Authorize]
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("delivering/{id}")]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToDelivering(string id, UpdateOrderToDeliveringModel model)
         {
@@ -83,6 +86,7 @@ namespace TechStoreAPI.Controllers
             return serviceResult.ToActionResult(this);
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPut("completed/{id}")]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateOrderStatusToCompleted(string id)
         {

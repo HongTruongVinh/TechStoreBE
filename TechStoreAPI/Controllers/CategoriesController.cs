@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TechStore.Common.Constants;
 using TechStore.Common.Models;
 using TechStore.Model.DTOs.Category;
 using TechStore.Service.Interfaces;
@@ -34,6 +36,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<string>>> AddCategory(CategoryCreateModel categoryCreateModel)
         {
             var serviceResult = await _categoryService.AddCategory(categoryCreateModel);
@@ -42,6 +45,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateCategory(string id, CategoryUpdateModel categoryUpdateModel)
         {
             var serviceResult = await _categoryService.UpdateCategory(id, categoryUpdateModel);
@@ -50,6 +54,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteCategory(string id)
         {
             var serviceResult = await _categoryService.DeleteCategory(id);

@@ -10,7 +10,6 @@ using TechStore.Common.Extensions;
 using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
-using TechStore.Data.Repositories.Interfaces;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Ai;
 using TechStore.Service.Interfaces;

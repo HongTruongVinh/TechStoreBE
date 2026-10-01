@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TechStore.Model.DTOs.Shipper;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TechStore.Common.Constants;
 using TechStore.Common.Models;
+using TechStore.Model.DTOs.Shipper;
 using TechStore.Service.Interfaces;
 using TechStoreAPI.Extensions;
 
@@ -34,6 +36,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<string>>> AddShipper(ShipperCreateModel model)
         {
             var serviceResult = await _shipperService.AddShipper(model);
@@ -42,6 +45,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateShipper(string id, ShipperUpdateModel model)
         {
             var serviceResult = await _shipperService.UpdateShipper(id, model);
@@ -50,6 +54,7 @@ namespace TechStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteShipper(string id)
         {
             var serviceResult = await _shipperService.DeleteShipper(id);
