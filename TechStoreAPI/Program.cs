@@ -16,6 +16,7 @@ using TechStore.Data.UnitOfWork;
 using TechStore.Service.Background;
 using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
+using TechStoreAPI.Authentication;
 using TechStoreAPI.Hubs;
 
 // dotnet run --project 
@@ -34,6 +35,7 @@ namespace TechStoreAPI
             builder.Services.Configure<CloudinaryConfig>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.Configure<PaymentSettings>(builder.Configuration.GetSection("PaymentSettings"));
             builder.Services.Configure<GeminiAIConfig>(builder.Configuration.GetSection("GeminiAISettings"));
+            builder.Services.Configure<SePaySettings>(builder.Configuration.GetSection("SePaySettings"));
             //builder.Services.Configure<VietQRConfig>(builder.Configuration.GetSection("VietQrSettings"));
 
             var jwtConfig = builder.Configuration.GetSection("JWT").Get<JWTConfig>() ?? new JWTConfig();
@@ -218,6 +220,22 @@ namespace TechStoreAPI
                         return Task.CompletedTask;
                     }
                 };
+            });
+            #endregion
+
+            #region Add SePay Authentication
+            builder.Services.AddAuthentication()
+                        .AddScheme<AuthenticationSchemeOptions, SePayAuthenticationHandler>(
+                            "SePay",
+                            options => { });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("SePayWebhook", policy =>
+                {
+                    policy.AddAuthenticationSchemes("SePay");
+                    policy.RequireAuthenticatedUser();
+                });
             });
             #endregion
 

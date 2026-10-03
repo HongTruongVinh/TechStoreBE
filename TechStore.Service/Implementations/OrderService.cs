@@ -1303,30 +1303,22 @@ namespace TechStore.Service.Implementations
 
         public async Task<ServiceResult<OrderDetailResponseModel>> GetOrderByIdAsync(string userId, string orderId)
         {
-            var serviceResult = new ServiceResult<OrderDetailResponseModel>
-            {
-                IsSuccess = true,
-                Data = null,
-                Message = Messenger.NoExitData,
-            };
-
             var order = await _uow.Orders.GetWithItemsAndInvoiceAsync(orderId);
 
             if (order == null)
             {
-                return serviceResult;
+                return ServiceResult<OrderDetailResponseModel>.Failure(EErrorType.NotFound, Messenger.NoExitData);
             }
 
             var customer = await _uow.Users.GetByIdAsync(userId);
             if (customer == null)
             {
-                serviceResult.Message = Messenger.NoExitData + " " + userId;
-                return serviceResult;
+                return ServiceResult<OrderDetailResponseModel>.Failure(EErrorType.NotFound, Messenger.NoExitData + " " + userId);
             }
 
             if (customer.Id != order.CustomerId)
             {
-                return serviceResult;
+                return ServiceResult<OrderDetailResponseModel>.Failure(EErrorType.NotFound, Messenger.NoExitData);
             }
 
             order.ShippingDetail = await _uow.ShippingDetails.FindOneAsync(s => s.OrderId == order.Id);
@@ -1339,10 +1331,7 @@ namespace TechStore.Service.Implementations
                 }
             }
 
-            serviceResult.Data = order.ToOrderDetailModel();
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.GetDataSuccessful;
-            return serviceResult;
+            return ServiceResult<OrderDetailResponseModel>.Success(order.ToOrderDetailModel());
         }
 
         public async Task<ServiceResult<OrderDetailResponseModel>> AdminGetOrderByIdAsync(string userId, string orderId)

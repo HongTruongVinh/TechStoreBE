@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Techstore.API.Hubs;
@@ -33,6 +34,7 @@ namespace TechStoreAPI.Controllers
             _paymentNotificationService = paymentNotificationService;
         }
 
+        [Authorize(Policy = "SePayWebhook")]
         [HttpPost("verify-payment-of-snapshot")]
         public async Task<IActionResult> VerifyPaymenForSnapshottWebhook(SepayWebhookRequest request)
         {
