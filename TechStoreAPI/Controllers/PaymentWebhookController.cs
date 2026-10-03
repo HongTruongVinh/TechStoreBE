@@ -49,8 +49,10 @@ namespace TechStoreAPI.Controllers
 
             await _paymentNotificationService.NotifyPaymentResultAsync(result, request);
 
-
-            return Ok();
+            return Ok(new
+            {
+                success = true
+            });
         }
 
         // this endpoint is used to mocking the payment gateway to verify the payment for invoice
