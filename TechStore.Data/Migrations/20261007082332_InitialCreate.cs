@@ -83,8 +83,8 @@ namespace TechStore.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Jti = table.Column<string>(type: "text", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    InvalidatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ExpiryDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    InvalidatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -340,6 +340,30 @@ namespace TechStore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BrandCategories",
+                columns: table => new
+                {
+                    BrandId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BrandCategories", x => new { x.BrandId, x.CategoryId });
+                    table.ForeignKey(
+                        name: "FK_BrandCategories_Brands_BrandId",
+                        column: x => x.BrandId,
+                        principalTable: "Brands",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BrandCategories_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -526,11 +550,11 @@ namespace TechStore.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     TokenHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RevokedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    RevokedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ReplacedByTokenHash = table.Column<string>(type: "text", nullable: true),
                     CreatedByIp = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -921,7 +945,7 @@ namespace TechStore.Data.Migrations
             migrationBuilder.InsertData(
                 table: "SystemConfigs",
                 columns: new[] { "Id", "IsShowImportantNotification", "isAiChatbotEnabled" },
-                values: new object[] { new Guid("74a9f06a-8cc0-4d61-bfc6-aa75dc7be6f4"), true, true });
+                values: new object[] { new Guid("36fa4d6e-3d48-4b0b-8c11-e61a37bd72b8"), true, true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AiConversationContexts_ConversationId",
@@ -950,6 +974,11 @@ namespace TechStore.Data.Migrations
                 table: "AiConversations",
                 column: "PublicId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BrandCategories_CategoryId",
+                table: "BrandCategories",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Brands_PublicId",
@@ -1268,6 +1297,9 @@ namespace TechStore.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AiConversationMessages");
+
+            migrationBuilder.DropTable(
+                name: "BrandCategories");
 
             migrationBuilder.DropTable(
                 name: "CartItems");

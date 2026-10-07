@@ -18,6 +18,7 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> DeleteCategory(string id);
         Task<ServiceResult<CategoryResponseModel>> GetCategoryById(string id);
         Task<ServiceResult<List<CategoryResponseModel>>> GetAllCategories();
+        Task<ServiceResult<bool>> GenerateBrandCategoriesAsync();
     }
 
 }

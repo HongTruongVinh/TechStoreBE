@@ -19,7 +19,15 @@ namespace TechStore.Service.Mappers
                 Name = category.Name,
                 Description = category.Description,
                 Slug = category.Slug,
-                IconImageUrl = category.IconImageUrl
+                IconImageUrl = category.IconImageUrl,
+                Brands = category.BrandCategories?.Select(bc => new BrandResponseModel
+                {
+                    Id = bc.Brand.PublicId,
+                    Name = bc.Brand.Name,
+                    Description = bc.Brand.Description,
+                    Slug = bc.Brand.Slug,
+                    IconImageUrl = bc.Brand.IconImageUrl
+                }).ToList() ?? new List<BrandResponseModel>()
             };
         }
 

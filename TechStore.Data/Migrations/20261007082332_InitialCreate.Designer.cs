@@ -13,7 +13,7 @@ using TechStore.Data.Context;
 namespace TechStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260922124152_InitialCreate")]
+    [Migration("20261007082332_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -355,6 +355,21 @@ namespace TechStore.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("TechStore.Data.Entities.CategoryEntities.BrandCategory", b =>
+                {
+                    b.Property<Guid>("BrandId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("BrandId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("BrandCategories");
+                });
+
             modelBuilder.Entity("TechStore.Data.Entities.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -484,10 +499,10 @@ namespace TechStore.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("ExpiryDate")
+                    b.Property<DateTimeOffset>("ExpiryDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("InvalidatedAt")
+                    b.Property<DateTimeOffset>("InvalidatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Jti")
@@ -1293,19 +1308,19 @@ namespace TechStore.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedByIp")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ExpiresAt")
+                    b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ReplacedByTokenHash")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("RevokedAt")
+                    b.Property<DateTimeOffset?>("RevokedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("TokenHash")
@@ -1653,7 +1668,7 @@ namespace TechStore.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("74a9f06a-8cc0-4d61-bfc6-aa75dc7be6f4"),
+                            Id = new Guid("36fa4d6e-3d48-4b0b-8c11-e61a37bd72b8"),
                             IsShowImportantNotification = true,
                             isAiChatbotEnabled = true
                         });
@@ -1906,6 +1921,25 @@ namespace TechStore.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("TechStore.Data.Entities.CategoryEntities.BrandCategory", b =>
+                {
+                    b.HasOne("TechStore.Data.Entities.Brand", "Brand")
+                        .WithMany("BrandCategories")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TechStore.Data.Entities.Category", "Category")
+                        .WithMany("BrandCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("TechStore.Data.Entities.Comment", b =>
                 {
                     b.HasOne("TechStore.Data.Entities.Product", "Product")
@@ -2137,6 +2171,16 @@ namespace TechStore.Data.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Voucher");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.Brand", b =>
+                {
+                    b.Navigation("BrandCategories");
+                });
+
+            modelBuilder.Entity("TechStore.Data.Entities.Category", b =>
+                {
+                    b.Navigation("BrandCategories");
                 });
 
             modelBuilder.Entity("TechStore.Data.Entities.Invoice", b =>

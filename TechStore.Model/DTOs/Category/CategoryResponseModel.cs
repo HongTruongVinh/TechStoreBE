@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechStore.Model.DTOs.Brand;
 
 namespace TechStore.Model.DTOs.Category
 {
@@ -17,5 +18,7 @@ namespace TechStore.Model.DTOs.Category
         public required string Slug { get; set; }
 
         public required string IconImageUrl { get; set; }
+
+        public List<BrandResponseModel> Brands { get; set; } = [];
     }
 }

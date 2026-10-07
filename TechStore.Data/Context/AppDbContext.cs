@@ -7,6 +7,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using TechStore.Data.Entities;
+using TechStore.Data.Entities.CategoryEntities;
 
 namespace TechStore.Data.Context
 {
@@ -22,6 +23,7 @@ namespace TechStore.Data.Context
         public DbSet<Sequence> Sequences => Set<Sequence>();
         public DbSet<Brand> Brands => Set<Brand>();
         public DbSet<Category> Categories => Set<Category>();
+        public DbSet<BrandCategory> BrandCategories => Set<BrandCategory>();
         public DbSet<Product> Products => Set<Product>();
         public DbSet<ProductVariant> ProductVariants  => Set<ProductVariant>();
         public DbSet<ProductVariantOption> ProductVariantOptions => Set<ProductVariantOption>();
@@ -91,6 +93,23 @@ namespace TechStore.Data.Context
                     .HasMaxLength(300);
 
                 entity.HasIndex(c => c.Slug).IsUnique(); // nếu muốn slug là duy nhất
+            });
+
+            modelBuilder.Entity<BrandCategory>(entity =>
+            {
+                entity.HasOne(x => x.Brand)
+                    .WithMany(x => x.BrandCategories)
+                    .HasForeignKey(x => x.BrandId);
+
+                entity.HasOne(x => x.Category)
+                    .WithMany(x => x.BrandCategories)
+                    .HasForeignKey(x => x.CategoryId);
+
+                entity.HasKey(x => new
+                {
+                    x.BrandId,
+                    x.CategoryId
+                });
             });
 
             modelBuilder.Entity<CartItem>(entity =>

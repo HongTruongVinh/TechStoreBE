@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,25 +75,11 @@ namespace TechStore.Service.Implementations
 
         public async Task<ServiceResult<List<CategoryResponseModel>>> GetAllCategories()
         {
-            ServiceResult<List<CategoryResponseModel>> serviceResult = new ServiceResult<List<CategoryResponseModel>>
-            {
-                IsSuccess = true,
-                Data = null,
-                Message = Messenger.NoExitData
-            };
+            var categories = await _uow.Categories.TableNoTracking
+                .Include(c => c.BrandCategories)
+                .ThenInclude(bc => bc.Brand).ToListAsync();
 
-            var categories = await _uow.Categories.GetAllAsync();
-
-            if (categories == null)
-            {
-                return serviceResult;
-            }
-
-            serviceResult.IsSuccess = true;
-            serviceResult.Message = Messenger.GetDataSuccessful;
-            serviceResult.Data = categories.ToList().ToListCategoryResponseModels();
-
-            return serviceResult;
+            return ServiceResult<List<CategoryResponseModel>>.Success(categories.Select(c => c.ToCategoryResponseModel()).ToList());
         }
 
         public async Task<ServiceResult<CategoryResponseModel>> GetCategoryById(string id)
@@ -182,6 +169,13 @@ namespace TechStore.Service.Implementations
             serviceResult.Message = Messenger.SuccessFull;
 
             return serviceResult;
+        }
+
+        public async Task<ServiceResult<bool>> GenerateBrandCategoriesAsync()
+        {
+            await _uow.BrandCategories.SyncFromProductsAsync();
+
+            return ServiceResult<bool>.Success(true);
         }
     }
 }

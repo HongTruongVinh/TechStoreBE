@@ -18,6 +18,7 @@ namespace TechStore.Data.UnitOfWork
         public IAiConversationMessageRepository AiConversationMessages { get; }
         public IBrandRepository Brands { get; }
         public ICategoryRepository Categories { get; }
+        public IBrandCategoryRepository BrandCategories { get; }
         public IProductRepository Products { get; }
         public IProductVariantRepository ProductVariants { get; }
         public IProductVariantOptionRepository ProductVariantOptions { get; }
@@ -53,6 +54,7 @@ namespace TechStore.Data.UnitOfWork
             AiConversationMessages = new AiConversationMessageRepository(_context);
             Brands = new BrandRepository(_context);
             Categories = new CategoryRepository(_context);
+            BrandCategories = new BrandCategoryRepository(_context);
             Products = new ProductRepository(_context);
             ProductVariants = new ProductVariantRepository(_context);
             ProductVariantOptions = new ProductVariantOptionRepository(_context);

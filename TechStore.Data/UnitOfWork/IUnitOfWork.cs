@@ -16,6 +16,7 @@ namespace TechStore.Data.UnitOfWork
         IAiConversationMessageRepository AiConversationMessages { get; }
         IBrandRepository Brands { get; }
         ICategoryRepository Categories { get; }
+        IBrandCategoryRepository BrandCategories { get; }
         IProductRepository Products { get; }
         IProductVariantRepository ProductVariants { get; }
         IProductVariantOptionRepository ProductVariantOptions { get; }

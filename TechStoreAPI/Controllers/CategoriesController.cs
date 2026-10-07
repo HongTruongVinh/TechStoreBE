@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TechStore.Common.Constants;
 using TechStore.Common.Models;
 using TechStore.Model.DTOs.Category;
+using TechStore.Service.Implementations;
 using TechStore.Service.Interfaces;
 using TechStoreAPI.Extensions;
 
@@ -58,6 +59,15 @@ namespace TechStoreAPI.Controllers
         public async Task<ActionResult<ApiResponse<bool>>> DeleteCategory(string id)
         {
             var serviceResult = await _categoryService.DeleteCategory(id);
+
+            return serviceResult.ToActionResult(this);
+        }
+
+        [HttpPost("/sync-brandcategories")]
+        //[Authorize(Roles = AppRoles.Admin)]
+        public async Task<ActionResult<ApiResponse<bool>>> SyncBrandCategories()
+        {
+            var serviceResult = await _categoryService.GenerateBrandCategoriesAsync();
 
             return serviceResult.ToActionResult(this);
         }

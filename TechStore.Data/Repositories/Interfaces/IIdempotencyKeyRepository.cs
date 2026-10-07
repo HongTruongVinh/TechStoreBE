@@ -9,6 +9,6 @@ namespace TechStore.Data.Repositories.Interfaces
 {
     public interface IIdempotencyKeyRepository : IRepository<IdempotencyKey>
     {
-
+        Task DeleteExpiredAsync(DateTimeOffset now, CancellationToken cancellationToken);
     }
 }

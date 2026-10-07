@@ -50,6 +50,7 @@ namespace TechStoreAPI.Authentication
                 return Task.FromResult(AuthenticateResult.Fail("SePay authentication is not configured."));
             }
 
+            //FixedTimeEquals prevents timing attack
             if (!CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(apiKey), Encoding.UTF8.GetBytes(expectedApiKey)))
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid API Key."));
