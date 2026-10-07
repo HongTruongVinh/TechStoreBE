@@ -77,7 +77,9 @@ namespace TechStore.Service.Implementations
         {
             var categories = await _uow.Categories.TableNoTracking
                 .Include(c => c.BrandCategories)
-                .ThenInclude(bc => bc.Brand).ToListAsync();
+                .ThenInclude(bc => bc.Brand)
+                .OrderBy(x => x.PublicId)
+                .ToListAsync();
 
             return ServiceResult<List<CategoryResponseModel>>.Success(categories.Select(c => c.ToCategoryResponseModel()).ToList());
         }
