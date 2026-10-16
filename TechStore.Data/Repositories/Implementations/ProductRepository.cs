@@ -188,6 +188,7 @@ namespace TechStore.Data.Repositories.Implementations
                 .ToListAsync();
         }
 
+
         public async Task<List<AiProductContext>?> SearchForAiAsync(ProductSearchCriteria criteria, CancellationToken cancellationToken = default)
         {
             var query = _context.Products
@@ -197,134 +198,72 @@ namespace TechStore.Data.Repositories.Implementations
                 .Include(x => x.Variants)
                 .AsQueryable();
 
-            // product name search
-            if (!string.IsNullOrWhiteSpace(criteria.SearchQuery))
-            {
-                if (criteria.SearchQuery == "null")
-                {
-                    return null;
-                }
-
-                query = query.Where(x =>
-                    x.Name.ToLower()
-                        .Contains(criteria.SearchQuery.ToLower()));
-
-                var productsByName = await query
-                .Take(5)
-                .ToListAsync(cancellationToken);
-
-                return productsByName
-                .Select(product =>
-                {
-                    var variants = product.Variants;
-
-                    var price = variants
-                        .Select(x => x.Price)
-                        .OrderBy(x => x)
-                        .FirstOrDefault();
-
-                    return new AiProductContext
-                    {
-                        ProductId = product.PublicId,
-                        Slug = product.Slug,
-                        Name = product.Name,
-                        ImgUrl = product.MainImageUrl,
-                        Brand = product.Brand.Name,
-                        Price = price,
-                    };
-                })
-                .ToList();
-            }
-
             // Category
-            if (!string.IsNullOrWhiteSpace(criteria.Category))
+            if (!string.IsNullOrWhiteSpace(criteria.Category) &&
+                !string.Equals(criteria.Category, "null",
+                    StringComparison.OrdinalIgnoreCase))
             {
-                if (criteria.Category == "null")
-                {
-                    return null;
-                }
-
                 query = query.Where(x =>
-                    x.Category.Name.ToLower()
-                        .Contains(criteria.Category.ToLower()));
+                    x.Category.Name.Contains(criteria.Category));
             }
 
             // Brand
-            if (!string.IsNullOrWhiteSpace(criteria.Brand))
+            if (!string.IsNullOrWhiteSpace(criteria.Brand) &&
+                !string.Equals(criteria.Brand, "null",
+                    StringComparison.OrdinalIgnoreCase))
             {
-                if (criteria.Brand != "null")
-                {
-                    query = query.Where(x =>
-                    x.Brand.Name.ToLower()
-                        .Contains(criteria.Brand.ToLower()));
-                }
+                query = query.Where(x =>
+                    x.Brand.Name.Contains(criteria.Brand));
             }
 
-            //// Minimum price
-            //if (criteria.MinPrice.HasValue)
-            //{
-            //    if (criteria.MinPrice.Value > 0)
-            //    {
-            //        query = query.Where(x =>
-            //        x.Variants.Any(v =>
-            //            v.Price >= criteria.MinPrice.Value));
-            //    }
-            //}
-
-            //// Maximum price
-            //if (criteria.MaxPrice.HasValue)
-            //{
-            //    if (criteria.MaxPrice.Value > 0)
-            //    {
-            //        query = query.Where(x =>
-            //        x.Variants.Any(v =>
-            //            v.Price <= criteria.MaxPrice.Value));
-            //    }
-            //}
-
             // Minimum price
-            if (criteria.MinPrice.HasValue)
+            if (criteria.MinPrice.HasValue &&
+                criteria.MinPrice.Value > 0)
             {
-                if (criteria.MinPrice.Value > 0)
-                {
-                    query = query.Where(x => x.MinPrice >= criteria.MinPrice.Value);
-                }
+                query = query.Where(x =>
+                    x.MinPrice >= criteria.MinPrice.Value);
             }
 
             // Maximum price
-            if (criteria.MaxPrice.HasValue)
+            if (criteria.MaxPrice.HasValue &&
+                criteria.MaxPrice.Value > 0)
             {
-                if (criteria.MaxPrice.Value > 0)
-                {
-                    query = query.Where(x => x.MaxPrice <= criteria.MaxPrice.Value);
-                }
+                query = query.Where(x =>
+                    x.MinPrice <= criteria.MaxPrice.Value);
+            }
+
+            // Product name search
+            if (!string.IsNullOrWhiteSpace(criteria.SearchQuery) &&
+                !string.Equals(criteria.SearchQuery, "null",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                var searchQuery = criteria.SearchQuery.Trim();
+
+                query = query.Where(x =>
+                    x.Name.Contains(searchQuery));
             }
 
             var products = await query
                 .Take(20)
                 .ToListAsync(cancellationToken);
 
-            return products
-                .Select(product =>
+            return products.Select(product =>
+            {
+                var price = product.Variants
+                    .Select(x => (decimal?)x.Price)
+                    .Min() ?? 0;
+
+                return new AiProductContext
                 {
-                    var variants = product.Variants;
-
-                    var price = variants
-                        .Select(x => x.Price)
-                        .OrderBy(x => x)
-                        .FirstOrDefault();
-
-                    return new AiProductContext
-                    {
-                        ProductId = product.PublicId,
-                        Slug = product.Slug,
-                        Name = product.Name,
-                        ImgUrl = product.MainImageUrl,
-                        Brand = product.Brand.Name,
-                        Price = price,
-                    };
-                })
-                .ToList();
+                    ProductId = product.PublicId,
+                    Slug = product.Slug,
+                    Name = product.Name,
+                    ImgUrl = product.MainImageUrl,
+                    Brand = product.Brand.Name,
+                    Price = price
+                };
+            }).ToList();
         }
+
     }
 }

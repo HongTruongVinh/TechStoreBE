@@ -1261,7 +1261,27 @@ namespace TechStore.Service.Implementations
                             searchQuery = new
                             {
                                 type = "string",
-                                description = "The search query for finding products (or product name, such as 'iPhone 18 pro max')."
+                                description = """
+                                    The specific product name or model that the user wants to find.
+
+                                    Rules:
+                                    - Return only the product name or model, not the entire user message.
+                                    - If the user asks for products based on category, price, brand,
+                                      usage, or gaming needs without specifying a particular product,
+                                      return an empty string "".
+                                    - Do not include price constraints, category names, or usage
+                                      descriptions unless they are part of the actual product name.
+                                    - If the user mentions a specific product model, extract its name.
+
+                                    Examples:
+                                    - "Find iPhone 18 Pro Max" -> "iPhone 18 Pro Max"
+                                    - "Find phones under 5 million VND" -> ""
+                                    - "Find a Samsung phone under 10 million VND" -> ""
+                                    - "Find a phone for gaming" -> ""
+                                    - "Find a laptop for programming" -> ""
+                                    - "Compare iPhone 18 Pro Max and Samsung Galaxy S26 Ultra"
+                                      -> "iPhone 18 Pro Max; Samsung Galaxy S26 Ultra"
+                                    """
                             },
 
                             category = new
