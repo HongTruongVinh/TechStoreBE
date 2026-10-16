@@ -9,6 +9,8 @@ namespace TechStore.Data.Repositories.QueryModels
     public class ProductSearchCriteria
     {
         public bool IsProductRelated { get; set; }
+
+        public string? SearchQuery { get; set; }
         public string? Category { get; set; }
         public string? Brand { get; set; }
 

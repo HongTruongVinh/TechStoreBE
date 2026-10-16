@@ -11,6 +11,7 @@ using TechStore.Data.Repositories.Implementations;
 using TechStore.Data.Repositories.QueryModels;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Ai;
+using TechStore.Model.DTOs.Ai.Ver2;
 using TechStore.Service.Interfaces;
 
 namespace TechStore.Service.Implementations
@@ -683,23 +684,23 @@ namespace TechStore.Service.Implementations
 
                             required = new[]
                             {
-                        "productId",
-                        "slug",
-                        "productName",
-                        "imgUrl",
-                        "price",
-                        "rank",
-                        "reason"
-                    }
+                                "productId",
+                                "slug",
+                                "productName",
+                                "imgUrl",
+                                "price",
+                                "rank",
+                                "reason"
+                            }
                         }
                     }
                 },
 
                 required = new[]
                 {
-            "summary",
-            "recommendations"
-        }
+                    "summary",
+                    "recommendations"
+                }
             };
 
             var requestBody = new
@@ -1231,6 +1232,669 @@ namespace TechStore.Service.Implementations
 
             throw new InvalidOperationException(
                 "Gemini response does not contain model output.");
+        }
+
+        public async Task<TechStore.Model.DTOs.Ai.Ver2.AiResponseV2> GenerateResponseAsync(string message, AiConversationContext? conversationContext, CancellationToken cancellationToken = default)
+        {
+            var tools = new object[]
+            {
+                new
+                {
+                    type = "function",
+                    name = "search_products",
+                    description =
+                        "Search TechStore products based on the customer's requirements. " +
+                        "Use this function when the customer wants actual product recommendations.",
+
+                    parameters = new
+                    {
+                        type = "object",
+
+                        properties = new
+                        {
+                            isProductRelated = new
+                            {
+                                type = "boolean",
+                                description = "Whether the request relates to TechStore products."
+                            },
+
+                            searchQuery = new
+                            {
+                                type = "string",
+                                description = "The search query for finding products (or product name, such as 'iPhone 18 pro max')."
+                            },
+
+                            category = new
+                            {
+                                type = "string",
+                                description = "Product category, such as Phone or Laptop."
+                            },
+
+                            minPrice = new
+                            {
+                                type = "number",
+                                description = "Minimum budget in VND, if specified."
+                            },
+
+                            maxPrice = new
+                            {
+                                type = "number",
+                                description = "Maximum budget in VND, if specified."
+                            },
+
+                            brand = new
+                            {
+                                type = "string",
+                                description = "Requested brand, if specified."
+                            },
+
+                            usages = new
+                            {
+                                type = "array",
+                                items = new
+                                {
+                                    type = "string"
+                                },
+                                description = "Intended uses, such as programming or gaming."
+                            },
+
+                            games = new
+                            {
+                                type = "array",
+                                items = new
+                                {
+                                    type = "string"
+                                },
+                                description = "Games the customer wants to play."
+                            }
+                        },
+
+                        required = new[]
+                        {
+                            "isProductRelated",
+                            "searchQuery",
+                            "category",
+                            "minPrice",
+                            "maxPrice",
+                            "brand",
+                            "usages",
+                            "games"
+                        }
+                    }
+                }
+            };
+
+            var contextJson = conversationContext is null
+                ? "{}"
+                : JsonSerializer.Serialize(
+                    conversationContext,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    });
+
+            var requestBody = new
+            {
+                model = _options.Model,
+
+                input = $"""
+                    You are the AI Technology Assistant of TechStore.
+
+                    SCOPE:
+                    You may only assist with technology, electronic products,
+                    product specifications, technology comparisons and purchasing advice.
+
+                    You may answer general technology questions directly.
+                    For example:
+                    - Explain CPU, GPU, RAM, battery and camera technologies.
+                    - Explain the differences between chipsets.
+                    - Provide technology purchasing advice.
+
+                    FUNCTION USAGE:
+                    You have access to the search_products function.
+
+                    Call search_products when the customer wants to:
+                    - Find actual products available in TechStore.
+                    - Receive product recommendations from TechStore.
+                    - Find products matching specific requirements.
+                    - Continue a previous product search that requires new database results.
+
+                    Do NOT call search_products merely because the customer
+                    mentions a product, chipset, battery, camera or other technology.
+
+                    For general technology questions that do not require
+                    TechStore product data, answer directly.
+
+                    Do not invent TechStore products, prices, inventory or specifications.
+
+                    CONVERSATION CONTEXT:
+                    {contextJson}
+
+                    CURRENT CUSTOMER MESSAGE:
+                    {message}
+
+                    CONTEXT RULES:
+                    1. Understand the current message using the conversation context.
+                    2. If the customer changes to a different product category,
+                       do not carry over incompatible requirements from the previous category.
+                    3. If the customer modifies a requirement within the same category,
+                       preserve other relevant requirements.
+                    4. Do not invent prices or product requirements.
+                    5. Interpret Vietnamese currency values as VND.
+                    6. When the customer explicitly requests actual product recommendations,
+                       use search_products rather than inventing products.
+                    7. If the request is outside the allowed technology scope,
+                       politely explain that you can only help with technology-related topics.
+                    """,
+
+                tools 
+            };
+
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                "https://generativelanguage.googleapis.com/v1beta/interactions");
+
+            request.Headers.Add(
+                "x-goog-api-key",
+                _options.ApiKey);
+
+            request.Content = JsonContent.Create(requestBody);
+
+            using var response = await _httpClient.SendAsync(
+                request,
+                cancellationToken);
+
+            var responseBody = await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"Gemini API request failed. " +
+                    $"StatusCode: {response.StatusCode}. " +
+                    $"Response: {responseBody}");
+            }
+
+            // Parse the Interactions API response.
+            // This helper must map the actual API response structure
+            // to the AiResponse DTO.
+            return ParseAiResponse(responseBody);
+        }
+
+        private TechStore.Model.DTOs.Ai.Ver2.AiResponseV2 ParseAiResponse(string responseBody)
+        {
+            using var document = JsonDocument.Parse(responseBody);
+
+            var root = document.RootElement;
+
+            var interactionId = root
+                .GetProperty("id")
+                .GetString();
+
+            if (string.IsNullOrWhiteSpace(interactionId))
+            {
+                throw new InvalidOperationException(
+                    "Gemini response does not contain a valid interaction ID.");
+            }
+
+            int? inputTokens = null;
+            int? outputTokens = null;
+
+            if (root.TryGetProperty("usage", out var usage))
+            {
+                if (usage.TryGetProperty("total_input_tokens", out var inputTokenElement))
+                {
+                    inputTokens = inputTokenElement.GetInt32();
+                }
+
+                if (usage.TryGetProperty("total_output_tokens", out var outputTokenElement))
+                {
+                    outputTokens = outputTokenElement.GetInt32();
+                }
+            }
+
+            var result = new TechStore.Model.DTOs.Ai.Ver2.AiResponseV2() 
+            { 
+                InteractionId = interactionId, 
+                InputTokens = inputTokens, 
+                OutputTokens = outputTokens 
+            };
+
+            if (!root.TryGetProperty("steps", out var steps))
+            {
+                throw new InvalidOperationException(
+                    "Gemini response does not contain steps.");
+            }
+
+            foreach (var step in steps.EnumerateArray())
+            {
+                if (!step.TryGetProperty("type", out var typeElement))
+                {
+                    continue;
+                }
+
+                var type = typeElement.GetString();
+
+                switch (type)
+                {
+                    case "model_output":
+                        {
+                            if (!step.TryGetProperty("content", out var content))
+                            {
+                                continue;
+                            }
+
+                            foreach (var part in content.EnumerateArray())
+                            {
+                                if (part.TryGetProperty("type", out var partType)
+                                    && partType.GetString() == "text"
+                                    && part.TryGetProperty("text", out var textElement))
+                                {
+                                    var text = textElement.GetString();
+
+                                    if (!string.IsNullOrWhiteSpace(text))
+                                    {
+                                        result.Text = string.IsNullOrWhiteSpace(result.Text)
+                                            ? text
+                                            : result.Text + Environment.NewLine + text;
+                                    }
+                                }
+                            }
+
+                            break;
+                        }
+
+                    case "function_call":
+                        {
+                            var name = step.TryGetProperty("name", out var nameElement)
+                                ? nameElement.GetString()
+                                : null;
+
+                            if (string.IsNullOrWhiteSpace(name))
+                            {
+                                throw new InvalidOperationException(
+                                    "Gemini returned a function call without a name.");
+                            }
+
+                            if (!step.TryGetProperty("arguments", out var arguments))
+                            {
+                                throw new InvalidOperationException(
+                                    $"Gemini function '{name}' has no arguments.");
+                            }
+
+                            var callId = step.TryGetProperty("id", out var idElement)
+                                ? idElement.GetString()
+                                : null;
+
+                            result.FunctionCalls.Add(new TechStore.Model.DTOs.Ai.Ver2.AiFunctionCall
+                            {
+                                Name = name,
+                                CallId = callId ?? string.Empty,
+                                Arguments = arguments.Clone()
+                            });
+
+                            break;
+                        }
+                }
+            }
+
+            if (result.FunctionCalls.Count == 0
+                && string.IsNullOrWhiteSpace(result.Text))
+            {
+                throw new InvalidOperationException(
+                    "Gemini returned neither text nor a function call.");
+            }
+
+            return result;
+        }
+
+        public async Task<AiResult> GenerateResponseFromToolResultsAsync(
+            string message,
+            AiConversationContext? conversationContext,
+            AiResponseV2 previousResponse,
+            List<TechStore.Model.DTOs.Ai.Ver2.AiToolResult> toolResults,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(previousResponse.InteractionId))
+            {
+                throw new ArgumentException(
+                    "InteractionId is required.",
+                    nameof(previousResponse));
+            }
+
+            if (toolResults.Count == 0)
+            {
+                throw new ArgumentException(
+                    "At least one tool result is required.",
+                    nameof(toolResults));
+            }
+
+            var functionCallsById = previousResponse.FunctionCalls
+                .Where(x => !string.IsNullOrWhiteSpace(x.CallId))
+                .ToDictionary(x => x.CallId);
+
+            var functionResults = new List<object>();
+
+            foreach (var toolResult in toolResults)
+            {
+                if (string.IsNullOrWhiteSpace(toolResult.CallId) ||
+                    !functionCallsById.TryGetValue(
+                        toolResult.CallId,
+                        out var functionCall))
+                {
+                    throw new InvalidOperationException(
+                        $"Unknown function call ID: {toolResult.CallId}");
+                }
+
+                if (!string.Equals(
+                        functionCall.Name,
+                        toolResult.FunctionName,
+                        StringComparison.Ordinal))
+                {
+                    throw new InvalidOperationException(
+                        "Function result does not match the original function call.");
+                }
+
+                var resultJson = toolResult.IsSuccess
+                    ? JsonSerializer.Serialize(toolResult.Result)
+                    : JsonSerializer.Serialize(new
+                    {
+                        error = toolResult.ErrorMessage
+                            ?? "The requested operation failed."
+                    });
+
+                functionResults.Add(new
+                {
+                    type = "function_result",
+                    name = toolResult.FunctionName,
+                    call_id = toolResult.CallId,
+                    result = new[]
+                    {
+                        new
+                        {
+                            type = "text",
+                            text = resultJson
+                        }
+                    }
+                });
+            }
+
+            var schema = new
+            {
+                type = "object",
+                properties = new
+                {
+                    summary = new
+                    {
+                        type = "string"
+                    },
+                    recommendations = new
+                    {
+                        type = "array",
+
+                        items = new
+                        {
+                            type = "object",
+
+                            properties = new
+                            {
+                                productId = new
+                                {
+                                    type = "string",
+                                    description =
+                                        "The exact ProductId from the provided product list."
+                                },
+
+                                slug = new
+                                {
+                                    type = "string",
+                                    description =
+                                        "The exact Slug from the provided product list."
+                                },
+
+                                productName = new
+                                {
+                                    type = "string",
+                                    description =
+                                        "Name of the product."
+                                },
+
+                                imgUrl = new
+                                {
+                                    type = "string",
+                                    description =
+                                        "The URL of the product's main image."
+                                },
+
+                                price = new
+                                {
+                                    type = "number",
+                                    description =
+                                        "The price of the product."
+                                },
+
+                                rank = new
+                                {
+                                    type = "integer",
+                                    description =
+                                        "Recommendation ranking. 1 is the best."
+                                },
+
+                                reason = new
+                                {
+                                    type = "string",
+                                    description =
+                                        "Why this product is suitable for the customer."
+                                }
+                            },
+
+                            required = new[]
+                            {
+                                "productId",
+                                "slug",
+                                "productName",
+                                "imgUrl",
+                                "price",
+                                "rank",
+                                "reason"
+                            }
+                        }
+                    }
+                },
+                required = new[]
+                {
+                    "summary",
+                    "recommendations"
+                },
+                additionalProperties = false
+            };
+
+            var instructions = """
+                You are the AI shopping assistant of TechStore.
+                Respond in Vietnamese.
+
+                Return a JSON object matching the provided schema.
+
+                Rules:
+                1. Answer the customer's latest request using the conversation
+                   and the function results.
+                2. Recommend products only when relevant to the request.
+                3. Use only ProductId values returned by successful
+                   search_products function calls.
+                4. Never invent product IDs or product specifications.
+                5. Recommend at most 3 products.
+                6. Rank recommendations from best to worst, starting at 1.
+                7. Explain the reason for each recommendation in Vietnamese.
+                8. If no suitable products are found, return an empty
+                   recommendations array.
+                9. Return only fields defined in the schema.
+                10. Do not include Markdown fences or text outside the JSON.
+                """;
+
+            var requestBody = new
+            {
+                model = _options.Model,
+
+                previous_interaction_id = previousResponse.InteractionId,
+
+                system_instruction = instructions,
+
+                input = functionResults,
+
+                response_format = new
+                {
+                    type = "text",
+                    mime_type = "application/json",
+                    schema
+                }
+            };
+
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                "https://generativelanguage.googleapis.com/v1beta/interactions");
+
+            request.Headers.Add("x-goog-api-key", _options.ApiKey);
+            request.Content = JsonContent.Create(requestBody);
+
+            using var response = await _httpClient.SendAsync(
+                request,
+                cancellationToken);
+
+            var responseBody = await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"Gemini API request failed. " +
+                    $"StatusCode: {response.StatusCode}. " +
+                    $"Response: {responseBody}");
+            }
+
+            // Parse response của Interactions API.
+            var finalResponse = ParseAiResponse(responseBody);
+
+            if (finalResponse.FunctionCalls.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    "Gemini requested additional function calls. " +
+                    "The caller must execute them before returning the final answer.");
+            }
+
+            if (string.IsNullOrWhiteSpace(finalResponse.Text))
+            {
+                throw new InvalidOperationException(
+                    "Gemini returned an empty final response.");
+            }
+
+            using var jsonDocument = JsonDocument.Parse(finalResponse.Text);
+
+            var recommendation = JsonSerializer.Deserialize<ProductRecommendationResponse>(
+                finalResponse.Text,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            if (recommendation is null)
+            {
+                throw new InvalidOperationException(
+                    "Failed to deserialize Gemini recommendation response.");
+            }
+
+            // Thu thập các sản phẩm hợp lệ từ kết quả search_products.
+            var availableProducts = toolResults
+                .Where(x =>
+                    x.IsSuccess &&
+                    string.Equals(
+                        x.FunctionName,
+                        "search_products",
+                        StringComparison.Ordinal))
+                .SelectMany(x => ExtractProducts(x.Result))
+                .GroupBy(x => x.ProductId, StringComparer.Ordinal)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.First(),
+                    StringComparer.Ordinal);
+
+            // Chỉ giữ ProductId tồn tại trong dữ liệu backend.
+            var validatedRecommendations = recommendation.Recommendations
+                .Where(x =>
+                    !string.IsNullOrWhiteSpace(x.ProductId) &&
+                    availableProducts.ContainsKey(x.ProductId))
+                .GroupBy(x => x.ProductId, StringComparer.Ordinal)
+                .Select(g => g.OrderBy(x => x.Rank).First())
+                .OrderBy(x => x.Rank)
+                .Take(3)
+                .Select((item, index) =>
+                {
+                    var product = availableProducts[item.ProductId];
+
+                    return new ProductRecommendation
+                    {
+                        ProductId = product.ProductId,
+                        Slug = product.Slug,
+                        ImgUrl = product.ImgUrl,
+                        ProductName = product.Name,
+                        Price = product.Price,
+                        Rank = index + 1,
+                        Reason = item.Reason
+                    };
+                })
+                .ToList();
+
+            recommendation.Recommendations = validatedRecommendations;
+
+            // Đọc token usage từ response gốc.
+            int? inputTokens = null;
+            int? outputTokens = null;
+
+            using var responseDocument = JsonDocument.Parse(responseBody);
+            var root = responseDocument.RootElement;
+
+            if (root.TryGetProperty("usage", out var usage))
+            {
+                if (usage.TryGetProperty(
+                        "total_input_tokens",
+                        out var inputTokenElement) &&
+                    inputTokenElement.TryGetInt32(out var inputTokenCount))
+                {
+                    inputTokens = inputTokenCount;
+                }
+
+                if (usage.TryGetProperty(
+                        "total_output_tokens",
+                        out var outputTokenElement) &&
+                    outputTokenElement.TryGetInt32(out var outputTokenCount))
+                {
+                    outputTokens = outputTokenCount;
+                }
+            }
+
+            return new AiResult
+            {
+                InteractionId = finalResponse.InteractionId
+                    ?? throw new InvalidOperationException(
+                        "Gemini response does not contain an interaction ID."),
+                InputTokens = inputTokens,
+                OutputTokens = outputTokens,
+                Recommendation = recommendation
+            };
+        }
+
+        private static IEnumerable<AiProductContext> ExtractProducts(object? result)
+        {
+            if (result is IEnumerable<AiProductContext> products)
+            {
+                return products;
+            }
+
+            if (result is AiProductContext product)
+            {
+                return [product];
+            }
+
+            return [];
         }
     }
 }

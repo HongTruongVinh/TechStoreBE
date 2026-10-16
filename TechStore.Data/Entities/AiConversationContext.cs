@@ -13,6 +13,8 @@ namespace TechStore.Data.Entities
 
         public required string ConversationPublicId { get; set; }
 
+        public string? SearchQuery { get; set; }
+
         public string? Category { get; set; }
         public string? Brand { get; set; }
 

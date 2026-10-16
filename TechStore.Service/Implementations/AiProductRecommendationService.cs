@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TechStore.Common.Constants;
 using TechStore.Common.Enums;
@@ -10,9 +12,12 @@ using TechStore.Common.Extensions;
 using TechStore.Common.Helpers;
 using TechStore.Common.Models;
 using TechStore.Data.Entities;
+using TechStore.Data.Repositories.QueryModels;
 using TechStore.Data.UnitOfWork;
 using TechStore.Model.DTOs.Ai;
+using TechStore.Model.DTOs.Ai.Ver2;
 using TechStore.Service.Interfaces;
+using static QRCoder.PayloadGenerator.SwissQrCode;
 
 namespace TechStore.Service.Implementations
 {
@@ -494,5 +499,391 @@ namespace TechStore.Service.Implementations
 
             return ServiceResult<AiChatResponse>.Success(aiChatResponse);
         }
+
+        public async Task<ServiceResult<AiChatResponse>> ProcessMessageV2Async(string? userId, string? guestId, string? conversationId, string message, CancellationToken cancellationToken)
+        {
+            var systemConfigs = await _uow.SystemConfigs.TableNoTracking.FirstOrDefaultAsync(cancellationToken);
+            if (systemConfigs == null)
+                throw new KeyNotFoundException("System configurations not found.");
+            if (systemConfigs.isAiChatbotEnabled == false)
+            {
+                return ServiceResult<AiChatResponse>.Success(new AiChatResponse
+                {
+                    ConversationId = conversationId ?? "",
+                    Content = "Hệ thống đang tạm dừng Chatbot để bảo trì. Vui lòng quay lại sau."
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException(
+                    "Message cannot be empty.",
+                    nameof(message));
+
+            if (userId == null && guestId == null)
+            {
+                guestId = Guid.NewGuid().ToString();
+            }
+
+            User? user = null;
+            if (userId != null)
+            {
+                user = await _uow.Users.GetByIdAsync(userId, cancellationToken);
+                if (user == null)
+                    throw new KeyNotFoundException("User not found.");
+            }
+
+            AiConversation? conversation = null;
+            AiConversationContext? conversationContext = null;
+
+            // =========================================================
+            // 1. Lấy conversation cũ hoặc tạo conversation mới
+            // =========================================================
+
+            if (!string.IsNullOrWhiteSpace(conversationId))
+            {
+                conversation = await _uow.AiConversations.GetByIdAsync(conversationId, cancellationToken);
+
+                if (conversation == null)
+                    throw new KeyNotFoundException(
+                        "Conversation not found.");
+
+                // Không cho user truy cập conversation của người khác // tuy nhiện tạm thời thêm conversation.UserPublicId != null tạm thời có thể lưu conversation cho guestId trước khi login, sau khi login thì sẽ lưu conversation cho userId
+                if (conversation.UserPublicId != null && conversation.UserPublicId != userId)
+                    throw new UnauthorizedAccessException(
+                        "You do not have access to this conversation.");
+
+                conversationContext = await _uow.AiConversationContexts.GetByConversationIdAsync(conversation.Id, cancellationToken);
+
+                if (conversationContext == null)
+                    throw new KeyNotFoundException(
+                        "Conversation context not found.");
+
+                // if user has have conversation before login -> save that conversation for this user
+                if (userId != null && guestId != null)
+                {
+                    conversation.UserPublicId = user!.PublicId;
+                    conversation.UserId = user!.Id;
+                }
+            }
+            else
+            {
+                if (user != null)
+                {
+                    conversation = new AiConversation
+                    {
+                        Id = Guid.NewGuid(),
+                        PublicId = ShareFunctions.GenerateRandomStringId(),
+                        UserId = user.Id,
+                        UserPublicId = user.PublicId,
+                        Title = message.Length > 100
+                        ? message[..100]
+                        : message,
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        UpdatedAt = TimeZoneHelper.GetUtcNow()
+                    };
+                }
+                else
+                {
+                    conversation = new AiConversation
+                    {
+                        Id = Guid.NewGuid(),
+                        PublicId = ShareFunctions.GenerateRandomStringId(),
+                        GuestId = guestId,
+                        Title = message.Length > 100
+                        ? message[..100]
+                        : message,
+                        CreatedAt = TimeZoneHelper.GetUtcNow(),
+                        UpdatedAt = TimeZoneHelper.GetUtcNow()
+                    };
+                }
+
+                conversationContext = new AiConversationContext
+                {
+                    ConversationId = conversation.Id,
+                    ConversationPublicId = conversation.PublicId,
+                    PublicId = ShareFunctions.GenerateRandomStringId(),
+                    CreatedAt = TimeZoneHelper.GetUtcNow(),
+                };
+
+                await _uow.AiConversations.AddAsync(conversation, cancellationToken);
+
+                await _uow.AiConversationContexts.AddAsync(conversationContext, cancellationToken);
+
+                await _uow.CommitAsync(cancellationToken);
+            }
+
+            // =========================================================
+            // 3. Lưu message của user
+            // =========================================================
+
+            var userMessage = new AiConversationMessage
+            {
+                Id = Guid.NewGuid(),
+                PublicId = ShareFunctions.GenerateRandomStringId(),
+                ConversationId = conversation.Id,
+                Role = "user",
+                Content = message,
+                CreatedAt = TimeZoneHelper.GetUtcNow()
+            };
+
+            await _uow.AiConversationMessages.AddAsync(userMessage, cancellationToken);
+
+
+            var aiResponse = await _aiService.GenerateResponseAsync(message, conversationContext, cancellationToken);
+
+            if (aiResponse == null)
+            {
+                return ServiceResult<AiChatResponse>.Success(new AiChatResponse
+                {
+                    ConversationId = conversation.PublicId,
+                    Content = "Bạn vui lòng cung cấp thêm thông tin về nhu cầu của bạn, như giá sản phẩm, nhu cầu học tập hay chơi game gì.",
+                    Recommendations = []
+                });
+            }
+
+            if (aiResponse.FunctionCalls.Count == 0)
+            {
+                var assistantMessagee = new AiConversationMessage
+                {
+                    Id = Guid.NewGuid(),
+                    PublicId = ShareFunctions.GenerateRandomStringId(),
+                    ConversationId = conversation.Id,
+                    Role = "assistant",
+                    Content = aiResponse.Text ?? "",
+                    InteractionId = aiResponse.InteractionId,
+                    InputTokens = aiResponse.InputTokens,
+                    OutputTokens = aiResponse.OutputTokens,
+                    CreatedAt = TimeZoneHelper.GetUtcNow()
+                };
+
+                conversation.LastInteractionId = aiResponse.InteractionId; // Mỗi lần tương tác với AI sẽ có 1 InteractionId riêng nên cần phải cập nhật lại LastInteractionId sau mỗi lần AI phản hồi (để đoạn chat của AI có context)
+                conversation.Title = message.Length > 100 ? message[..100] : message;
+                conversation.UpdatedAt = TimeZoneHelper.GetUtcNow();
+                _uow.AiConversations.Update(conversation);
+
+
+                await _uow.AiConversationMessages.AddAsync(assistantMessagee, cancellationToken);
+
+                var commitResultt = await _uow.CommitAsync(cancellationToken);
+
+                if (commitResultt < 1)
+                {
+                    return ServiceResult<AiChatResponse>.Failure(EErrorType.Status500InternalServerError, "Failed to save conversation messages.");
+                }
+
+                // =========================================================
+                // 6. Trả response cho Controller
+                // =========================================================
+
+                var aiChatResponsee = new AiChatResponse
+                {
+                    ConversationId = conversation.PublicId,
+                    GuestId = conversation.GuestId,
+                    Content = aiResponse.Text ?? "",
+                };
+
+                return ServiceResult<AiChatResponse>.Success(aiChatResponsee);
+            }
+
+            var toolResults = await ExecuteFunctionCallsAsync(aiResponse.FunctionCalls, conversationContext, cancellationToken);
+
+            var finalResponse = await _aiService.GenerateResponseFromToolResultsAsync(
+                message,
+                conversationContext,
+                aiResponse,
+                toolResults,
+                cancellationToken);
+
+            _uow.AiConversationContexts.Update(conversationContext);
+
+
+            // 3. Ask Gemini to recommend from candidates
+            //var aiResult = await _aiService.GenerateProductRecommendationAsync(
+            //        message,
+            //        products,
+            //        conversation.LastInteractionId,
+            //        cancellationToken);
+
+            // =========================================================
+            // 4. Lưu message của assistant
+            // =========================================================
+
+            var assistantMessage = new AiConversationMessage
+            {
+                Id = Guid.NewGuid(),
+                PublicId = ShareFunctions.GenerateRandomStringId(),
+                ConversationId = conversation.Id,
+                Role = "assistant",
+                Content = finalResponse.Recommendation.Summary ?? "",
+                InteractionId = finalResponse.InteractionId,
+                InputTokens = finalResponse.InputTokens,
+                OutputTokens = finalResponse.OutputTokens,
+                CreatedAt = TimeZoneHelper.GetUtcNow()
+            };
+
+
+
+            string title = message.Length > 100 ? message[..100] : message;
+
+            conversation.LastInteractionId = finalResponse.InteractionId; // Mỗi lần tương tác với AI sẽ có 1 InteractionId riêng nên cần phải cập nhật lại LastInteractionId sau mỗi lần AI phản hồi (để đoạn chat của AI có context)
+            conversation.Title = title;
+            conversation.UpdatedAt = TimeZoneHelper.GetUtcNow();
+            _uow.AiConversations.Update(conversation);
+
+
+            await _uow.AiConversationMessages.AddAsync(assistantMessage, cancellationToken);
+
+            var commitResult = await _uow.CommitAsync(cancellationToken);
+
+            if (commitResult < 1)
+            {
+                return ServiceResult<AiChatResponse>.Failure(EErrorType.Status500InternalServerError, "Failed to save conversation messages.");
+            }
+
+            // =========================================================
+            // 6. Trả response cho Controller
+            // =========================================================
+
+            var aiChatResponse = new AiChatResponse
+            {
+                ConversationId = conversation.PublicId,
+                GuestId = conversation.GuestId,
+                Content = finalResponse.Recommendation.Summary ?? "",
+                Recommendations = finalResponse.Recommendation.Recommendations
+                    .OrderBy(x => x.Rank)
+                    .Take(3)
+                    .ToList()
+            };
+
+            return ServiceResult<AiChatResponse>.Success(aiChatResponse);
+        }
+
+        private async Task<List<AiToolResult>> ExecuteFunctionCallsAsync(List<AiFunctionCall> functionCalls, AiConversationContext conversationContext, CancellationToken cancellationToken = default)
+        {
+            var results = new List<AiToolResult>();
+
+            foreach (var functionCall in functionCalls)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var toolResult = new AiToolResult
+                {
+                    FunctionName = functionCall.Name,
+                    CallId = functionCall.CallId
+                };
+
+                try
+                {
+                    switch (functionCall.Name)
+                    {
+                        case "search_products":
+                            {
+                                var criteria = functionCall.Arguments.Deserialize<ProductSearchCriteria>(
+                                        new JsonSerializerOptions
+                                        {
+                                            PropertyNameCaseInsensitive = true
+                                        });
+
+                                if (criteria is null)
+                                {
+                                    throw new ArgumentException(
+                                        "Invalid product search criteria.");
+                                }
+
+                                // Validate criteria trước khi truy vấn database.
+                                ValidateProductSearchCriteria(criteria);
+
+                                if (!string.IsNullOrWhiteSpace(criteria.Category) &&
+                                    CategoryMappings.TryGetValue(criteria.Category, out var categoryName))
+                                {
+                                    criteria.Category = categoryName;
+                                }
+
+                                var products = await _uow.Products.SearchForAiAsync(criteria,cancellationToken);
+
+                                toolResult.IsSuccess = true;
+                                toolResult.Result = products;
+
+                                //update conversation context with the latest search criteria
+                                conversationContext.Brand = criteria.Brand;
+                                conversationContext.Category = criteria.Category;
+                                conversationContext.MinPrice = criteria.MinPrice;
+                                conversationContext.MaxPrice = criteria.MaxPrice;
+                                conversationContext.Usages = criteria.Usages;
+                                conversationContext.Games = criteria.Games;
+
+                                break;
+                            }
+
+                        default:
+                            {
+                                toolResult.IsSuccess = false;
+                                toolResult.ErrorMessage =
+                                    $"Unsupported function: {functionCall.Name}";
+
+                                break;
+                            }
+                    }
+                }
+                catch (OperationCanceledException)
+                    when (cancellationToken.IsCancellationRequested)
+                {
+                    throw;
+                }
+                catch (ArgumentException)
+                {
+                    toolResult.IsSuccess = false;
+                    toolResult.ErrorMessage =
+                        "The search parameters are invalid.";
+
+                    // Ghi log chi tiết nếu cần.
+                }
+                catch (Exception ex)
+                {
+                    toolResult.IsSuccess = false;
+                    toolResult.ErrorMessage =
+                        "An error occurred while processing the request.";
+
+                    // Ghi log exception ex tại đây.
+                }
+
+                results.Add(toolResult);
+            }
+
+            return results;
+        }
+
+        private static void ValidateProductSearchCriteria(ProductSearchCriteria criteria)
+        {
+            if (criteria.MinPrice.HasValue && criteria.MinPrice.Value < 0)
+            {
+                throw new ArgumentException(
+                    "Minimum price cannot be negative.");
+            }
+
+            if (criteria.MaxPrice.HasValue && criteria.MaxPrice.Value < 0)
+            {
+                throw new ArgumentException(
+                    "Maximum price cannot be negative.");
+            }
+
+            if (criteria.MinPrice.HasValue &&
+                criteria.MaxPrice.HasValue &&
+                criteria.MinPrice.Value > criteria.MaxPrice.Value)
+            {
+                throw new ArgumentException(
+                    "Minimum price cannot exceed maximum price.");
+            }
+        }
+
+        private static readonly Dictionary<string, string> CategoryMappings =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Phone"] = "Điện thoại",
+            ["Smartphone"] = "Điện thoại",
+            ["Laptop"] = "Laptop",
+            ["Tablet"] = "Máy tính bảng",
+            ["Accessory"] = "Phụ kiện"
+        };
     }
 }

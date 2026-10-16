@@ -20,5 +20,12 @@ namespace TechStore.Service.Interfaces
             string? conversationId,
             string message, 
             CancellationToken cancellationToken = default);
+
+        public Task<ServiceResult<AiChatResponse>> ProcessMessageV2Async(
+            string? userId,
+            string? guestId,
+            string? conversationId,
+            string message,
+            CancellationToken cancellationToken = default);
     }
 }

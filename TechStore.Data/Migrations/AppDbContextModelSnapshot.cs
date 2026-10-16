@@ -117,6 +117,9 @@ namespace TechStore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SearchQuery")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1665,7 +1668,7 @@ namespace TechStore.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("36fa4d6e-3d48-4b0b-8c11-e61a37bd72b8"),
+                            Id = new Guid("a07d823c-b189-4548-a3bb-870abedbb88e"),
                             IsShowImportantNotification = true,
                             isAiChatbotEnabled = true
                         });

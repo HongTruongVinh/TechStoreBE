@@ -197,6 +197,45 @@ namespace TechStore.Data.Repositories.Implementations
                 .Include(x => x.Variants)
                 .AsQueryable();
 
+            // product name search
+            if (!string.IsNullOrWhiteSpace(criteria.SearchQuery))
+            {
+                if (criteria.SearchQuery == "null")
+                {
+                    return null;
+                }
+
+                query = query.Where(x =>
+                    x.Name.ToLower()
+                        .Contains(criteria.SearchQuery.ToLower()));
+
+                var productsByName = await query
+                .Take(5)
+                .ToListAsync(cancellationToken);
+
+                return productsByName
+                .Select(product =>
+                {
+                    var variants = product.Variants;
+
+                    var price = variants
+                        .Select(x => x.Price)
+                        .OrderBy(x => x)
+                        .FirstOrDefault();
+
+                    return new AiProductContext
+                    {
+                        ProductId = product.PublicId,
+                        Slug = product.Slug,
+                        Name = product.Name,
+                        ImgUrl = product.MainImageUrl,
+                        Brand = product.Brand.Name,
+                        Price = price,
+                    };
+                })
+                .ToList();
+            }
+
             // Category
             if (!string.IsNullOrWhiteSpace(criteria.Category))
             {

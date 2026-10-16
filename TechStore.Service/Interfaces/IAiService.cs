@@ -20,5 +20,13 @@ namespace TechStore.Service.Interfaces
 
         Task<AiResponse> SendMessageAsync(string message, string? previousInteractionId, CancellationToken cancellationToken = default);
 
+        Task<TechStore.Model.DTOs.Ai.Ver2.AiResponseV2> GenerateResponseAsync(string message, AiConversationContext? conversationContext, CancellationToken cancellationToken = default);
+
+        Task<AiResult> GenerateResponseFromToolResultsAsync(
+            string message,
+            AiConversationContext? conversationContext,
+            TechStore.Model.DTOs.Ai.Ver2.AiResponseV2 previousResponse,
+            List<TechStore.Model.DTOs.Ai.Ver2.AiToolResult> toolResults,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -43,7 +43,7 @@ namespace TechStoreAPI.Controllers
 
             var guestId = HttpContext.Request.Headers["guest-Id"].FirstOrDefault();
 
-            var serviceResult = await _aiProductRecommendationService.ProcessMessageAsync(userId, guestId, request.ConversationId, request.Message, cancellationToken);
+            var serviceResult = await _aiProductRecommendationService.ProcessMessageV2Async(userId, guestId, request.ConversationId, request.Message, cancellationToken);
 
             var result = serviceResult.ToActionResult(this);
 
