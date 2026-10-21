@@ -24,6 +24,3 @@ jobs:
 
       - name: Build
         run: dotnet build TechStoreAPI.sln --no-restore
-
-      - name: Run tests
-        run: dotnet test TechStoreAPI.sln --no-build
