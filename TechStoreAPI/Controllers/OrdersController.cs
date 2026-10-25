@@ -98,5 +98,27 @@ namespace TechStoreAPI.Controllers
 
             return serviceResult.ToActionResult(this);
         }
+
+        [Authorize(Roles = AppRoles.Customer)]
+        [HttpGet("snapshots")]
+        public async Task<ActionResult<ApiResponse<List<ListItemOrderModel>>>> GetSnapshotOrders(int page = 1, int pageSize = 1000)
+        {
+            var userId = User.GetRequiredUserId();
+
+            var serviceResult = await _orderService.GetCustomerSnapshotOrdersAsync(userId, page, pageSize);
+
+            return serviceResult.ToActionResult(this);
+        }
+
+        [Authorize(Roles = AppRoles.Customer)]
+        [HttpGet("snapshots/{id}")]
+        public async Task<ActionResult<ApiResponse<OrderDetailResponseModel>>> GetSnapshotOrderAsync(string id)
+        {
+            var userId = User.GetRequiredUserId();
+
+            var serviceResult = await _orderService.GetCustomerSnapshotOrderAsync(userId, id);
+
+            return serviceResult.ToActionResult(this);
+        }
     }
 }

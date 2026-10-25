@@ -9,6 +9,6 @@ namespace TechStore.Data.Repositories.Interfaces
 {
     public interface IPaymentTransactionRepository : IRepository<PaymentTransaction>
     {
-
+        Task<PaymentTransaction?> GetExistingTransactionAsync(string transactionId);
     }
 }

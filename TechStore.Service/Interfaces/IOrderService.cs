@@ -12,7 +12,6 @@ namespace TechStore.Service.Interfaces
     {
         Task<ServiceResult<PagedResult<OrderDetailResponseModel>>> GetListOrdersByStatusIdAsync(EOrderStatus statusId, int page, int pageSize);
         Task<ServiceResult<PagedResult<ListItemOrderModel>>> GetOrdersAsync(OrderSearchQuery query);
-        //Task<ServiceResult<string>> CreatePrepaidOnlineOrderAsync(string userId, PaymentSnapshot ps, PaymentForSnapshot request);
         Task<ServiceResult<CreatePrePayOnlineOrderResult>> CreatePrepaidOnlineOrderFromSepayWebhookAsync(SepayWebhookRequest request);
         Task<ServiceResult<CreatePaymentSnapshotResult>> CreateSnapshotAsync(string userId, OrderCreateModel orderCreateModel, string idempotencyKey);
         Task<ServiceResult<CreateCODOnlineOrderResult>> CreateCODOnlineOrderAsync(string userId, OrderCreateModel createOrderRequest, string idempotencyKey);
@@ -21,8 +20,6 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<List<ListItemOrderModel>>> GetInStoreOrdersAsync();
         Task<ServiceResult<InStoreOrderResponseModel>> GetInStoreOrderAsync(string id);
         Task<ServiceResult<bool>> ConfirmInStoreOrder(string id);
-        Task<ServiceResult<bool>> CheckoutInStoreOrderAsync(string id);
-        Task<ServiceResult<bool>> UpdateInStoreOrderAsync(string updatedByCashierId, string orderId);
 
         Task<ServiceResult<OrderDetailResponseModel>> GetOrderByIdAsync(string userId, string orderId);
         Task<ServiceResult<OrderDetailResponseModel>> AdminGetOrderByIdAsync(string userId, string orderId);
@@ -35,6 +32,8 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<bool>> DeleteOrderAsync(string orderId);
 
         Task<ServiceResult<List<ListItemOrderModel>>> GetCustomerOrdersAsync(string customerId, int page, int pageSize);
+        Task<ServiceResult<List<ListItemOrderModel>>> GetCustomerSnapshotOrdersAsync(string customerId, int page, int pageSize);
+        Task<ServiceResult<OrderDetailResponseModel>> GetCustomerSnapshotOrderAsync(string userId, string snapshotId);
         Task<ServiceResult<bool>> CancelOrderByCustomerAsync(string updateByUserId, string orderId, CancelOrderModel model);
         Task<ServiceResult<bool>> UpdateOrderByCustomerAsync(string updateByUserId, string orderId, UpdateOrderModel model);
     }

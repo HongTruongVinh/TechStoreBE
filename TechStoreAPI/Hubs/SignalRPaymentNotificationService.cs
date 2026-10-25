@@ -70,7 +70,6 @@ namespace TechStoreAPI.Hubs
                     {
                         PaymentSnapshotId = result.Data.PaymentSnapshotId,
                         Amount = result.Data.Amount,
-                        OrderId = result.Data.OrderId
                     });
             }
             else
@@ -91,63 +90,5 @@ namespace TechStoreAPI.Hubs
                         });
             }
         }
-
-        //public async Task NotifyPaymentResultAsync(ServiceResult<VerifyResult> result, SepayWebhookRequest request)
-        //{
-        //    if (result.Data != null)
-        //    {
-        //        if (result.IsSuccess)
-        //        {
-        //            _logger.LogInformation(
-        //                "[SEPAY][SUCCESS] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
-        //                result.Data.SnapshotId,
-        //                result.Data.Amount,
-        //                result.Data.Message);
-
-        //            await _hubContext.Clients
-        //                .Group(result.Data.SnapshotId)
-        //                .SendAsync("PaymentSuccess", new
-        //                {
-        //                    paymentId = result.Data.SnapshotId,
-        //                    amount = result.Data.Amount,
-        //                    message = result.Data.Message
-        //                });
-        //        }
-        //        else
-        //        {
-        //            _logger.LogWarning(
-        //                "[SEPAY][FAILED] SnapshotId={SnapshotId}, Amount={Amount}, Message={Message}",
-        //                result.Data.SnapshotId,
-        //                result.Data.Amount,
-        //                result.Data.Message);
-
-        //            await _hubContext.Clients
-        //                .Group(result.Data.SnapshotId)
-        //                .SendAsync("PaymentFailed", new
-        //                {
-        //                    paymentId = result.Data.SnapshotId,
-        //                    amount = result.Data.Amount,
-        //                    message = result.Data.Message
-        //                });
-        //        }
-        //    }
-        //    else
-        //    {
-        //        _logger.LogWarning(
-        //            "[SEPAY][NO_SNAPSHOT] Ref={ReferenceCode}, Code={Code}, Amount={Amount}",
-        //            request.ReferenceCode,
-        //            request.Code,
-        //            request.TransferAmount);
-
-        //        await _hubContext.Clients
-        //                .Group(request.Code)
-        //                .SendAsync("PaymentFailed", new
-        //                {
-        //                    paymentId = request.Code,
-        //                    amount = request.TransferAmount,
-        //                    message = Messenger.SystemError
-        //                });
-        //    }
-        //}
     }
 }

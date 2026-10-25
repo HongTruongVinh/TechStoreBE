@@ -17,9 +17,9 @@ namespace TechStore.Model.DTOs.Order
         public required string CustomerName { get; set; }
 
         public required string CustomerPhonenumber { get; set; }
-        public required string CustomerEmail { get; set; }
+        public string? CustomerEmail { get; set; }
         public required string ShippingAddress { get; set; }
-        public required string Notes { get; set; }
+        public string? Notes { get; set; }
 
         public required EOrderStatus OrderStatus { get; set; } = EOrderStatus.Pending;
 
@@ -34,5 +34,10 @@ namespace TechStore.Model.DTOs.Order
 
         public required DateTime CreatedAt { get; set; }
         public required DateTime UpdatedAt { get; set; }
+
+        /// <summary>
+        /// for snapshot
+        /// </summary>
+        public DateTime? ExpiredAt { get; set; }
     }
 }

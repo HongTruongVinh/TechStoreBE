@@ -54,39 +54,5 @@ namespace TechStoreAPI.Controllers
                 success = true
             });
         }
-
-        // this endpoint is used to mocking the payment gateway to verify the payment for invoice
-        [HttpPost("verify-payment")]
-        public async Task<IActionResult> VerifyPaymenForInvoicetWebhook(PaymentForInvocieWebhookRequest request)
-        {
-            var result = await _paymentService.VerifyPaymentForInvoiceAsync(request);
-
-            if (result.IsSuccess)
-            {
-                await _hubContext
-                    .Clients
-                    .Group(request.PaymentId)
-                    .SendAsync("PaymentSuccess", new
-                    {
-                        paymentId = request.PaymentId,
-                        amount = request.Amount,
-                        message = "Thanh toán thành công"
-                    });
-            }
-            else
-            {
-                await _hubContext
-                    .Clients
-                    .Group(request.PaymentId)
-                    .SendAsync("PaymentFailed", new
-                    {
-                        paymentId = request.PaymentId,
-                        amount = request.Amount,
-                        message = result.Data?.Message ?? "Thanh toán thất bại"
-                    });
-            }
-
-            return Ok();
-        }
     }
 }

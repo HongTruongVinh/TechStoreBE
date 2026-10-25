@@ -477,19 +477,49 @@ namespace TechStore.Service.Implementations
             try
             {
                 //Validate duplicate transaction
-                var existingTransaction = await _uow.PaymentTransactions.FindOneAsync(
-                    x => x.TransactionId == paymentTransaction.TransactionId);
+                var existingTransaction = await _uow.PaymentTransactions.GetExistingTransactionAsync(paymentTransaction.TransactionId);
 
                 if (existingTransaction != null)
                 {
-                    await transaction.RollbackAsync();
-                    return ServiceResult<CreatePrePayOnlineOrderResult>.Failure(EErrorType.ConfictData, PaymentMessenger.PaymentAlreadyProcessed);
+                    var isSameTransaction =
+                            existingTransaction.PaymentCode == request.Code &&
+                            existingTransaction.Amount == request.TransferAmount;
+
+                    if (!isSameTransaction)
+                    {
+                        _logger.LogError(
+                            "Duplicate transaction with different PaymentCode. " +
+                            "TransactionId: {TransactionId}, Existing: {ExistingCode}, Incoming: {IncomingCode}",
+                            request.Id,
+                            existingTransaction.PaymentCode,
+                            request.Code);
+
+                        throw new InvalidOperationException(
+                            "Duplicate transaction detected with a different PaymentCode.");
+                    }
+                    else
+                    {
+                        await transaction.RollbackAsync();
+
+                        if (existingTransaction.PaymentSnapshot == null)
+                        {
+                            throw new InvalidOperationException("Existing transaction does not have an associated PaymentSnapshot.");
+                        }
+
+                        var response = new CreatePrePayOnlineOrderResult
+                        {
+                            PaymentSnapshotId = existingTransaction.PaymentSnapshot.PublicId,
+                            Amount = existingTransaction.Amount,
+                        };
+
+                        return ServiceResult<CreatePrePayOnlineOrderResult>.Success(response);
+                    }
                 }
 
                 var snapshot = await _uow.PaymentSnapshots.GetForUpdateAsync_PostgreSQL(request.Code);
                 if (snapshot == null)
                 {
-                    _logger.LogInformation(OrderMessenger.NotFoundSnapshot + " snapshot Id " + request.Code);
+                    _logger.LogWarning(OrderMessenger.NotFoundSnapshot + " snapshot Id " + request.Code);
                     paymentTransaction.Status = EPaymentTransactionStatus.InvalidSnapshot;
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
@@ -735,7 +765,6 @@ namespace TechStore.Service.Implementations
 
                 var createOrderResult = new CreatePrePayOnlineOrderResult
                 {
-                    OrderId = order.PublicId,
                     PaymentSnapshotId = snapshot.PublicId,
                     Amount = order.TotalAmount,
                 };
@@ -1669,11 +1698,6 @@ namespace TechStore.Service.Implementations
         }
         #endregion
 
-        public Task<ServiceResult<bool>> UpdateInStoreOrderAsync(string updatedByCashierId, string orderId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<ServiceResult<InStoreOrderResponseModel>> GetInStoreOrderAsync(string id)
         {
             var serviceResult = new ServiceResult<InStoreOrderResponseModel>
@@ -1713,56 +1737,6 @@ namespace TechStore.Service.Implementations
             //    serviceResult.Data = order.ToInStoreOrderResponseModel(order.OrderItems.ToList(), paymentQRCode, payment);
             //}
 
-
-            //serviceResult.IsSuccess = true;
-            //serviceResult.Message = Messenger.GetDataSuccessful;
-            return serviceResult;
-        }
-
-        public async Task<ServiceResult<bool>> CheckoutInStoreOrderAsync(string id)
-        {
-            var serviceResult = new ServiceResult<bool>
-            {
-                IsSuccess = false,
-                Data = false,
-                Message = Messenger.NoExitData,
-            };
-
-            //var order = await _uow.Orders.GetByIdAsync(id);
-
-            //if (order == null)
-            //{
-            //    return serviceResult;
-            //}
-
-            //var invoice = await _uow.Invoices.FindOneAsync(i => i.OrderId == order.Id);
-
-            //var payment = await _uow.Payments.FindOneAsync(p => p.OrderId == order.Id);
-
-            //order.OrderStatus = EOrderStatus.Completed;
-            //order.UpdatedAt = TimeZoneHelper.GetUtcNow();
-
-            //if (invoice != null)
-            //{
-            //    invoice.InvoiceStatus = EInvoiceStatus.Paid;
-            //    invoice.UpdatedAt = TimeZoneHelper.GetUtcNow();
-            //    invoice.PaidAt = TimeZoneHelper.GetUtcNow();
-            //    _uow.Invoices.Update(invoice);
-            //}
-
-            //if (payment != null)
-            //{
-            //    payment.PaymentStatus = EPaymentStatus.Paid;
-            //    payment.UpdatedAt = TimeZoneHelper.GetUtcNow();
-            //    payment.TransactionCode = Random.Shared.Next(100000, 999999).ToString();
-            //    _uow.Payments.Update(payment);
-            //}
-
-            //var result = await _uow.CommitAsync();
-            //if (result < 1)
-            //{
-            //    return serviceResult;
-            //}
 
             //serviceResult.IsSuccess = true;
             //serviceResult.Message = Messenger.GetDataSuccessful;
@@ -1902,5 +1876,59 @@ namespace TechStore.Service.Implementations
             return serviceResult;
         }
 
+        public async Task<ServiceResult<List<ListItemOrderModel>>> GetCustomerSnapshotOrdersAsync(string customerId, int page, int pageSize)
+        {
+            var customer = await _uow.Users.TableNoTracking.Where(u => u.PublicId == customerId).FirstOrDefaultAsync();
+
+            if(customer == null)
+            {
+                return ServiceResult<List<ListItemOrderModel>>.Failure(EErrorType.NotFound, Messenger.NotFoundUser);
+            }
+
+            var snapshots = await _uow.PaymentSnapshots
+                .TableNoTracking
+                .Where(s => s.CustomerId == customer.Id)
+                .Include(s => s.Items)
+                .OrderByDescending(s => s.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var snapshotOrders = new List<ListItemOrderModel>();
+            foreach (var snapshot in snapshots)
+            {
+                snapshotOrders.Add(snapshot.ToListItemOrderModel(customer.PublicId));
+            }
+
+            return ServiceResult<List<ListItemOrderModel>>.Success(snapshotOrders);
+        }
+
+        public async Task<ServiceResult<OrderDetailResponseModel>> GetCustomerSnapshotOrderAsync(string userId, string snapshotId)
+        {
+            var customer = await _uow.Users.TableNoTracking.Where(u => u.PublicId == userId).FirstOrDefaultAsync();
+
+            if (customer == null)
+            {
+                return ServiceResult<OrderDetailResponseModel>.Failure(EErrorType.NotFound, Messenger.NotFoundUser);
+            }
+
+            var snapshot = await _uow.PaymentSnapshots
+                .TableNoTracking
+                .Where(s => s.PublicId == snapshotId)
+                .Include(s => s.Items)
+                .FirstOrDefaultAsync();
+
+            if (snapshot == null)
+            {
+                return ServiceResult<OrderDetailResponseModel>.Failure(EErrorType.NotFound, Messenger.NoExitData);
+            }
+
+            if (snapshot.CustomerId != customer.Id)
+            {
+                return ServiceResult<OrderDetailResponseModel>.Failure(EErrorType.NotFound, Messenger.NoExitData);
+            }
+
+            return ServiceResult<OrderDetailResponseModel>.Success(snapshot.ToOrderDetailResponseModel(customer.PublicId));
+        }
     }
 }
