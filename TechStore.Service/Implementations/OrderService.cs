@@ -1930,5 +1930,72 @@ namespace TechStore.Service.Implementations
 
             return ServiceResult<OrderDetailResponseModel>.Success(snapshot.ToOrderDetailResponseModel(customer.PublicId));
         }
+
+        public async Task<ServiceResult<bool>> UpdateSnapshotOrderAsync(string updateByUserId, string snapshotId, UpdateOrderModel model)
+        {
+            var snapshot = await _uow.PaymentSnapshots.GetByIdAsync(snapshotId);
+            var user = await _uow.Users.GetByIdAsync(updateByUserId);
+
+            if (snapshot == null || user == null)
+            {
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, Messenger.NoExitData);
+            }
+
+            if (snapshot.CustomerId != user.Id)
+            {
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, Messenger.NoExitData);
+            }
+
+            snapshot.CustomerName = model.CustomerName;
+            snapshot.CustomerPhoneNumber = model.CustomerPhoneNumber;
+            snapshot.CustomerEmail = model.CustomerEmail;
+            snapshot.ShippingAddress = model.ShippingAddress;
+            snapshot.Note = model.Note;
+
+            snapshot.UpdatedAt = TimeZoneHelper.GetUtcNow();
+            snapshot.UpdatedBy = user.Id;
+
+            _uow.PaymentSnapshots.Update(snapshot);
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
+            }
+
+            return ServiceResult<bool>.Success(true);
+        }
+
+        public async Task<ServiceResult<bool>> CancelSnapshotOrderAsync(string userId, string snapshotId)
+        {
+            var snapshot = await _uow.PaymentSnapshots.GetByIdAsync(snapshotId);
+            var user = await _uow.Users.GetByIdAsync(userId);
+
+            if (snapshot == null || user == null)
+            {
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, Messenger.NoExitData);
+            }
+
+            if (snapshot.CustomerId != user.Id)
+            {
+                return ServiceResult<bool>.Failure(EErrorType.NotFound, Messenger.NoExitData);
+            }
+
+            // Chuyển Snapshot thành trạng thái hết hạn, background job sẽ xử lý release các sản phẩm trong snapshot sau khi hết hạn 
+            snapshot.ExpiredAt = TimeZoneHelper.GetUtcNow();
+            snapshot.UpdatedAt = TimeZoneHelper.GetUtcNow();
+            snapshot.UpdatedBy = user.Id;
+
+            _uow.PaymentSnapshots.Update(snapshot);
+
+            var result = await _uow.CommitAsync();
+
+            if (result < 1)
+            {
+                return ServiceResult<bool>.Failure(EErrorType.SystemError, Messenger.SystemError);
+            }
+
+            return ServiceResult<bool>.Success(true);
+        }
     }
 }

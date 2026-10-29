@@ -36,5 +36,7 @@ namespace TechStore.Service.Interfaces
         Task<ServiceResult<OrderDetailResponseModel>> GetCustomerSnapshotOrderAsync(string userId, string snapshotId);
         Task<ServiceResult<bool>> CancelOrderByCustomerAsync(string updateByUserId, string orderId, CancelOrderModel model);
         Task<ServiceResult<bool>> UpdateOrderByCustomerAsync(string updateByUserId, string orderId, UpdateOrderModel model);
+        Task<ServiceResult<bool>> UpdateSnapshotOrderAsync(string updateByUserId, string snapshotId, UpdateOrderModel model);
+        Task<ServiceResult<bool>> CancelSnapshotOrderAsync(string userId, string snapshotId);
     }
 }

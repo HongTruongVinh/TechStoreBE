@@ -120,5 +120,26 @@ namespace TechStoreAPI.Controllers
 
             return serviceResult.ToActionResult(this);
         }
+
+        [Authorize(Roles = AppRoles.Customer)]
+        [HttpPut("snapshots/{id}")]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateSnapshotOrderAsync(string id, UpdateOrderModel model)
+        {
+            var userId = User.GetRequiredUserId();
+
+            var serviceResult = await _orderService.UpdateSnapshotOrderAsync(userId, id, model);
+
+            return serviceResult.ToActionResult(this);
+        }
+
+        [HttpPut("snapshots/{id}/cancel")]
+        public async Task<ActionResult<ApiResponse<bool>>> CancelSnapshotOrder(string id)
+        {
+            var userId = User.GetRequiredUserId();
+
+            var serviceResult = await _orderService.CancelSnapshotOrderAsync(userId, id);
+
+            return serviceResult.ToActionResult(this);
+        }
     }
 }
