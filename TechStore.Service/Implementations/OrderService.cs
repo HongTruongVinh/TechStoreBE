@@ -1887,7 +1887,8 @@ namespace TechStore.Service.Implementations
 
             var snapshots = await _uow.PaymentSnapshots
                 .TableNoTracking
-                .Where(s => s.CustomerId == customer.Id)
+                .Where(s => s.CustomerId == customer.Id && 
+                (s.Status == EPaymentSnapshotStatus.PendingPayment ||  s.Status == EPaymentSnapshotStatus.Expired))
                 .Include(s => s.Items)
                 .OrderByDescending(s => s.CreatedAt)
                 .Skip((page - 1) * pageSize)
