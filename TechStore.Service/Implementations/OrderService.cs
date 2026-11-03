@@ -476,7 +476,10 @@ namespace TechStore.Service.Implementations
 
             try
             {
-                //Validate duplicate transaction
+                #region Validate duplicate transaction
+                //Xử lý webhooks gửi request nhiều lần do lỗi mạng:
+                //Nếu đã có transactionId này thì phải check xem PaymentCode và Amount có giống nhau không,
+                //nếu khác nhau thì báo lỗi, nếu giống nhau thì trả về kết quả cũ
                 var existingTransaction = await _uow.PaymentTransactions.GetExistingTransactionAsync(paymentTransaction.TransactionId);
 
                 if (existingTransaction != null)
@@ -515,10 +518,13 @@ namespace TechStore.Service.Implementations
                         return ServiceResult<CreatePrePayOnlineOrderResult>.Success(response);
                     }
                 }
+                #endregion
 
                 var snapshot = await _uow.PaymentSnapshots.GetForUpdateAsync_PostgreSQL(request.Code);
                 if (snapshot == null)
                 {
+                    // Nếu nhận được transaction từ ngân hàng nhưng không tìm thấy snapshot tương ứng,
+                    // thì vẫn lưu transaction và đánh dấu transaction là InvalidSnapshot và log cảnh báo
                     _logger.LogWarning(OrderMessenger.NotFoundSnapshot + " snapshot Id " + request.Code);
                     paymentTransaction.Status = EPaymentTransactionStatus.InvalidSnapshot;
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
@@ -529,6 +535,8 @@ namespace TechStore.Service.Implementations
 
                 if (snapshot.Status != EPaymentSnapshotStatus.PendingPayment || snapshot.ExpiredAt <= TimeZoneHelper.GetUtcNow())
                 {
+                    // Nếu nhận được transaction từ ngân hàng nhưng snapshot đã hết hạn hoặc không hợp lệ,
+                    // thì vẫn lưu transaction và đánh dấu transaction là ExpiredSnapshot
                     paymentTransaction.Status = EPaymentTransactionStatus.ExpiredSnapshot;
                     await _uow.PaymentTransactions.AddAsync(paymentTransaction);
                     await _uow.CommitAsync();
@@ -539,6 +547,8 @@ namespace TechStore.Service.Implementations
                 var customer = await _uow.Users.GetByInternalIdAsync(snapshot.CustomerId);
                 if (customer == null)
                 {
+                    // Nếu nhận được transaction từ ngân hàng nhưng không tìm thấy user tương ứng với snapshot,
+                    // thì vẫn lưu transaction và đánh dấu transaction là ManualReview và log cảnh báo
                     _logger.LogInformation(Messenger.NotFoundUser + " user Id " + snapshot.CustomerId);
                     paymentTransaction.PaymentSnapshotId = snapshot.Id;
                     paymentTransaction.Status = EPaymentTransactionStatus.ManualReview;
@@ -551,6 +561,8 @@ namespace TechStore.Service.Implementations
 
                 if (request.TransferAmount < snapshot.TotalAmount)
                 {
+                    // Nếu nhận được transaction từ ngân hàng nhưng số tiền chuyển khoản nhỏ hơn số tiền cần thanh toán,
+                    // thì vẫn lưu transaction và đánh dấu transaction là IncorrectAmount và log cảnh báo
                     paymentTransaction.PaymentSnapshotId = snapshot.Id;
                     paymentTransaction.Status = EPaymentTransactionStatus.IncorrectAmount;
                     paymentTransaction.Note = PaymentMessenger.IncorrectAmount;
@@ -562,11 +574,15 @@ namespace TechStore.Service.Implementations
 
                 if (snapshot.TotalAmount < request.TransferAmount)
                 {
+                    // Xử lý bổ sung trường hợp số tiền chuyển khoản lớn hơn số tiền cần thanh toán, ví dụ: khách chuyển thừa tiền
+                    // thì cộng số tiền thừa vào ví của khách hàng
                     customer.WalletBalance += request.TransferAmount - snapshot.TotalAmount;
                     _uow.Users.Update(customer);
                 }
                 else if (snapshot.TotalAmount > request.TransferAmount)
                 {
+                    // Nếu nhận được transaction từ ngân hàng nhưng số tiền chuyển khoản nhỏ hơn số tiền cần thanh toán,
+                    // thì vẫn lưu transaction và đánh dấu transaction là IncorrectAmount và log cảnh báo
                     _logger.LogInformation(PaymentMessenger.IncorrectAmount + " sanpshot Id " + request.Code);
                     paymentTransaction.Status = EPaymentTransactionStatus.IncorrectAmount;
                     paymentTransaction.Note = PaymentMessenger.IncorrectAmount;
